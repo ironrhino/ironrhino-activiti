@@ -1,0 +1,149 @@
+package org.ironrhino.activiti.action;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.List;
+import java.util.zip.ZipInputStream;
+
+import javax.servlet.ServletOutputStream;
+
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.repository.ProcessDefinitionQuery;
+import org.apache.commons.io.IOUtils;
+import org.apache.struts2.ServletActionContext;
+import org.ironrhino.core.metadata.Authorize;
+import org.ironrhino.core.metadata.AutoConfig;
+import org.ironrhino.core.model.ResultPage;
+import org.ironrhino.core.security.role.UserRole;
+import org.ironrhino.core.struts.BaseAction;
+import org.springframework.beans.factory.annotation.Autowired;
+
+@AutoConfig(fileupload = "text/xml,application/zip,application/octet-stream")
+@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
+public class DeploymentAction extends BaseAction {
+
+	private static final long serialVersionUID = 8529576691612260306L;
+
+	@Autowired
+	private RepositoryService repositoryService;
+
+	private File file;
+
+	private String fileFileName;
+
+	private ResultPage<ProcessDefinition> resultPage;
+
+	private String deploymentId;
+
+	private String resourceName;
+
+	private ProcessDefinition processDefinition;
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public String getFileFileName() {
+		return fileFileName;
+	}
+
+	public void setFileFileName(String fileFileName) {
+		this.fileFileName = fileFileName;
+	}
+
+	public ResultPage<ProcessDefinition> getResultPage() {
+		return resultPage;
+	}
+
+	public void setResultPage(ResultPage<ProcessDefinition> resultPage) {
+		this.resultPage = resultPage;
+	}
+
+	public String getDeploymentId() {
+		return deploymentId;
+	}
+
+	public void setDeploymentId(String deploymentId) {
+		this.deploymentId = deploymentId;
+	}
+
+	public String getResourceName() {
+		return resourceName;
+	}
+
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+
+	public ProcessDefinition getProcessDefinition() {
+		return processDefinition;
+	}
+
+	public String execute() {
+		if (resultPage == null)
+			resultPage = new ResultPage<ProcessDefinition>();
+		ProcessDefinitionQuery query = repositoryService
+				.createProcessDefinitionQuery();
+		long count = query.count();
+		List<ProcessDefinition> list = query.orderByProcessDefinitionName()
+				.asc().orderByProcessDefinitionVersion().desc()
+				.listPage(resultPage.getStart(), resultPage.getPageSize());
+		resultPage.setTotalResults(count);
+		resultPage.setResult(list);
+		return LIST;
+	}
+
+	public String view() {
+		processDefinition = repositoryService.createProcessDefinitionQuery()
+				.processDefinitionId(getUid()).singleResult();
+		if (processDefinition == null)
+			return NOTFOUND;
+		return VIEW;
+	}
+
+	public String delete() {
+		deploymentId = repositoryService.createProcessDefinitionQuery()
+				.processDefinitionId(getUid()).singleResult().getDeploymentId();
+		repositoryService.deleteDeployment(deploymentId, true);
+		addActionMessage(getText("delete.success"));
+		return SUCCESS;
+	}
+
+	public String upload() throws Exception {
+		if (file == null || fileFileName == null) {
+			addActionError("请上传zip文件或者xml文件");
+			return ERROR;
+		}
+		if (fileFileName.endsWith(".zip")) {
+			ZipInputStream zipInputStream = new ZipInputStream(
+					new FileInputStream(file));
+			repositoryService.createDeployment()
+					.addZipInputStream(zipInputStream).deploy();
+		} else if (fileFileName.endsWith(".xml")) {
+			repositoryService.createDeployment()
+					.addInputStream(fileFileName, new FileInputStream(file))
+					.deploy();
+		}
+		addActionMessage("部署成功");
+		return SUCCESS;
+	}
+
+	public String download() throws Exception {
+		InputStream resourceAsStream = repositoryService.getResourceAsStream(
+				deploymentId, resourceName);
+		byte[] byteArray = IOUtils.toByteArray(resourceAsStream);
+		ServletOutputStream servletOutputStream = ServletActionContext
+				.getResponse().getOutputStream();
+		servletOutputStream.write(byteArray, 0, byteArray.length);
+		servletOutputStream.flush();
+		servletOutputStream.close();
+		return NONE;
+	}
+
+}
