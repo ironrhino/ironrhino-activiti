@@ -45,7 +45,7 @@ Observation.app = function(container) {
 		t.html('<img alt="跟踪工作流" src="' + CONTEXT_PATH
 				+ '/process/processInstance/diagram/' + processInstanceId
 				+ '" style="position:absolute; left:0px; top:0px;">');
-		$.getJSON(CONTEXT_PATH + '/process/processInstance/traceProcess/'
+		$.getJSON(CONTEXT_PATH + '/process/processInstance/trace/'
 						+ processInstanceId, function(data) {
 					$.each(data, function(i, v) {
 								var div = $('<div/>', {

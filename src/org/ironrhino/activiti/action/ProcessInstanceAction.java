@@ -1,7 +1,6 @@
 package org.ironrhino.activiti.action;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,10 +8,6 @@ import javax.servlet.ServletOutputStream;
 
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
-import org.activiti.engine.impl.RepositoryServiceImpl;
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
@@ -44,13 +39,9 @@ public class ProcessInstanceAction extends BaseAction {
 
 	private ProcessInstance processInstance;
 
-	private String processInstanceId;
-
 	private String resourceType;
 
 	private String executionId;
-
-	private Map<String, Object> activityImageInfo;
 
 	private List<Map<String, Object>> activityInfos;
 
@@ -64,14 +55,6 @@ public class ProcessInstanceAction extends BaseAction {
 
 	public ProcessInstance getProcessInstance() {
 		return processInstance;
-	}
-
-	public String getProcessInstanceId() {
-		return processInstanceId;
-	}
-
-	public void setProcessInstanceId(String processInstanceId) {
-		this.processInstanceId = processInstanceId;
 	}
 
 	public String getResourceType() {
@@ -88,10 +71,6 @@ public class ProcessInstanceAction extends BaseAction {
 
 	public void setExecutionId(String executionId) {
 		this.executionId = executionId;
-	}
-
-	public Map<String, Object> getActivityImageInfo() {
-		return activityImageInfo;
 	}
 
 	public List<Map<String, Object>> getActivityInfos() {
@@ -126,34 +105,6 @@ public class ProcessInstanceAction extends BaseAction {
 		return VIEW;
 	}
 
-	public String download() throws Exception {
-		ProcessInstance processInstance = runtimeService
-				.createProcessInstanceQuery()
-				.processInstanceId(processInstanceId).singleResult();
-		ProcessDefinition processDefinition = repositoryService
-				.createProcessDefinitionQuery()
-				.processDefinitionId(processInstance.getProcessDefinitionId())
-				.singleResult();
-		String resourceName = "";
-		if (resourceType.equals("xml"))
-			resourceName = processDefinition.getResourceName();
-		else if (resourceType.equals("image"))
-			resourceName = processDefinition.getDiagramResourceName();
-		if (StringUtils.isBlank(resourceName))
-			return NOTFOUND;
-		ServletActionContext.getResponse().setHeader("Content-Disposition",
-				"attachment;filename=" + resourceName + ";");
-		InputStream resourceAsStream = repositoryService.getResourceAsStream(
-				processDefinition.getDeploymentId(), resourceName);
-		byte[] byteArray = IOUtils.toByteArray(resourceAsStream);
-		ServletOutputStream servletOutputStream = ServletActionContext
-				.getResponse().getOutputStream();
-		servletOutputStream.write(byteArray, 0, byteArray.length);
-		servletOutputStream.flush();
-		servletOutputStream.close();
-		return NONE;
-	}
-
 	public String diagram() throws Exception {
 		InputStream resourceAsStream = null;
 		ProcessInstance processInstance = runtimeService
@@ -176,35 +127,8 @@ public class ProcessInstanceAction extends BaseAction {
 		return NONE;
 	}
 
-	@JsonConfig(root = "activityImageInfo")
-	public String trace() throws Exception {
-		ExecutionEntity execution = (ExecutionEntity) runtimeService
-				.createExecutionQuery().processInstanceId(processInstanceId)
-				.executionId(executionId).singleResult();
-		String activityId = execution.getActivityId();
-		ProcessInstance processInstance = runtimeService
-				.createProcessInstanceQuery()
-				.processInstanceId(processInstanceId).singleResult();
-		ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-				.getDeployedProcessDefinition(processInstance
-						.getProcessDefinitionId());
-		List<ActivityImpl> activities = processDefinitionEntity.getActivities();
-		activityImageInfo = new HashMap<String, Object>();
-		for (ActivityImpl activityImpl : activities) {
-			String id = activityImpl.getId();
-			if (id.equals(activityId)) {
-				activityImageInfo.put("x", activityImpl.getX());
-				activityImageInfo.put("y", activityImpl.getY());
-				activityImageInfo.put("width", activityImpl.getWidth());
-				activityImageInfo.put("height", activityImpl.getHeight());
-				break;
-			}
-		}
-		return JSON;
-	}
-
 	@JsonConfig(root = "activityInfos")
-	public String traceProcess() throws Exception {
+	public String trace() throws Exception {
 		activityInfos = processTraceService.traceProcess(getUid());
 		return JSON;
 	}
