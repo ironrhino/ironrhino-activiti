@@ -1,4 +1,4 @@
-Observation.deploy = function(container) {
+Observation.app = function(container) {
 	var form = $('#deployment-form', container);
 	var uploadFile = function(file) {
 		var maxsize = 4 * 1024 * 1024;
@@ -38,4 +38,58 @@ Observation.deploy = function(container) {
 						}).click();
 			});
 
+	$('.trace-process', container).each(function() {
+		// var t = $(this).css('position', 'relative');
+		var t = $(this);
+		var processInstanceId = t.data('processinstanceid');
+		t.html('<img alt="跟踪工作流" src="' + CONTEXT_PATH
+				+ '/process/processInstance/diagram/' + processInstanceId
+				+ '" style="position:absolute; left:0px; top:0px;">');
+		$.getJSON(CONTEXT_PATH + '/process/processInstance/traceProcess/'
+						+ processInstanceId, function(data) {
+					$.each(data, function(i, v) {
+								var div = $('<div/>', {
+											'class' : 'activiyAttr'
+										}).css({
+											position : 'absolute',
+											left : (v.x - 1),
+											top : (v.y - 1),
+											width : (v.width - 2),
+											height : (v.height - 2)
+										}).appendTo(t).data('vars', v.vars);
+								if (v.currentActiviti) {
+									div.css({
+												'border' : '2px solid red',
+												'border-radius' : '12px'
+											});
+								}
+							});
+
+					if (typeof $.qtip != 'undefined') {
+						$('.activiyAttr').qtip({
+							content : function() {
+								var vars = $(this).data('vars');
+								var tipContent = '<table class="need-border">';
+								$.each(vars, function(varKey, varValue) {
+											if (varValue) {
+												tipContent += '<tr><td class="label">'
+														+ varKey
+														+ '</td><td>'
+														+ varValue
+														+ '<td/></tr>';
+											}
+										});
+								tipContent += '</table>';
+								return tipContent;
+							},
+							position : {
+								at : 'bottom left',
+								adjust : {
+									x : 3
+								}
+							}
+						});
+					}
+				});
+	});
 }

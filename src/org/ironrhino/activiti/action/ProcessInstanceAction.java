@@ -42,6 +42,8 @@ public class ProcessInstanceAction extends BaseAction {
 
 	private ResultPage<ProcessInstance> resultPage;
 
+	private ProcessInstance processInstance;
+
 	private String processInstanceId;
 
 	private String resourceType;
@@ -58,6 +60,10 @@ public class ProcessInstanceAction extends BaseAction {
 
 	public void setResultPage(ResultPage<ProcessInstance> resultPage) {
 		this.resultPage = resultPage;
+	}
+
+	public ProcessInstance getProcessInstance() {
+		return processInstance;
 	}
 
 	public String getProcessInstanceId() {
@@ -112,6 +118,14 @@ public class ProcessInstanceAction extends BaseAction {
 		return LIST;
 	}
 
+	public String view() {
+		processInstance = runtimeService.createProcessInstanceQuery()
+				.processInstanceId(getUid()).singleResult();
+		if (processInstance == null)
+			return NOTFOUND;
+		return VIEW;
+	}
+
 	public String download() throws Exception {
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery()
@@ -143,8 +157,8 @@ public class ProcessInstanceAction extends BaseAction {
 	public String diagram() throws Exception {
 		InputStream resourceAsStream = null;
 		ProcessInstance processInstance = runtimeService
-				.createProcessInstanceQuery()
-				.processInstanceId(processInstanceId).singleResult();
+				.createProcessInstanceQuery().processInstanceId(getUid())
+				.singleResult();
 		ProcessDefinition processDefinition = repositoryService
 				.createProcessDefinitionQuery()
 				.processDefinitionId(processInstance.getProcessDefinitionId())
@@ -191,7 +205,7 @@ public class ProcessInstanceAction extends BaseAction {
 
 	@JsonConfig(root = "activityInfos")
 	public String traceProcess() throws Exception {
-		activityInfos = processTraceService.traceProcess(processInstanceId);
+		activityInfos = processTraceService.traceProcess(getUid());
 		return JSON;
 	}
 }
