@@ -43,22 +43,28 @@ Observation.app = function(container) {
 		var processInstanceId = t.data('processinstanceid');
 		t.html('<img alt="跟踪工作流" src="' + CONTEXT_PATH
 				+ '/process/processInstance/diagram/' + processInstanceId
-				+ '" style="position:absolute; left:0px; top:0px;">');
+				+ '" style="position:absolute;">');
 		var img = $('img', t)[0];
 		img.onload = function() {
 			var ratio = img.width / img.naturalWidth;
 			$.getJSON(CONTEXT_PATH + '/process/processInstance/trace/'
 							+ processInstanceId, function(data) {
 						$.each(data, function(i, v) {
-									var div = $('<div/>', {
-												'class' : 'activiyAttr'
-											}).css({
+									var div = $('<div/>').css({
 												position : 'absolute',
 												left : (v.x * ratio - 1),
 												top : (v.y * ratio - 1),
 												width : (v.width * ratio - 2),
 												height : (v.height * ratio - 2)
-											}).appendTo(t).data('vars', v.vars);
+											}).appendTo(t);
+									var title = [];
+									for (var key in v.vars) {
+										var value = v.vars[key];
+										if (value) {
+											title.push(key + ': ' + value);
+										}
+									}
+									div.attr('title', title.join('\n'));
 									if (v.currentActiviti) {
 										div.css({
 													'border' : '2px solid red',
@@ -66,31 +72,6 @@ Observation.app = function(container) {
 												});
 									}
 								});
-
-						if (typeof $.qtip != 'undefined') {
-							$('.activiyAttr').qtip({
-								content : function() {
-									var vars = $(this).data('vars');
-									var tipContent = '<table class="need-border">';
-									$.each(vars, function(varKey, varValue) {
-										if (varValue) {
-											tipContent += '<tr><td class="label">'
-													+ varKey
-													+ '</td><td>'
-													+ varValue + '<td/></tr>';
-										}
-									});
-									tipContent += '</table>';
-									return tipContent;
-								},
-								position : {
-									at : 'bottom left',
-									adjust : {
-										x : 3
-									}
-								}
-							});
-						}
 					});
 		}
 
