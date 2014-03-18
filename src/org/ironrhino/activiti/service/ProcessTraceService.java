@@ -47,8 +47,23 @@ public class ProcessTraceService {
 	@Autowired
 	protected IdentityService identityService;
 
-	public List<Map<String, Object>> traceProcess(String processInstanceId)
-			throws Exception {
+	public List<Map<String, Object>> traceProcessDefinition(
+			String processDefinitionId) throws Exception {
+		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+				.getDeployedProcessDefinition(processDefinitionId);
+		List<ActivityImpl> activitiList = processDefinition.getActivities();
+
+		List<Map<String, Object>> activityInfos = new ArrayList<Map<String, Object>>();
+		for (ActivityImpl activity : activitiList) {
+			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(activity);
+			activityInfos.add(activityImageInfo);
+		}
+
+		return activityInfos;
+	}
+
+	public List<Map<String, Object>> traceProcessInstance(
+			String processInstanceId) throws Exception {
 		Execution execution = runtimeService.createExecutionQuery()
 				.executionId(processInstanceId).singleResult();
 		String activityId = execution.getActivityId();
@@ -77,6 +92,11 @@ public class ProcessTraceService {
 		}
 
 		return activityInfos;
+	}
+
+	private Map<String, Object> packageSingleActivitiInfo(ActivityImpl activity)
+			throws Exception {
+		return packageSingleActivitiInfo(activity, null, false);
 	}
 
 	private Map<String, Object> packageSingleActivitiInfo(
@@ -142,12 +162,6 @@ public class ProcessTraceService {
 		vars.put("任务所属角色", roles);
 	}
 
-	/**
-	 * 设置当前处理人信息
-	 * 
-	 * @param vars
-	 * @param currentTask
-	 */
 	private void setCurrentTaskAssignee(Map<String, Object> vars,
 			Task currentTask) {
 		String assignee = currentTask.getAssignee();

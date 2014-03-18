@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletOutputStream;
@@ -13,8 +14,10 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
+import org.ironrhino.activiti.service.ProcessTraceService;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
+import org.ironrhino.core.metadata.JsonConfig;
 import org.ironrhino.core.model.ResultPage;
 import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.struts.BaseAction;
@@ -22,9 +25,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @AutoConfig(fileupload = "text/xml,application/zip,application/octet-stream")
 @Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
-public class DeploymentAction extends BaseAction {
+public class ProcessDefinitionAction extends BaseAction {
 
 	private static final long serialVersionUID = 8529576691612260306L;
+
+	@Autowired
+	private ProcessTraceService processTraceService;
 
 	@Autowired
 	private RepositoryService repositoryService;
@@ -40,6 +46,8 @@ public class DeploymentAction extends BaseAction {
 	private String resourceName;
 
 	private ProcessDefinition processDefinition;
+
+	private List<Map<String, Object>> activities;
 
 	public File getFile() {
 		return file;
@@ -83,6 +91,10 @@ public class DeploymentAction extends BaseAction {
 
 	public ProcessDefinition getProcessDefinition() {
 		return processDefinition;
+	}
+
+	public List<Map<String, Object>> getActivities() {
+		return activities;
 	}
 
 	public String execute() {
@@ -144,6 +156,12 @@ public class DeploymentAction extends BaseAction {
 		servletOutputStream.flush();
 		servletOutputStream.close();
 		return NONE;
+	}
+
+	@JsonConfig(root = "activities")
+	public String trace() throws Exception {
+		activities = processTraceService.traceProcessDefinition(getUid());
+		return JSON;
 	}
 
 }

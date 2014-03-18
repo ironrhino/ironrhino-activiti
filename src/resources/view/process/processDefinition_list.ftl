@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <#escape x as x?html><html>
 <head>
-<title>流程部署</title>
+<title>流程定义</title>
 </head>
 <body>
 <#assign columns={"id":{"alias":"流程定义ID","width":"120px"},"deploymentId":{"alias":"部署ID","width":"100px"},"key":{"alias":"KEY","width":"100px"},"name":{},"version":{"width":"100px"},
@@ -17,6 +17,6 @@
 +
 r' <a class="btn" href="<@url value="/process/processInstance/list/${entity.id}"/>">实例</a>
 '>
-<@richtable formid="deployment-form" entityName="deployment" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
+<@richtable formid="processDefinition-form" entityName="processDefinition" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 </body>
 </html></#escape>

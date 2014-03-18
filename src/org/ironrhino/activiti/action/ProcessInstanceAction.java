@@ -43,7 +43,7 @@ public class ProcessInstanceAction extends BaseAction {
 
 	private String executionId;
 
-	private List<Map<String, Object>> activityInfos;
+	private List<Map<String, Object>> activities;
 
 	public ResultPage<ProcessInstance> getResultPage() {
 		return resultPage;
@@ -73,8 +73,8 @@ public class ProcessInstanceAction extends BaseAction {
 		this.executionId = executionId;
 	}
 
-	public List<Map<String, Object>> getActivityInfos() {
-		return activityInfos;
+	public List<Map<String, Object>> getActivities() {
+		return activities;
 	}
 
 	public String execute() {
@@ -127,9 +127,9 @@ public class ProcessInstanceAction extends BaseAction {
 		return NONE;
 	}
 
-	@JsonConfig(root = "activityInfos")
+	@JsonConfig(root = "activities")
 	public String trace() throws Exception {
-		activityInfos = processTraceService.traceProcess(getUid());
+		activities = processTraceService.traceProcessInstance(getUid());
 		return JSON;
 	}
 }

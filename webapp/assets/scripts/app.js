@@ -1,5 +1,5 @@
 Observation.app = function(container) {
-	var form = $('#deployment-form', container);
+	var form = $('#processDefinition-form', container);
 	var uploadFile = function(file) {
 		var maxsize = 4 * 1024 * 1024;
 		if (file.size > maxsize) {
