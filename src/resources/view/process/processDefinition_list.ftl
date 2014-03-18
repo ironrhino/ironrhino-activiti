@@ -9,7 +9,7 @@
 "diagramResourceName":{"alias":"流程图","width":"120px","template":r"<#if value?has_content><a href='${actionBaseUrl}/download?deploymentId=${entity.deploymentId}&resourceName=${value}' download='${value}'>${value}</a></#if>"}}>
 <#assign bottomButtons=r'
 <button type="button" class="btn noajax deploy">${action.getText("deploy")}</button>
-<button type="button" class="btn" data-action="delete" data-shown="selected" style="display: none;">${action.getText("delete")}</button>
+<button type="button" class="btn confirm" data-action="delete" data-shown="selected" style="display: none;">${action.getText("delete")}</button>
 <button type="button" class="btn reload">${action.getText("reload")}</button>
 '>
 <#assign actionColumnButtons='
