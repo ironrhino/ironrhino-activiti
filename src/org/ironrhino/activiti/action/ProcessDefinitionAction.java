@@ -10,6 +10,7 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.ServletOutputStream;
 
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.apache.commons.io.IOUtils;
@@ -34,6 +35,9 @@ public class ProcessDefinitionAction extends BaseAction {
 
 	@Autowired
 	private RepositoryService repositoryService;
+
+	@Autowired
+	private RuntimeService runtimeService;
 
 	private File file;
 
@@ -120,6 +124,13 @@ public class ProcessDefinitionAction extends BaseAction {
 	}
 
 	public String delete() {
+		String processDefinitionId = getUid();
+		long count = runtimeService.createProcessInstanceQuery()
+				.processDefinitionId(processDefinitionId).count();
+		if (count > 0) {
+			addActionError("已经有流程实例了,不能删除!");
+			return ERROR;
+		}
 		deploymentId = repositoryService.createProcessDefinitionQuery()
 				.processDefinitionId(getUid()).singleResult().getDeploymentId();
 		repositoryService.deleteDeployment(deploymentId, true);

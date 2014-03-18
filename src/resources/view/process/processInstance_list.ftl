@@ -4,11 +4,7 @@
 <title>流程实例</title>
 </head>
 <body>
-<#assign columns={"id":{"alias":"流程实例ID","width":"120px"}}>
-<#if !id?has_content>
-<#assign columns=columns+{"processDefinitionId":{"alias":"流程定义ID","width":"100px"}}>
-</#if>
-<#assign columns=columns+{"name":{},"businessKey":{"alias":"业务键值","width":"200px"},"suspended":{"width":"80px"},"ended":{"width":"80px"}}>
+<#assign columns={"id":{"alias":"流程实例ID","width":"120px"},"processDefinitionId":{"alias":"流程定义ID","width":"100px","template":r"<#if id?has_content>${value}<#else><a href='${actionBaseUrl}/list/${value}' class='ajax view'>${value}</a></#if>"},"name":{},"businessKey":{"alias":"业务键值","width":"200px"},"suspended":{"width":"80px"},"ended":{"width":"80px"}}>
 
 <#assign bottomButtons='
 <button type="button" class="btn reload">${action.getText("reload")}</button>
