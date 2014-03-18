@@ -1,6 +1,7 @@
 package org.ironrhino.activiti.action;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class ProcessInstanceAction extends BaseAction {
 	@Autowired
 	private ProcessTraceService processTraceService;
 
-	private ResultPage<ProcessInstance> resultPage;
+	private ResultPage<Tuple<ProcessInstance, ProcessDefinition>> resultPage;
 
 	private ProcessInstance processInstance;
 
@@ -45,11 +46,12 @@ public class ProcessInstanceAction extends BaseAction {
 
 	private List<Map<String, Object>> activities;
 
-	public ResultPage<ProcessInstance> getResultPage() {
+	public ResultPage<Tuple<ProcessInstance, ProcessDefinition>> getResultPage() {
 		return resultPage;
 	}
 
-	public void setResultPage(ResultPage<ProcessInstance> resultPage) {
+	public void setResultPage(
+			ResultPage<Tuple<ProcessInstance, ProcessDefinition>> resultPage) {
 		this.resultPage = resultPage;
 	}
 
@@ -83,15 +85,27 @@ public class ProcessInstanceAction extends BaseAction {
 
 	public String list() {
 		if (resultPage == null)
-			resultPage = new ResultPage<ProcessInstance>();
+			resultPage = new ResultPage<Tuple<ProcessInstance, ProcessDefinition>>();
 		ProcessInstanceQuery query = runtimeService
 				.createProcessInstanceQuery();
 		String processDefinitionId = getUid();
 		if (StringUtils.isNotBlank(processDefinitionId))
 			query = query.processDefinitionId(processDefinitionId);
 		long count = query.count();
-		List<ProcessInstance> list = query.orderByProcessInstanceId().desc()
+		List<ProcessInstance> processInstances = query
+				.orderByProcessInstanceId().desc()
 				.listPage(resultPage.getStart(), resultPage.getPageSize());
+		List<Tuple<ProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<ProcessInstance, ProcessDefinition>>(
+				processInstances.size());
+		for (ProcessInstance pi : processInstances) {
+			Tuple<ProcessInstance, ProcessDefinition> tuple = new Tuple<ProcessInstance, ProcessDefinition>();
+			tuple.setId(pi.getId());
+			tuple.setKey(pi);
+			tuple.setValue(repositoryService.createProcessDefinitionQuery()
+					.processDefinitionId(pi.getProcessDefinitionId())
+					.singleResult());
+			list.add(tuple);
+		}
 		resultPage.setTotalResults(count);
 		resultPage.setResult(list);
 		return LIST;

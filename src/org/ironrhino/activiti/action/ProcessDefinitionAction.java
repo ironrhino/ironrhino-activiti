@@ -3,6 +3,7 @@ package org.ironrhino.activiti.action;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
@@ -11,6 +12,7 @@ import javax.servlet.ServletOutputStream;
 
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.apache.commons.io.IOUtils;
@@ -43,7 +45,7 @@ public class ProcessDefinitionAction extends BaseAction {
 
 	private String fileFileName;
 
-	private ResultPage<ProcessDefinition> resultPage;
+	private ResultPage<Tuple<ProcessDefinition, Deployment>> resultPage;
 
 	private String deploymentId;
 
@@ -69,11 +71,12 @@ public class ProcessDefinitionAction extends BaseAction {
 		this.fileFileName = fileFileName;
 	}
 
-	public ResultPage<ProcessDefinition> getResultPage() {
+	public ResultPage<Tuple<ProcessDefinition, Deployment>> getResultPage() {
 		return resultPage;
 	}
 
-	public void setResultPage(ResultPage<ProcessDefinition> resultPage) {
+	public void setResultPage(
+			ResultPage<Tuple<ProcessDefinition, Deployment>> resultPage) {
 		this.resultPage = resultPage;
 	}
 
@@ -103,13 +106,25 @@ public class ProcessDefinitionAction extends BaseAction {
 
 	public String execute() {
 		if (resultPage == null)
-			resultPage = new ResultPage<ProcessDefinition>();
+			resultPage = new ResultPage<Tuple<ProcessDefinition, Deployment>>();
 		ProcessDefinitionQuery query = repositoryService
 				.createProcessDefinitionQuery();
 		long count = query.count();
-		List<ProcessDefinition> list = query.orderByProcessDefinitionName()
-				.asc().orderByProcessDefinitionVersion().desc()
+		List<ProcessDefinition> processDefinitions = query
+				.orderByProcessDefinitionName().asc()
+				.orderByProcessDefinitionVersion().desc()
 				.listPage(resultPage.getStart(), resultPage.getPageSize());
+
+		List<Tuple<ProcessDefinition, Deployment>> list = new ArrayList<Tuple<ProcessDefinition, Deployment>>(
+				processDefinitions.size());
+		for (ProcessDefinition pd : processDefinitions) {
+			Tuple<ProcessDefinition, Deployment> tuple = new Tuple<ProcessDefinition, Deployment>();
+			tuple.setId(pd.getId());
+			tuple.setKey(pd);
+			tuple.setValue(repositoryService.createDeploymentQuery()
+					.deploymentId(pd.getDeploymentId()).singleResult());
+			list.add(tuple);
+		}
 		resultPage.setTotalResults(count);
 		resultPage.setResult(list);
 		return LIST;
