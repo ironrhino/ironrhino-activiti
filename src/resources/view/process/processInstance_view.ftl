@@ -4,6 +4,6 @@
 <title>查看流程实例</title>
 </head>
 <body>
-<div class="trace-process" data-processinstanceid="${processInstance.id}"></div>
+<div class="diagram processInstance" data-pid="${processInstance.id}"></div>
 </body>
 </html></#escape>

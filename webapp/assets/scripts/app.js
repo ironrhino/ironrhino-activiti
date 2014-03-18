@@ -38,17 +38,19 @@ Observation.app = function(container) {
 						}).click();
 			});
 
-	$('.trace-process', container).each(function() {
+	$('.diagram', container).each(function() {
 		var t = $(this).css('position', 'relative');
-		var processInstanceId = t.data('processinstanceid');
-		t.html('<img alt="跟踪工作流" src="' + CONTEXT_PATH
-				+ '/process/processInstance/diagram/' + processInstanceId
-				+ '" style="position:absolute;">');
+		var pid = t.data('pid');
+		var entity = t.hasClass('processDefinition')
+				? 'processDefinition'
+				: 'processInstance';
+		t.html('<img alt="跟踪工作流" src="' + CONTEXT_PATH + '/process/' + entity
+				+ '/diagram/' + pid + '" style="position:absolute;">');
 		var img = $('img', t)[0];
 		img.onload = function() {
 			var ratio = img.width / img.naturalWidth;
-			$.getJSON(CONTEXT_PATH + '/process/processInstance/trace/'
-							+ processInstanceId, function(data) {
+			$.getJSON(CONTEXT_PATH + '/process/' + entity + '/trace/' + pid,
+					function(data) {
 						$.each(data, function(i, v) {
 									var div = $('<div/>').css({
 												position : 'absolute',

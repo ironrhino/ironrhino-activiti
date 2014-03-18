@@ -4,8 +4,6 @@
 <title>查看流程定义</title>
 </head>
 <body>
-<#if processDefinition.diagramResourceName?has_content>
-<img class="process-diagram" data-processdefinitionid="${processDefinition.id}" src="${actionBaseUrl}/download?deploymentId=${processDefinition.deploymentId}&resourceName=${processDefinition.diagramResourceName}"/>
-</#if>
+<div class="diagram processDefinition" data-pid="${processDefinition.id}"></div>
 </body>
 </html></#escape>

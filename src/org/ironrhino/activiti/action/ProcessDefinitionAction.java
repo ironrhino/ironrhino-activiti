@@ -158,6 +158,23 @@ public class ProcessDefinitionAction extends BaseAction {
 		return NONE;
 	}
 
+	public String diagram() throws Exception {
+		InputStream resourceAsStream = null;
+		ProcessDefinition processDefinition = repositoryService
+				.createProcessDefinitionQuery().processDefinitionId(getUid())
+				.singleResult();
+		String resourceName = processDefinition.getDiagramResourceName();
+		resourceAsStream = repositoryService.getResourceAsStream(
+				processDefinition.getDeploymentId(), resourceName);
+		byte[] byteArray = IOUtils.toByteArray(resourceAsStream);
+		ServletOutputStream servletOutputStream = ServletActionContext
+				.getResponse().getOutputStream();
+		servletOutputStream.write(byteArray, 0, byteArray.length);
+		servletOutputStream.flush();
+		servletOutputStream.close();
+		return NONE;
+	}
+
 	@JsonConfig(root = "activities")
 	public String trace() throws Exception {
 		activities = processTraceService.traceProcessDefinition(getUid());
