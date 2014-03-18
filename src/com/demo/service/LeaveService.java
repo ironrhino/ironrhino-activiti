@@ -2,7 +2,6 @@ package com.demo.service;
 
 import java.util.List;
 
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 
 import com.demo.model.Leave;
@@ -17,6 +16,5 @@ public interface LeaveService {
 
 	public ProcessDefinition getProcessDefinition(String processDefinitionId);
 
-	public TaskEntity findTaskById(String taskId) throws Exception;
 
 }

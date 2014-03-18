@@ -1,12 +1,14 @@
 package com.demo.action;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.service.EntityManager;
@@ -39,7 +41,12 @@ public class LeaveAction extends BaseAction {
 	@Autowired
 	private IdentityService identityService;
 
+	@Autowired
+	private TaskService taskService;
+
 	private Leave leave;
+
+	private List<Leave> list;
 
 	public Leave getLeave() {
 		return leave;
@@ -47,6 +54,10 @@ public class LeaveAction extends BaseAction {
 
 	public void setLeave(Leave leave) {
 		this.leave = leave;
+	}
+
+	public List<Leave> getList() {
+		return list;
 	}
 
 	@InputConfig(resultName = "start")
@@ -74,4 +85,13 @@ public class LeaveAction extends BaseAction {
 		return SUCCESS;
 	}
 
+	public String tasks() {
+		list = leaveService.findTask(AuthzUtils.getUsername(), "leave");
+		return "tasks";
+	}
+
+	public String claim() {
+		taskService.claim(getUid(), AuthzUtils.getUsername());
+		return tasks();
+	}
 }

@@ -132,4 +132,14 @@ public class ProcessInstanceAction extends BaseAction {
 		activities = processTraceService.traceProcessInstance(getUid());
 		return JSON;
 	}
+
+	public String suspend() throws Exception {
+		runtimeService.suspendProcessInstanceById(getUid());
+		return SUCCESS;
+	}
+
+	public String activate() throws Exception {
+		runtimeService.activateProcessInstanceById(getUid());
+		return SUCCESS;
+	}
 }

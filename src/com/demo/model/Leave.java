@@ -7,7 +7,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.ironrhino.core.model.BaseEntity;
 import org.ironrhino.security.model.User;
 
@@ -39,6 +42,12 @@ public class Leave extends BaseEntity {
 	private String leaveType;
 
 	private String reason;
+
+	@Transient
+	private ProcessInstance processInstance;
+
+	@Transient
+	private Task task;
 
 	public User getUser() {
 		return user;
@@ -110,6 +119,22 @@ public class Leave extends BaseEntity {
 
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+
+	public ProcessInstance getProcessInstance() {
+		return processInstance;
+	}
+
+	public void setProcessInstance(ProcessInstance processInstance) {
+		this.processInstance = processInstance;
+	}
+
+	public Task getTask() {
+		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
 	}
 
 }
