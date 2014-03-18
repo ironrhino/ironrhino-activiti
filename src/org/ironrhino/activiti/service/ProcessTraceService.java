@@ -11,6 +11,7 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.Expression;
+import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
@@ -21,10 +22,12 @@ import org.activiti.engine.impl.task.TaskDefinition;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -46,6 +49,9 @@ public class ProcessTraceService {
 
 	@Autowired
 	protected IdentityService identityService;
+
+	@Autowired
+	protected UserDetailsService userDetailsService;
 
 	public List<Map<String, Object>> traceProcessDefinition(
 			String processDefinitionId) throws Exception {
@@ -114,7 +120,6 @@ public class ProcessTraceService {
 				ActionContext.getContext().getLocale(), type, null));
 
 		ActivityBehavior activityBehavior = activity.getActivityBehavior();
-		logger.debug("activityBehavior={}", activityBehavior);
 		if (activityBehavior instanceof UserTaskActivityBehavior) {
 
 			Task currentTask = null;
@@ -141,25 +146,28 @@ public class ProcessTraceService {
 		String description = activity.getProcessDefinition().getDescription();
 		vars.put("描述", description);
 
-		logger.debug("trace variables: {}", vars);
 		activityInfo.put("vars", vars);
 		return activityInfo;
 	}
 
 	private void setTaskGroup(Map<String, Object> vars,
 			Set<Expression> candidateGroupIdExpressions) {
-		String roles = "";
+		StringBuilder roles = new StringBuilder();
 		for (Expression expression : candidateGroupIdExpressions) {
 			String expressionText = expression.getExpressionText();
-			if (expressionText.startsWith("$")) {
-				expressionText = expressionText.replace("${insuranceType}",
-						"life");
+			Group g = identityService.createGroupQuery()
+					.groupId(expressionText).singleResult();
+			String roleName = g.getName();
+			if (roleName == null) {
+				roleName = g.getId();
+				roleName = LocalizedTextUtil.findText(getClass(), roleName,
+						ActionContext.getContext().getLocale(), roleName, null);
 			}
-			String roleName = identityService.createGroupQuery()
-					.groupId(expressionText).singleResult().getName();
-			roles += roleName;
+			roles.append(roleName).append(" ");
 		}
-		vars.put("任务所属角色", roles);
+		if (roles.length() > 0)
+			roles.deleteCharAt(roles.length() - 1);
+		vars.put("任务所属角色", roles.toString());
 	}
 
 	private void setCurrentTaskAssignee(Map<String, Object> vars,
@@ -168,9 +176,13 @@ public class ProcessTraceService {
 		if (assignee != null) {
 			User assigneeUser = identityService.createUserQuery()
 					.userId(assignee).singleResult();
-			String userInfo = assigneeUser.getLastName() + " "
-					+ assigneeUser.getFirstName();
-			vars.put("当前处理人", userInfo);
+			try {
+				UserDetails userDetails = userDetailsService
+						.loadUserByUsername(assigneeUser.getId());
+				vars.put("当前处理人", userDetails.toString());
+			} catch (UsernameNotFoundException e) {
+				vars.put("当前处理人", assigneeUser.getFirstName());
+			}
 		}
 	}
 
@@ -178,12 +190,9 @@ public class ProcessTraceService {
 		Task currentTask = null;
 		try {
 			String activitiId = processInstance.getActivityId();
-			logger.debug("current activity id: {}", activitiId);
 			currentTask = taskService.createTaskQuery()
 					.processInstanceId(processInstance.getId())
 					.taskDefinitionKey(activitiId).singleResult();
-			logger.debug("current task for processInstance: {}",
-					ToStringBuilder.reflectionToString(currentTask));
 		} catch (Exception e) {
 			logger.error(
 					"can not get property activityId from processInstance: {}",

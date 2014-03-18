@@ -13,9 +13,9 @@
 <button type="button" class="btn" data-view="view" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("view")}</button>
 '+r'
 <#if entity.suspended>
-<button type="button" class="btn" data-action="activate">${action.getText("activate")}</button>
+<button type="button" class="btn confirm" data-action="activate">${action.getText("activate")}</button>
 <#else>
-<button type="button" class="btn" data-action="suspend">${action.getText("suspend")}</button>
+<button type="button" class="btn confirm" data-action="suspend">${action.getText("suspend")}</button>
 </#if>
 '>
 <@richtable entityName="processInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
