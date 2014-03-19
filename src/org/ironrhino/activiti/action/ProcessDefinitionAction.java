@@ -16,6 +16,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.ironrhino.activiti.service.ProcessTraceService;
 import org.ironrhino.core.metadata.Authorize;
@@ -109,6 +110,8 @@ public class ProcessDefinitionAction extends BaseAction {
 			resultPage = new ResultPage<Tuple<ProcessDefinition, Deployment>>();
 		ProcessDefinitionQuery query = repositoryService
 				.createProcessDefinitionQuery();
+		if (StringUtils.isNoneBlank(keyword))
+			query.processDefinitionNameLike(keyword);
 		long count = query.count();
 		List<ProcessDefinition> processDefinitions = query
 				.orderByProcessDefinitionName().asc()

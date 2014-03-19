@@ -17,6 +17,6 @@
 +
 r' <a class="btn" href="<@url value="/process/processInstance/list/${entity.id}"/>">实例</a>
 '>
-<@richtable formid="processDefinition-form" entityName="processDefinition" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
+<@richtable formid="processDefinition-form" entityName="processDefinition" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=true celleditable=false/>
 </body>
 </html></#escape>

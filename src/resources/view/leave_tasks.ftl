@@ -12,6 +12,9 @@
 <button type="button" class="btn" data-view="view">办理</button>
 </#if>
 '>
-<@richtable entityName="leave" columns=columns actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
+<#assign bottomButtons='
+<button type="button" class="btn reload">${action.getText("reload")}</button>
+'>
+<@richtable entityName="leave" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
 </body>
 </html></#escape>
