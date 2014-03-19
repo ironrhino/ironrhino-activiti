@@ -18,6 +18,8 @@ public class IdentitySynchronizer implements
 
 	@Override
 	public void onApplicationEvent(EntityOperationEvent event) {
+		if (!event.isLocal())
+			return;
 		Persistable<?> entity = event.getEntity();
 		if (entity.getClass() == User.class) {
 			User user = (User) entity;
