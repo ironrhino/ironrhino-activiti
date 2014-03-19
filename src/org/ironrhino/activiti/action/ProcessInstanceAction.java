@@ -16,9 +16,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.ironrhino.activiti.service.ProcessTraceService;
+import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.metadata.JsonConfig;
 import org.ironrhino.core.model.ResultPage;
+import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.struts.BaseAction;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -111,6 +113,7 @@ public class ProcessInstanceAction extends BaseAction {
 		return LIST;
 	}
 
+	@Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 	public String view() {
 		processInstance = runtimeService.createProcessInstanceQuery()
 				.processInstanceId(getUid()).singleResult();
@@ -119,6 +122,7 @@ public class ProcessInstanceAction extends BaseAction {
 		return VIEW;
 	}
 
+	@Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 	public String diagram() throws Exception {
 		InputStream resourceAsStream = null;
 		ProcessInstance processInstance = runtimeService
@@ -142,6 +146,7 @@ public class ProcessInstanceAction extends BaseAction {
 	}
 
 	@JsonConfig(root = "activities")
+	@Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 	public String trace() throws Exception {
 		activities = processTraceService.traceProcessInstance(getUid());
 		return JSON;

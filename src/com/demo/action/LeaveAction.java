@@ -4,33 +4,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.ironrhino.core.metadata.AutoConfig;
-import org.ironrhino.core.service.EntityManager;
-import org.ironrhino.core.struts.BaseAction;
+import org.ironrhino.core.struts.EntityAction;
 import org.ironrhino.core.util.AuthzUtils;
 import org.ironrhino.security.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.demo.model.Leave;
 import com.demo.service.LeaveService;
-import com.opensymphony.xwork2.interceptor.annotations.InputConfig;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 
 @AutoConfig
-public class LeaveAction extends BaseAction {
+public class LeaveAction extends EntityAction<Leave> {
 
 	private static final long serialVersionUID = 314143213105332544L;
-
-	@Resource
-	private EntityManager<Leave> entityManager;
 
 	@Autowired
 	private LeaveService leaveService;
@@ -60,27 +53,34 @@ public class LeaveAction extends BaseAction {
 		return list;
 	}
 
-	@InputConfig(resultName = "start")
+	@Override
+	public String input() {
+		return doInput();
+	}
+
 	@Validations(requiredFields = {
 			@RequiredFieldValidator(type = ValidatorType.FIELD, fieldName = "leave.startTime", key = "validation.required"),
-			@RequiredFieldValidator(type = ValidatorType.FIELD, fieldName = "leave.endTime", key = "validation.required") })
-	public String start() {
+			@RequiredFieldValidator(type = ValidatorType.FIELD, fieldName = "leave.endTime", key = "validation.required"),
+			@RequiredFieldValidator(type = ValidatorType.FIELD, fieldName = "leave.leaveType", key = "validation.required"),
+			@RequiredFieldValidator(type = ValidatorType.FIELD, fieldName = "leave.reason", key = "validation.required") })
+	public String save() {
 		User user = AuthzUtils.getUserDetails();
 		Leave temp = leave;
 		Leave leave = new Leave();
 		leave.setUser(user);
 		leave.setStartTime(temp.getStartTime());
 		leave.setEndTime(temp.getEndTime());
+		leave.setLeaveType(temp.getLeaveType());
 		leave.setReason(temp.getReason());
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("to", user.getEmail());
-		entityManager.save(leave);
+		getEntityManager(Leave.class).save(leave);
 		String businessKey = leave.getId().toString();
 		identityService.setAuthenticatedUserId(user.getId());
 		ProcessInstance processInstance = runtimeService
 				.startProcessInstanceByKey("leave", businessKey, variables);
 		leave.setProcessInstanceId(processInstance.getId());
-		entityManager.save(leave);
+		getEntityManager(Leave.class).save(leave);
 		addActionMessage("流程已启动，流程ID：" + processInstance.getId());
 		return SUCCESS;
 	}

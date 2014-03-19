@@ -4,5 +4,9 @@
   <li><a href="<@url value="/user"/>">${action.getText("user")}</a></li>
   <li><a href="<@url value="/process/processDefinition"/>">流程定义</a></li>
   <li><a href="<@url value="/process/processInstance"/>">流程实例</a></li>
-</@authorize>
+  </@authorize>
+  <@authorize ifAnyGranted="deptLeader">
+  <li><a href="<@url value="/leave/tasks"/>">我的任务</a></li>
+  </@authorize>
+  <li><a href="<@url value="/leave"/>">我的请假</a></li>
 </ul>
