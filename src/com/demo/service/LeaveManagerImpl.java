@@ -1,13 +1,12 @@
 package com.demo.service;
 
-import org.ironrhino.core.metadata.AutoConfig;
-import org.ironrhino.core.service.BaseManager;
 import org.ironrhino.core.service.BaseManagerImpl;
+import org.springframework.stereotype.Component;
 
 import com.demo.model.Leave;
 
-@AutoConfig
+@Component
 public class LeaveManagerImpl extends BaseManagerImpl<Leave> implements
-		BaseManager<Leave> {
+		LeaveManager {
 
 }
