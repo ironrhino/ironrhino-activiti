@@ -15,6 +15,7 @@ import org.ironrhino.security.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.demo.model.Leave;
+import com.demo.service.LeaveManager;
 import com.demo.service.LeaveService;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
@@ -24,6 +25,9 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 public class LeaveAction extends EntityAction<Leave> {
 
 	private static final long serialVersionUID = 314143213105332544L;
+
+	@Autowired
+	private LeaveManager leaveManager;
 
 	@Autowired
 	private LeaveService leaveService;
@@ -74,13 +78,13 @@ public class LeaveAction extends EntityAction<Leave> {
 		leave.setReason(temp.getReason());
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("to", user.getEmail());
-		getEntityManager(Leave.class).save(leave);
+		leaveManager.save(leave);
 		String businessKey = leave.getId().toString();
 		identityService.setAuthenticatedUserId(user.getId());
 		ProcessInstance processInstance = runtimeService
 				.startProcessInstanceByKey("leave", businessKey, variables);
 		leave.setProcessInstanceId(processInstance.getId());
-		getEntityManager(Leave.class).save(leave);
+		leaveManager.save(leave);
 		addActionMessage("流程已启动，流程ID：" + processInstance.getId());
 		return SUCCESS;
 	}
