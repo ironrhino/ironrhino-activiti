@@ -3,9 +3,6 @@ package com.demo.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ManagementService;
@@ -16,7 +13,7 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.ironrhino.core.service.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,28 +23,25 @@ import com.demo.model.Leave;
 @Component
 public class LeaveServiceImpl implements LeaveService {
 
-	@Resource
-	private EntityManager<Leave> entityManager;
+	@Autowired
+	private LeaveManager leaveManager;
 
-	@Resource(name = "identityService")
+	@Autowired
 	private IdentityService identityService;
 
-	@Resource(name = "runtimeService")
+	@Autowired
 	private RuntimeService runtimeService;
 
-	@Resource(name = "historyService")
+	@Autowired
 	private HistoryService historyService;
 
-	@Resource(name = "taskService")
+	@Autowired
 	private TaskService taskService;
 
-	@Resource(name = "managementService")
+	@Autowired
 	private ManagementService managementService;
 
-	@Resource(name = "formService")
-	private FormService formService;
-
-	@Resource(name = "repositoryService")
+	@Autowired
 	private RepositoryService repositoryService;
 
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -71,8 +65,7 @@ public class LeaveServiceImpl implements LeaveService {
 					.createProcessInstanceQuery()
 					.processInstanceId(processInstanceId).singleResult();
 			String businessKey = processInstance.getBusinessKey();
-			entityManager.setEntityClass(Leave.class);
-			Leave leave = entityManager.get(businessKey);
+			Leave leave = leaveManager.get(businessKey);
 			leave.setProcessInstance(processInstance);
 			leave.setTask(task);
 			leaves.add(leave);
@@ -93,8 +86,7 @@ public class LeaveServiceImpl implements LeaveService {
 
 			String businessKey = processInstance.getBusinessKey();
 
-			entityManager.setEntityClass(Leave.class);
-			Leave leave = entityManager.get(businessKey);
+			Leave leave = leaveManager.get(businessKey);
 
 			leave.setProcessInstanceId(processInstance.getId());
 
@@ -130,8 +122,7 @@ public class LeaveServiceImpl implements LeaveService {
 
 			String businessKey = historicProcessInstance.getBusinessKey();
 
-			entityManager.setEntityClass(Leave.class);
-			Leave leave = entityManager.get(businessKey);
+			Leave leave = leaveManager.get(businessKey);
 
 			// leave.setHistoricProcessInstance(historicProcessInstance);
 			// leave.setProcessDefinition(getProcessDefinition(historicProcessInstance
@@ -152,6 +143,5 @@ public class LeaveServiceImpl implements LeaveService {
 				.processDefinitionId(processDefinitionId).singleResult();
 		return processDefinition;
 	}
-
 
 }
