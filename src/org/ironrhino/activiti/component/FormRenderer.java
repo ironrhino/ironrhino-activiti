@@ -36,6 +36,7 @@ public class FormRenderer {
 		for (FormProperty fp : formProperties) {
 			FormElement fe = new FormElement();
 			fe.setName(fp.getId());
+			fe.setValue(fp.getValue());
 			String label = fp.getName();
 			if (StringUtils.isBlank(label))
 				label = fp.getId();
@@ -77,6 +78,8 @@ public class FormRenderer {
 
 		private String name;
 
+		private String value;
+
 		private String type = "input"; // input textarea select radio
 
 		private String inputType = "text";
@@ -107,6 +110,14 @@ public class FormRenderer {
 
 		public void setName(String name) {
 			this.name = name;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
 		}
 
 		public String getType() {

@@ -19,16 +19,22 @@ import org.ironrhino.activiti.component.FormRenderer.FormElement;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.security.role.UserRole;
+import org.ironrhino.core.sequence.CyclicSequence;
 import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
 import org.ironrhino.core.util.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 public class TaskAction extends BaseAction {
 
 	private static final long serialVersionUID = 314143213105332544L;
+
+	@Autowired
+	@Qualifier("businessKeySequence")
+	private CyclicSequence businessKeySequence;
 
 	@Autowired
 	private RepositoryService repositoryService;
@@ -124,8 +130,9 @@ public class TaskAction extends BaseAction {
 					.createProcessInstanceQuery()
 					.processInstanceId(task.getProcessInstanceId())
 					.singleResult();
-			System.out.println(processInstance);
-			// TODO display processInstance and bind form
+			Map<String, Object> vars = processInstance.getProcessVariables();
+			System.out.println(vars);
+			// TODO show info
 		}
 		return "form";
 	}
@@ -136,11 +143,16 @@ public class TaskAction extends BaseAction {
 				.getParametersMap(ServletActionContext.getRequest());
 		properties.remove("processDefinitionId");
 		if (processDefinitionId != null) {
+			// TODO check
 			ProcessInstance processInstance = formService.submitStartFormData(
-					processDefinitionId, properties);
+					processDefinitionId,
+					properties);
 			addActionMessage("启动流程: " + processInstance.getId());
-			// TODO callback update processInstanceId
 		} else {
+			Task task = taskService.createTaskQuery().taskId(taskId)
+					.singleResult();
+			if (!AuthzUtils.getUsername().equals(task.getAssignee()))
+				return ACCESSDENIED;
 			formService.submitTaskFormData(taskId, properties);
 			addActionMessage(getText("operate.success"));
 		}
@@ -151,11 +163,10 @@ public class TaskAction extends BaseAction {
 		taskService.claim(getUid(), AuthzUtils.getUsername());
 		return execute();
 	}
-	
+
 	public String unclaim() {
 		taskService.unclaim(getUid());
 		return execute();
 	}
-	
-	
+
 }

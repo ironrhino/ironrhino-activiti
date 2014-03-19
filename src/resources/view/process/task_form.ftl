@@ -4,6 +4,7 @@
 <title>${title}</title>
 </head>
 <body>
+
 <form action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal">
 	<#if processDefinitionId?has_content>
 	<input type="hidden" name="processDefinitionId" value="${processDefinitionId}"/>
@@ -17,20 +18,21 @@
 		<div class="controls">
 		<#if type=='textarea'>
 		<textarea id="${id}" name="${fe.name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>>
+		${fe.value!}
 		</textarea>
 		<#elseif type=='select'>
 		<select id="${id}" name="${fe.name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>>
 		<option></option>
 		<#list fe.values.entrySet() as entry>
-		<option value="${entry.key}">${entry.value}</option>
+		<option value="${entry.key}"<#if fe.value??&&fe.value==entry.key> selected</#if>>${entry.value}</option>
 		</#list>
 		</select>
 		<#elseif type=='radio'>
 		<#list fe.values.entrySet() as entry>
-		<label for="${id}_${entry.key}" class="radio inline"><input id="${id}_${entry.key}" type="radio" name="${fe.name}" value="${entry.key}"> ${action.getText(entry.value)}</label>
+		<label for="${id}_${entry.key}" class="radio inline"><input id="${id}_${entry.key}" type="radio" name="${fe.name}" value="${entry.key}"<#if fe.value??&&fe.value==entry.key> checked</#if> class="custom"> ${action.getText(entry.value)}</label>
 		</#list>
 		<#else>
-		<input id="${id}" type="${fe.inputType}" name="${fe.name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>/>
+		<input id="${id}" type="${fe.inputType}" name="${fe.name}" value="${fe.value!}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>/>
 		</#if>
 		</div>
 	</div>

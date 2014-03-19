@@ -9,10 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.Task;
+import org.hibernate.annotations.NaturalId;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.metadata.Hidden;
 import org.ironrhino.core.metadata.Owner;
@@ -36,42 +34,38 @@ public class Leave extends BaseEntity {
 	@UiConfig(displayOrder = 1, alias = "申请人", hiddenInList = @Hidden(expression = "!Parameters.user??"), hiddenInInput = @Hidden(true))
 	private User user;
 
-	@UiConfig(displayOrder = 2, alias = "流程", listTemplate = "<a href=\"<@url value='/process/processInstance/view/${value}'/>\" target=\"_blank\">跟踪</a>", hiddenInInput = @Hidden(true))
-	private String processInstanceId;
+	@NaturalId
+	@UiConfig(displayOrder = 2, alias = "编号")
+	private String number;
 
-	@UiConfig(displayOrder = 3)
-	@Temporal(TemporalType.DATE)
-	private Date startTime;
+	@UiConfig(displayOrder = 3, alias = "流程", listTemplate = "<a href=\"<@url value='/process/processInstance/view/${value}'/>\" target=\"_blank\">跟踪</a>", hiddenInInput = @Hidden(true))
+	private String processInstanceId;
 
 	@UiConfig(displayOrder = 4)
 	@Temporal(TemporalType.DATE)
+	private Date startTime;
+
+	@UiConfig(displayOrder = 5)
+	@Temporal(TemporalType.DATE)
 	private Date endTime;
 
-	@UiConfig(displayOrder = 5, hiddenInInput = @Hidden(true))
+	@UiConfig(displayOrder = 6)
 	@Temporal(TemporalType.DATE)
 	private Date realityStartTime;
 
-	@UiConfig(displayOrder = 6, hiddenInInput = @Hidden(true))
+	@UiConfig(displayOrder = 7)
 	@Temporal(TemporalType.DATE)
 	private Date realityEndTime;
 
-	@UiConfig(displayOrder = 7, hiddenInInput = @Hidden(true))
+	@UiConfig(displayOrder = 8)
 	private Date applyTime = new Date();
 
-	@UiConfig(displayOrder = 8, type = "dictionary", templateName = "leaveType")
+	@UiConfig(displayOrder = 9, type = "dictionary", templateName = "leaveType")
 	private String leaveType;
 
-	@UiConfig(displayOrder = 9, type = "textarea")
+	@UiConfig(displayOrder = 10, type = "textarea")
 	@Column(length = 4000)
 	private String reason;
-
-	@Transient
-	@UiConfig(hidden = true)
-	private ProcessInstance processInstance;
-
-	@Transient
-	@UiConfig(hidden = true)
-	private Task task;
 
 	public User getUser() {
 		return user;
@@ -79,6 +73,14 @@ public class Leave extends BaseEntity {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 
 	public String getProcessInstanceId() {
@@ -143,22 +145,6 @@ public class Leave extends BaseEntity {
 
 	public void setReason(String reason) {
 		this.reason = reason;
-	}
-
-	public ProcessInstance getProcessInstance() {
-		return processInstance;
-	}
-
-	public void setProcessInstance(ProcessInstance processInstance) {
-		this.processInstance = processInstance;
-	}
-
-	public Task getTask() {
-		return task;
-	}
-
-	public void setTask(Task task) {
-		this.task = task;
 	}
 
 }
