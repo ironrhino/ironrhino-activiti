@@ -41,12 +41,10 @@ public class Leave extends BaseEntity {
 
 	@UiConfig(displayOrder = 3)
 	@Temporal(TemporalType.DATE)
-	@Column(nullable = false, updatable = false)
 	private Date startTime;
 
 	@UiConfig(displayOrder = 4)
 	@Temporal(TemporalType.DATE)
-	@Column(nullable = false, updatable = false)
 	private Date endTime;
 
 	@UiConfig(displayOrder = 5, hiddenInInput = @Hidden(true))
@@ -58,15 +56,13 @@ public class Leave extends BaseEntity {
 	private Date realityEndTime;
 
 	@UiConfig(displayOrder = 7, hiddenInInput = @Hidden(true))
-	@Column(nullable = false, updatable = false)
 	private Date applyTime = new Date();
 
 	@UiConfig(displayOrder = 8, type = "dictionary", templateName = "leaveType")
-	@Column(nullable = false, updatable = false)
 	private String leaveType;
 
 	@UiConfig(displayOrder = 9, type = "textarea")
-	@Column(length = 4000, nullable = false, updatable = false)
+	@Column(length = 4000)
 	private String reason;
 
 	@Transient

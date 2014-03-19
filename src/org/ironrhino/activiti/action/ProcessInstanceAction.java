@@ -25,6 +25,7 @@ import org.ironrhino.core.struts.BaseAction;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @AutoConfig
+@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 public class ProcessInstanceAction extends BaseAction {
 
 	private static final long serialVersionUID = -6657349245825745444L;
