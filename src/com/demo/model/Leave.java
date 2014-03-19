@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -31,7 +32,7 @@ public class Leave extends BaseEntity {
 	private static final long serialVersionUID = -3509600479976901201L;
 
 	@ManyToOne(optional = false)
-	@Column(updatable = false)
+	@JoinColumn(updatable = false)
 	@UiConfig(displayOrder = 1, alias = "申请人", hiddenInList = @Hidden(expression = "!Parameters.user??"), hiddenInInput = @Hidden(true))
 	private User user;
 
