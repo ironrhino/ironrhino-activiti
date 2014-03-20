@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.FormService;
+import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -14,6 +15,7 @@ import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
 import org.apache.struts2.ServletActionContext;
 import org.ironrhino.activiti.form.FormRenderer;
@@ -27,8 +29,6 @@ import org.ironrhino.core.util.AuthzUtils;
 import org.ironrhino.core.util.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
@@ -48,6 +48,9 @@ public class TaskAction extends BaseAction {
 
 	@Autowired
 	private TaskService taskService;
+
+	@Autowired
+	private IdentityService identityService;
 
 	@Autowired
 	private FormService formService;
@@ -236,12 +239,59 @@ public class TaskAction extends BaseAction {
 	}
 
 	public String claim() {
-		taskService.claim(getUid(), AuthzUtils.getUsername());
+		String taskId = getUid();
+		List<IdentityLink> identityLinks = taskService
+				.getIdentityLinksForTask(taskId);
+		boolean authorized = identityLinks.isEmpty();
+		for (IdentityLink identityLink : identityLinks) {
+			if (identityLink.getType().equals(IdentityLinkType.CANDIDATE)) {
+				String userId = identityLink.getUserId();
+				String groupId = identityLink.getGroupId();
+				if (userId != null && AuthzUtils.getUsername().equals(userId)) {
+					authorized = true;
+					break;
+				}
+				if (groupId != null
+						&& AuthzUtils.getRoleNames().contains(groupId)) {
+					authorized = true;
+					break;
+				}
+			}
+		}
+		if (!authorized)
+			return ACCESSDENIED;
+		taskService.claim(taskId, AuthzUtils.getUsername());
 		return execute();
 	}
 
 	public String unclaim() {
-		taskService.unclaim(getUid());
+		String taskId = getUid();
+		List<IdentityLink> identityLinks = taskService
+				.getIdentityLinksForTask(taskId);
+		if (identityLinks.size() == 1) {
+			IdentityLink identityLink = identityLinks.get(0);
+			if (identityLink.getType().equals(IdentityLinkType.ASSIGNEE)
+					&& AuthzUtils.getUsername()
+							.equals(identityLink.getUserId())) {
+				addActionError("不能撤销非签收的任务");
+				return ERROR;
+			}
+		} else if (identityLinks.size() > 1) {
+			boolean authorized = false;
+			for (IdentityLink identityLink : identityLinks) {
+				if (identityLink.getType().equals(IdentityLinkType.ASSIGNEE)) {
+					String userId = identityLink.getUserId();
+					if (userId != null
+							&& AuthzUtils.getUsername().equals(userId)) {
+						authorized = true;
+						break;
+					}
+				}
+			}
+			if (!authorized)
+				return ACCESSDENIED;
+		}
+		taskService.unclaim(taskId);
 		return execute();
 	}
 
@@ -250,23 +300,18 @@ public class TaskAction extends BaseAction {
 				.getIdentityLinksForProcessDefinition(processDefinitionId);
 		boolean authorized;
 		if (!identityLinks.isEmpty()) {
-			UserDetails user = AuthzUtils.getUserDetails();
 			authorized = false;
 			for (IdentityLink identityLink : identityLinks) {
 				String userId = identityLink.getUserId();
 				String groupId = identityLink.getGroupId();
-				if (userId != null && userId.equals(user.getUsername())) {
+				if (userId != null && AuthzUtils.getUsername().equals(userId)) {
 					authorized = true;
 					break;
 				}
-				if (groupId != null) {
-					for (GrantedAuthority ga : user.getAuthorities())
-						if (ga.getAuthority().equals(groupId)) {
-							authorized = true;
-							break;
-						}
-					if (authorized)
-						break;
+				if (groupId != null
+						&& AuthzUtils.getRoleNames().contains(groupId)) {
+					authorized = true;
+					break;
 				}
 			}
 
