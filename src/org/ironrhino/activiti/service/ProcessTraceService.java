@@ -58,14 +58,12 @@ public class ProcessTraceService {
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processDefinitionId);
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
-
-		List<Map<String, Object>> activityInfos = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (ActivityImpl activity : activitiList) {
 			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(activity);
-			activityInfos.add(activityImageInfo);
+			activities.add(activityImageInfo);
 		}
-
-		return activityInfos;
+		return activities;
 	}
 
 	public List<Map<String, Object>> traceProcessInstance(
@@ -80,24 +78,17 @@ public class ProcessTraceService {
 				.getDeployedProcessDefinition(processInstance
 						.getProcessDefinitionId());
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
-
-		List<Map<String, Object>> activityInfos = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (ActivityImpl activity : activitiList) {
-
 			boolean currentActiviti = false;
 			String id = activity.getId();
-
-			if (id.equals(activityId)) {
+			if (id.equals(activityId))
 				currentActiviti = true;
-			}
-
 			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
 					activity, processInstance, currentActiviti);
-
-			activityInfos.add(activityImageInfo);
+			activities.add(activityImageInfo);
 		}
-
-		return activityInfos;
+		return activities;
 	}
 
 	private Map<String, Object> packageSingleActivitiInfo(ActivityImpl activity)
@@ -118,16 +109,12 @@ public class ProcessTraceService {
 		String type = (String) properties.get("type");
 		vars.put("任务类型", LocalizedTextUtil.findText(getClass(), type,
 				ActionContext.getContext().getLocale(), type, null));
-
 		ActivityBehavior activityBehavior = activity.getActivityBehavior();
 		if (activityBehavior instanceof UserTaskActivityBehavior) {
-
 			Task currentTask = null;
-
 			if (currentActiviti) {
 				currentTask = getCurrentTaskInfo(processInstance);
 			}
-
 			UserTaskActivityBehavior userTaskActivityBehavior = (UserTaskActivityBehavior) activityBehavior;
 			TaskDefinition taskDefinition = userTaskActivityBehavior
 					.getTaskDefinition();
@@ -140,12 +127,9 @@ public class ProcessTraceService {
 				}
 			}
 		}
-
 		vars.put("节点说明", properties.get("documentation"));
-
 		String description = activity.getProcessDefinition().getDescription();
 		vars.put("描述", description);
-
 		activityInfo.put("vars", vars);
 		return activityInfo;
 	}
