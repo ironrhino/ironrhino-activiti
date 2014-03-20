@@ -11,6 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.NaturalId;
+import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.metadata.Hidden;
 import org.ironrhino.core.metadata.Owner;
@@ -24,6 +25,7 @@ import org.ironrhino.security.model.User;
 @Table(name = "`leave`")
 @AutoConfig
 @Owner(propertyName = "user")
+@Authorize(ifAnyGranted = UserRole.user)
 @Richtable(readonly = @Readonly(true), bottomButtons = "<a class='btn noid' href='<@url value='/process/task/form?processDefinitionKey=leave'/>' rel='richtable'>请假</a> <button type='button' class='btn reload'>${action.getText('reload')}</button> <button type='button' class='btn filter'>${action.getText('filter')}</button>", order = "applyTime desc")
 public class Leave extends BaseEntity {
 

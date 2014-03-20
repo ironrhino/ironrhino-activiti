@@ -13,6 +13,7 @@ import org.activiti.engine.form.StartFormData;
 import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.apache.struts2.ServletActionContext;
 import org.ironrhino.activiti.form.FormRenderer;
@@ -26,6 +27,8 @@ import org.ironrhino.core.util.AuthzUtils;
 import org.ironrhino.core.util.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
@@ -142,6 +145,8 @@ public class TaskAction extends BaseAction {
 			}
 			if (processDefinition == null)
 				return ACCESSDENIED;
+			if (!canStartProcess(processDefinitionId))
+				return ACCESSDENIED;
 			title = processDefinition.getName();
 			StartFormData startFormData = formService
 					.getStartFormData(processDefinitionId);
@@ -149,7 +154,8 @@ public class TaskAction extends BaseAction {
 		} else {
 			Task task = taskService.createTaskQuery().taskId(taskId)
 					.singleResult();
-			if (task == null)
+			if (task == null
+					|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 				return ACCESSDENIED;
 			title = task.getName();
 			ProcessDefinition processDefinition = repositoryService
@@ -199,6 +205,8 @@ public class TaskAction extends BaseAction {
 				}
 				if (processDefinition == null)
 					return ACCESSDENIED;
+				if (!canStartProcess(processDefinitionId))
+					return ACCESSDENIED;
 				ProcessInstance processInstance = formService
 						.submitStartFormData(processDefinitionId,
 								businessKeySequence.nextStringValue(),
@@ -235,6 +243,37 @@ public class TaskAction extends BaseAction {
 	public String unclaim() {
 		taskService.unclaim(getUid());
 		return execute();
+	}
+
+	private boolean canStartProcess(String processDefinitionId) {
+		List<IdentityLink> identityLinks = repositoryService
+				.getIdentityLinksForProcessDefinition(processDefinitionId);
+		boolean authorized;
+		if (!identityLinks.isEmpty()) {
+			UserDetails user = AuthzUtils.getUserDetails();
+			authorized = false;
+			for (IdentityLink identityLink : identityLinks) {
+				String userId = identityLink.getUserId();
+				String groupId = identityLink.getGroupId();
+				if (userId != null && userId.equals(user.getUsername())) {
+					authorized = true;
+					break;
+				}
+				if (groupId != null) {
+					for (GrantedAuthority ga : user.getAuthorities())
+						if (ga.getAuthority().equals(groupId)) {
+							authorized = true;
+							break;
+						}
+					if (authorized)
+						break;
+				}
+			}
+
+		} else {
+			authorized = true;
+		}
+		return authorized;
 	}
 
 }
