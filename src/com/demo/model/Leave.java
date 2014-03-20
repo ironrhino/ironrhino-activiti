@@ -24,21 +24,21 @@ import org.ironrhino.security.model.User;
 @Table(name = "`leave`")
 @AutoConfig
 @Owner(propertyName = "user")
-@Richtable(readonly = @Readonly(true), bottomButtons = "<button type='button' class='btn' data-view='input'>请假</button> <button type='button' class='btn reload'>${action.getText('reload')}</button> <button type='button' class='btn filter'>${action.getText('filter')}</button>", order = "applyTime desc")
+@Richtable(readonly = @Readonly(true), bottomButtons = "<a class='btn noid' href='<@url value='/process/task/form?processDefinitionKey=leave'/>' rel='richtable'>请假</a> <button type='button' class='btn reload'>${action.getText('reload')}</button> <button type='button' class='btn filter'>${action.getText('filter')}</button>", order = "applyTime desc")
 public class Leave extends BaseEntity {
 
 	private static final long serialVersionUID = -3509600479976901201L;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(updatable = false)
-	@UiConfig(displayOrder = 1, alias = "申请人", hiddenInList = @Hidden(expression = "!Parameters.user??"), hiddenInInput = @Hidden(true))
+	@UiConfig(displayOrder = 1, alias = "申请人", hiddenInList = @Hidden(expression = "!Parameters.user??"), hiddenInView = @Hidden(expression = "!Parameters.user??"))
 	private User user;
 
 	@NaturalId
 	@UiConfig(displayOrder = 2, alias = "编号")
 	private String number;
 
-	@UiConfig(displayOrder = 3, alias = "流程", listTemplate = "<a href=\"<@url value='/process/processInstance/view/${value}'/>\" target=\"_blank\">跟踪</a>", hiddenInInput = @Hidden(true))
+	@UiConfig(displayOrder = 3, alias = "流程", hiddenInView = @Hidden(true), listTemplate = "<a href=\"<@url value='/process/processInstance/view/${value}'/>\" target=\"_blank\">跟踪</a>", hiddenInInput = @Hidden(true))
 	private String processInstanceId;
 
 	@UiConfig(displayOrder = 4)

@@ -9,8 +9,8 @@
 		    <activiti:formProperty id="startTime" type="date" required="true" />
 		    <activiti:formProperty id="endTime" type="date" required="true" />
 		    <activiti:formProperty id="leaveType" type="enum" required="true">
-				<activiti:value id="01" name="公休" />
-				<activiti:value id="02" name="病假" />
+				<activiti:value id="公休" name="公休" />
+				<activiti:value id="病假" name="病假" />
 		    </activiti:formProperty>
 		    <activiti:formProperty id="reason" required="true" />
 		</extensionElements>
@@ -18,19 +18,20 @@
     <userTask id="deptLeaderAudit" name="部门领导审批" activiti:candidateGroups="deptLeader">
 	    <extensionElements>
 	    	<activiti:formProperty id="deptLeaderMemo" />
-	    	<activiti:formProperty id="deptLeaderPass" type="boolean" required="true" />
+	    	<activiti:formProperty id="deptLeaderPass" name="审批通过" type="boolean" required="true" />
 		</extensionElements>
     </userTask>
     <userTask id="hrAudit" name="人事审批" activiti:candidateGroups="hr">
 	    <extensionElements>
 	    	<activiti:formProperty id="hrMemo" />
-	    	<activiti:formProperty id="hrPass" type="boolean" required="true" />
+	    	<activiti:formProperty id="hrPass" name="审批通过" type="boolean" required="true" />
 		</extensionElements>
     </userTask>
     <userTask id="reportBack" name="销假" activiti:assignee="${applyUserId}">
 	    <extensionElements>
 	      	<activiti:formProperty id="realityStartTime" value="${startTime}" type="date" required="true" />
 	   		<activiti:formProperty id="realityEndTime" value="${endTime}" type="date" required="true" />
+	   		<activiti:formProperty id="notify" name="是否邮件通知" type="boolean" required="true" />
 	        <activiti:taskListener event="complete" delegateExpression="${reportBackEndProcessor}"/>
 	    </extensionElements>
     </userTask>
@@ -38,6 +39,7 @@
 	    <extensionElements>
 	      	<activiti:formProperty id="startTime" value="${startTime}" type="date" required="true" />
 	    	<activiti:formProperty id="endTime" value="${endTime}" type="date" required="true" />
+	    	<activiti:formProperty id="reApply" name="是否重新申请" type="boolean" required="true" />
 	        <activiti:taskListener event="complete" delegateExpression="${afterModifyApplyContentProcessor}"/>
 	    </extensionElements>
     </userTask>

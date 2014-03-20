@@ -59,12 +59,22 @@ public class TaskAction extends BaseAction {
 
 	private String processDefinitionId;
 
+	private String processDefinitionKey;
+
 	public String getProcessDefinitionId() {
 		return processDefinitionId;
 	}
 
 	public void setProcessDefinitionId(String processDefinitionId) {
 		this.processDefinitionId = processDefinitionId;
+	}
+
+	public String getProcessDefinitionKey() {
+		return processDefinitionKey;
+	}
+
+	public void setProcessDefinitionKey(String processDefinitionKey) {
+		this.processDefinitionKey = processDefinitionKey;
 	}
 
 	public String getTitle() {
@@ -101,13 +111,27 @@ public class TaskAction extends BaseAction {
 	public String form() {
 		String taskId = getUid();
 		if (taskId == null) {
-			if (processDefinitionId == null)
-				return NOTFOUND;
-			ProcessDefinition processDefinition = repositoryService
-					.createProcessDefinitionQuery()
-					.processDefinitionId(processDefinitionId).singleResult();
+			ProcessDefinition processDefinition = null;
+			if (processDefinitionId == null) {
+				if (processDefinitionKey != null) {
+					processDefinition = repositoryService
+							.createProcessDefinitionQuery()
+							.processDefinitionKey(processDefinitionKey)
+							.latestVersion().singleResult();
+					if (processDefinition != null)
+						processDefinitionId = processDefinition.getId();
+					else
+						return ACCESSDENIED;
+				} else
+					return ACCESSDENIED;
+			} else {
+				processDefinition = repositoryService
+						.createProcessDefinitionQuery()
+						.processDefinitionId(processDefinitionId)
+						.singleResult();
+			}
 			if (processDefinition == null)
-				return NOTFOUND;
+				return ACCESSDENIED;
 			title = processDefinition.getName();
 			StartFormData startFormData = formService
 					.getStartFormData(processDefinitionId);
@@ -116,7 +140,7 @@ public class TaskAction extends BaseAction {
 			Task task = taskService.createTaskQuery().taskId(taskId)
 					.singleResult();
 			if (task == null)
-				return NOTFOUND;
+				return ACCESSDENIED;
 			title = task.getName();
 			ProcessDefinition processDefinition = repositoryService
 					.createProcessDefinitionQuery()
@@ -142,7 +166,28 @@ public class TaskAction extends BaseAction {
 		Map<String, String> properties = RequestUtils
 				.getParametersMap(ServletActionContext.getRequest());
 		properties.remove("processDefinitionId");
-		if (processDefinitionId != null) {
+		if (taskId == null) {
+			ProcessDefinition processDefinition = null;
+			if (processDefinitionId == null) {
+				if (processDefinitionKey != null) {
+					processDefinition = repositoryService
+							.createProcessDefinitionQuery()
+							.processDefinitionKey(processDefinitionKey)
+							.latestVersion().singleResult();
+					if (processDefinition != null)
+						processDefinitionId = processDefinition.getId();
+					else
+						return ACCESSDENIED;
+				} else
+					return ACCESSDENIED;
+			} else {
+				processDefinition = repositoryService
+						.createProcessDefinitionQuery()
+						.processDefinitionId(processDefinitionId)
+						.singleResult();
+			}
+			if (processDefinition == null)
+				return ACCESSDENIED;
 			ProcessInstance processInstance = formService.submitStartFormData(
 					processDefinitionId, businessKeySequence.nextStringValue(),
 					properties);
@@ -150,7 +195,8 @@ public class TaskAction extends BaseAction {
 		} else {
 			Task task = taskService.createTaskQuery().taskId(taskId)
 					.singleResult();
-			if (!AuthzUtils.getUsername().equals(task.getAssignee()))
+			if (task == null
+					|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 				return ACCESSDENIED;
 			formService.submitTaskFormData(taskId, properties);
 			addActionMessage(getText("operate.success"));

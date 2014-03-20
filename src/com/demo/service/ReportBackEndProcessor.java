@@ -27,14 +27,9 @@ public class ReportBackEndProcessor implements TaskListener {
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery()
 				.processInstanceId(processInstanceId).singleResult();
-		Leave leave = leaveManager.get(processInstance.getBusinessKey());
-
-		Object realityStartTime = delegateTask.getVariable("realityStartTime");
-		leave.setRealityStartTime((Date) realityStartTime);
-
-		Object realityEndTime = delegateTask.getVariable("realityEndTime");
-		leave.setRealityEndTime((Date) realityEndTime);
-
+		Leave leave = leaveManager.findOne(processInstance.getBusinessKey());
+		leave.setRealityStartTime((Date) delegateTask.getVariable("realityStartTime"));
+		leave.setRealityEndTime((Date)  delegateTask.getVariable("realityEndTime"));
 		leaveManager.save(leave);
 	}
 
