@@ -8,12 +8,10 @@ import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.demo.model.Leave;
 
 @Component
-@Transactional
 public class ReportBackEndProcessor implements TaskListener {
 
 	private static final long serialVersionUID = 3124655854713421538L;

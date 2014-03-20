@@ -9,16 +9,15 @@ import org.ironrhino.security.model.User;
 import org.ironrhino.security.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.demo.model.Leave;
 
 @Component
-@Transactional
 public class StartLeaveProcessor implements ExecutionListener {
 
 	private static final long serialVersionUID = -523387540206288280L;
 
+	@Autowired
 	private LeaveManager leaveManager;
 
 	@Autowired

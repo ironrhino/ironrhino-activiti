@@ -143,9 +143,8 @@ public class TaskAction extends BaseAction {
 				.getParametersMap(ServletActionContext.getRequest());
 		properties.remove("processDefinitionId");
 		if (processDefinitionId != null) {
-			// TODO check
 			ProcessInstance processInstance = formService.submitStartFormData(
-					processDefinitionId,
+					processDefinitionId, businessKeySequence.nextStringValue(),
 					properties);
 			addActionMessage("启动流程: " + processInstance.getId());
 		} else {
