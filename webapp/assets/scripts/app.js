@@ -49,13 +49,18 @@ Observation.app = function(container) {
 		var img = $('img', t)[0];
 		img.onload = function() {
 			var ratio = img.width / img.naturalWidth;
+			var offsetX = 0, offsetY = 0;
+			if (img.naturalWidth == 1050) {
+				offsetX = 164;
+				offsetY = 134;
+			}
 			$.getJSON(CONTEXT_PATH + '/process/' + entity + '/trace/' + pid,
 					function(data) {
 						$.each(data, function(i, v) {
 									var div = $('<div/>').css({
 												position : 'absolute',
-												left : (v.x * ratio - 1),
-												top : (v.y * ratio - 1),
+												left : ((v.x - offsetX) * ratio - 1),
+												top : ((v.y - offsetY) * ratio - 1),
 												width : (v.width * ratio - 2),
 												height : (v.height * ratio - 2)
 											}).appendTo(t);

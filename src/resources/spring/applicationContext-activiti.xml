@@ -17,6 +17,8 @@
 	    <property name="mailServerPassword" value="${mail.smtp.password:testironrhino}"></property>
 	    <property name="mailServerDefaultFrom" value="${mail.default.from:ironrhinotest@gmail.com}"></property>
 	   	<property name="mailServerUseSSL" value="${mail.use.ssl:true}" />
+	   	<property name="activityFontName" value="宋体"/>
+        <property name="labelFontName" value="宋体"/>
 		<property name="customFormTypes">
 			<list>
 				<bean class="org.ironrhino.activiti.form.TextareaFormType"/>
