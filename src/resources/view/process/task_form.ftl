@@ -27,7 +27,7 @@
 		</select>
 		<#elseif type=='radio'>
 		<#list fe.values.entrySet() as entry>
-		<label for="${id}_${entry.key}" class="radio inline"><input id="${id}_${entry.key}" type="radio" name="${fe.name}" value="${entry.key}"<#if fe.value??&&fe.value==entry.key> checked</#if> class="custom"> ${action.getText(entry.value)}</label>
+		<label for="${id}_${entry.key}" class="radio inline"><input id="${id}_${entry.key}" type="radio" name="${fe.name}" value="${entry.key}"<#if fe.value??&&fe.value==entry.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(entry.value)}</label>
 		</#list>
 		<#else>
 		<input id="${id}" type="${fe.inputType}" name="${fe.name}" value="${fe.value!}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>/>

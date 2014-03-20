@@ -218,7 +218,7 @@ public class TaskAction extends BaseAction {
 			if (message != null && message.startsWith("form property '")
 					&& message.endsWith("' is required")) {
 				String fieldName = message.substring(message.indexOf('\'') + 1);
-				fieldName = fieldName.substring(0, message.indexOf('\''));
+				fieldName = fieldName.substring(0, fieldName.indexOf('\''));
 				addFieldError(fieldName, getText("validation.required"));
 			} else {
 				throw e;
