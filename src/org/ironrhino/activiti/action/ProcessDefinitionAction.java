@@ -142,17 +142,29 @@ public class ProcessDefinitionAction extends BaseAction {
 	}
 
 	public String delete() {
-		String processDefinitionId = getUid();
-		long count = runtimeService.createProcessInstanceQuery()
-				.processDefinitionId(processDefinitionId).count();
-		if (count > 0) {
-			addActionError("已经有流程实例了,不能删除!");
-			return ERROR;
+		String[] id = getId();
+		if (id != null) {
+			boolean deletable = true;
+			for (String processDefinitionId : id) {
+				long count = runtimeService.createProcessInstanceQuery()
+						.processDefinitionId(processDefinitionId).count();
+				if (count > 0) {
+					deletable = false;
+					addActionError(processDefinitionId + " 已经有流程实例了,不能删除!");
+					break;
+				}
+			}
+			if (!deletable) {
+				return ERROR;
+			}
+			for (String processDefinitionId : id) {
+				deploymentId = repositoryService.createProcessDefinitionQuery()
+						.processDefinitionId(processDefinitionId)
+						.singleResult().getDeploymentId();
+				repositoryService.deleteDeployment(deploymentId, true);
+			}
+			addActionMessage(getText("delete.success"));
 		}
-		deploymentId = repositoryService.createProcessDefinitionQuery()
-				.processDefinitionId(getUid()).singleResult().getDeploymentId();
-		repositoryService.deleteDeployment(deploymentId, true);
-		addActionMessage(getText("delete.success"));
 		return SUCCESS;
 	}
 
@@ -164,10 +176,10 @@ public class ProcessDefinitionAction extends BaseAction {
 		if (fileFileName.endsWith(".zip")) {
 			ZipInputStream zipInputStream = new ZipInputStream(
 					new FileInputStream(file));
-			repositoryService.createDeployment()
+			repositoryService.createDeployment().name(fileFileName)
 					.addZipInputStream(zipInputStream).deploy();
 		} else if (fileFileName.endsWith(".xml")) {
-			repositoryService.createDeployment()
+			repositoryService.createDeployment().name(fileFileName)
 					.addInputStream(fileFileName, new FileInputStream(file))
 					.deploy();
 		}

@@ -19,6 +19,7 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.task.TaskDefinition;
+import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -57,10 +58,16 @@ public class ProcessTraceService {
 			String processDefinitionId) throws Exception {
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processDefinitionId);
+		Deployment deployment = repositoryService.createDeploymentQuery()
+				.deploymentId(processDefinition.getDeploymentId())
+				.singleResult();
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (ActivityImpl activity : activitiList) {
-			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(activity);
+			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
+					activity, null, false,
+					deployment != null && deployment.getName() != null
+							&& !deployment.getName().endsWith(".zip"));
 			activities.add(activityImageInfo);
 		}
 		return activities;
@@ -77,6 +84,9 @@ public class ProcessTraceService {
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processInstance
 						.getProcessDefinitionId());
+		Deployment deployment = repositoryService.createDeploymentQuery()
+				.deploymentId(processDefinition.getDeploymentId())
+				.singleResult();
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (ActivityImpl activity : activitiList) {
@@ -85,24 +95,21 @@ public class ProcessTraceService {
 			if (id.equals(activityId))
 				currentActiviti = true;
 			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
-					activity, processInstance, currentActiviti);
+					activity, processInstance, currentActiviti,
+					deployment != null && deployment.getName() != null
+							&& !deployment.getName().endsWith(".zip"));
 			activities.add(activityImageInfo);
 		}
 		return activities;
 	}
 
-	private Map<String, Object> packageSingleActivitiInfo(ActivityImpl activity)
-			throws Exception {
-		return packageSingleActivitiInfo(activity, null, false);
-	}
-
 	private Map<String, Object> packageSingleActivitiInfo(
 			ActivityImpl activity, ProcessInstance processInstance,
-			boolean currentActiviti) throws Exception {
+			boolean currentActiviti, boolean offset) throws Exception {
 		Map<String, Object> vars = new HashMap<String, Object>();
 		Map<String, Object> activityInfo = new HashMap<String, Object>();
 		activityInfo.put("currentActiviti", currentActiviti);
-		setPosition(activity, activityInfo);
+		setPosition(activity, activityInfo, offset);
 		setWidthAndHeight(activity, activityInfo);
 
 		Map<String, Object> properties = activity.getProperties();
@@ -192,8 +199,8 @@ public class ProcessTraceService {
 	}
 
 	private void setPosition(ActivityImpl activity,
-			Map<String, Object> activityInfo) {
-		activityInfo.put("x", activity.getX());
-		activityInfo.put("y", activity.getY());
+			Map<String, Object> activityInfo, boolean offset) {
+		activityInfo.put("x", offset ? activity.getX() - 164 : activity.getX());
+		activityInfo.put("y", offset ? activity.getY() - 134 : activity.getY());
 	}
 }
