@@ -130,20 +130,24 @@ public class TaskAction extends BaseAction {
 			ProcessDefinition processDefinition = null;
 			if (processDefinitionId == null) {
 				if (processDefinitionKey != null) {
-					processDefinition = repositoryService
+					List<ProcessDefinition> processDefinitions = repositoryService
 							.createProcessDefinitionQuery()
 							.processDefinitionKey(processDefinitionKey)
-							.latestVersion().singleResult();
-					if (processDefinition != null)
+							.active().orderByProcessDefinitionVersion().desc()
+							.listPage(0, 1);
+					if (!processDefinitions.isEmpty()) {
+						processDefinition = processDefinitions.get(0);
 						processDefinitionId = processDefinition.getId();
-					else
+					} else {
 						return ACCESSDENIED;
-				} else
+					}
+				} else {
 					return ACCESSDENIED;
+				}
 			} else {
 				processDefinition = repositoryService
 						.createProcessDefinitionQuery()
-						.processDefinitionId(processDefinitionId)
+						.processDefinitionId(processDefinitionId).active()
 						.singleResult();
 			}
 			if (processDefinition == null)
@@ -176,6 +180,10 @@ public class TaskAction extends BaseAction {
 			// Map<String, Object> vars = processInstance.getProcessVariables();
 			// System.out.println(vars);
 			// TODO show info
+			List<IdentityLink> identityLinks = runtimeService
+					.getIdentityLinksForProcessInstance(task
+							.getProcessInstanceId());
+			System.out.println(identityLinks);
 		}
 		return "form";
 	}
@@ -190,20 +198,24 @@ public class TaskAction extends BaseAction {
 				ProcessDefinition processDefinition = null;
 				if (processDefinitionId == null) {
 					if (processDefinitionKey != null) {
-						processDefinition = repositoryService
+						List<ProcessDefinition> processDefinitions = repositoryService
 								.createProcessDefinitionQuery()
 								.processDefinitionKey(processDefinitionKey)
-								.latestVersion().singleResult();
-						if (processDefinition != null)
+								.active().orderByProcessDefinitionVersion()
+								.desc().listPage(0, 1);
+						if (!processDefinitions.isEmpty()) {
+							processDefinition = processDefinitions.get(0);
 							processDefinitionId = processDefinition.getId();
-						else
+						} else {
 							return ACCESSDENIED;
-					} else
+						}
+					} else {
 						return ACCESSDENIED;
+					}
 				} else {
 					processDefinition = repositoryService
 							.createProcessDefinitionQuery()
-							.processDefinitionId(processDefinitionId)
+							.processDefinitionId(processDefinitionId).active()
 							.singleResult();
 				}
 				if (processDefinition == null)

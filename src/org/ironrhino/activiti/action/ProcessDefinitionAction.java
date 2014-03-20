@@ -210,4 +210,14 @@ public class ProcessDefinitionAction extends BaseAction {
 		return JSON;
 	}
 
+	public String suspend() throws Exception {
+		repositoryService.suspendProcessDefinitionById(getUid());
+		return SUCCESS;
+	}
+
+	public String activate() throws Exception {
+		repositoryService.activateProcessDefinitionById(getUid());
+		return SUCCESS;
+	}
+
 }
