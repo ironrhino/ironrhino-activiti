@@ -114,7 +114,7 @@ public class ProcessDefinitionAction extends BaseAction {
 			query.processDefinitionNameLike(keyword);
 		long count = query.count();
 		List<ProcessDefinition> processDefinitions = query
-				.orderByProcessDefinitionName().asc()
+				.orderByProcessDefinitionKey().asc()
 				.orderByProcessDefinitionVersion().desc()
 				.listPage(resultPage.getStart(), resultPage.getPageSize());
 

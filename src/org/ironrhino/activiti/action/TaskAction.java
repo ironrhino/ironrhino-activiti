@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.FormService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -14,8 +15,8 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.struts2.ServletActionContext;
-import org.ironrhino.activiti.component.FormRenderer;
-import org.ironrhino.activiti.component.FormRenderer.FormElement;
+import org.ironrhino.activiti.form.FormRenderer;
+import org.ironrhino.activiti.form.FormRenderer.FormElement;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.security.role.UserRole;
@@ -55,7 +56,7 @@ public class TaskAction extends BaseAction {
 
 	private List<FormElement> formElements;
 
-	private List<Task> list;
+	private List<Tuple<Task, ProcessDefinition>> list;
 
 	private String processDefinitionId;
 
@@ -89,22 +90,31 @@ public class TaskAction extends BaseAction {
 		return formElements;
 	}
 
-	public List<Task> getList() {
+	public List<Tuple<Task, ProcessDefinition>> getList() {
 		return list;
 	}
 
 	public String execute() {
 		String userid = AuthzUtils.getUsername();
-		list = new ArrayList<Task>();
 		List<Task> taskAssignees = taskService.createTaskQuery()
 				.taskAssignee(userid).orderByTaskPriority().desc()
 				.orderByTaskCreateTime().desc().list();
-
 		List<Task> taskCandidates = taskService.createTaskQuery()
 				.taskCandidateUser(userid).orderByTaskPriority().desc()
 				.orderByTaskCreateTime().desc().list();
-		list.addAll(taskAssignees);
-		list.addAll(taskCandidates);
+		List<Task> all = new ArrayList<Task>();
+		all.addAll(taskAssignees);
+		all.addAll(taskCandidates);
+		list = new ArrayList<Tuple<Task, ProcessDefinition>>();
+		for (Task task : all) {
+			Tuple<Task, ProcessDefinition> tuple = new Tuple<Task, ProcessDefinition>();
+			list.add(tuple);
+			tuple.setId(task.getId());
+			tuple.setKey(task);
+			tuple.setValue(repositoryService.createProcessDefinitionQuery()
+					.processDefinitionId(task.getProcessDefinitionId())
+					.singleResult());
+		}
 		return LIST;
 	}
 
@@ -166,40 +176,53 @@ public class TaskAction extends BaseAction {
 		Map<String, String> properties = RequestUtils
 				.getParametersMap(ServletActionContext.getRequest());
 		properties.remove("processDefinitionId");
-		if (taskId == null) {
-			ProcessDefinition processDefinition = null;
-			if (processDefinitionId == null) {
-				if (processDefinitionKey != null) {
+		try {
+			if (taskId == null) {
+				ProcessDefinition processDefinition = null;
+				if (processDefinitionId == null) {
+					if (processDefinitionKey != null) {
+						processDefinition = repositoryService
+								.createProcessDefinitionQuery()
+								.processDefinitionKey(processDefinitionKey)
+								.latestVersion().singleResult();
+						if (processDefinition != null)
+							processDefinitionId = processDefinition.getId();
+						else
+							return ACCESSDENIED;
+					} else
+						return ACCESSDENIED;
+				} else {
 					processDefinition = repositoryService
 							.createProcessDefinitionQuery()
-							.processDefinitionKey(processDefinitionKey)
-							.latestVersion().singleResult();
-					if (processDefinition != null)
-						processDefinitionId = processDefinition.getId();
-					else
-						return ACCESSDENIED;
-				} else
+							.processDefinitionId(processDefinitionId)
+							.singleResult();
+				}
+				if (processDefinition == null)
 					return ACCESSDENIED;
+				ProcessInstance processInstance = formService
+						.submitStartFormData(processDefinitionId,
+								businessKeySequence.nextStringValue(),
+								properties);
+				addActionMessage("启动流程: " + processInstance.getId());
 			} else {
-				processDefinition = repositoryService
-						.createProcessDefinitionQuery()
-						.processDefinitionId(processDefinitionId)
+				Task task = taskService.createTaskQuery().taskId(taskId)
 						.singleResult();
+				if (task == null
+						|| !AuthzUtils.getUsername().equals(task.getAssignee()))
+					return ACCESSDENIED;
+				formService.submitTaskFormData(taskId, properties);
+				addActionMessage(getText("operate.success"));
 			}
-			if (processDefinition == null)
-				return ACCESSDENIED;
-			ProcessInstance processInstance = formService.submitStartFormData(
-					processDefinitionId, businessKeySequence.nextStringValue(),
-					properties);
-			addActionMessage("启动流程: " + processInstance.getId());
-		} else {
-			Task task = taskService.createTaskQuery().taskId(taskId)
-					.singleResult();
-			if (task == null
-					|| !AuthzUtils.getUsername().equals(task.getAssignee()))
-				return ACCESSDENIED;
-			formService.submitTaskFormData(taskId, properties);
-			addActionMessage(getText("operate.success"));
+		} catch (ActivitiException e) {
+			String message = e.getMessage();
+			if (message != null && message.startsWith("form property '")
+					&& message.endsWith("' is required")) {
+				String fieldName = message.substring(message.indexOf('\'') + 1);
+				fieldName = fieldName.substring(0, message.indexOf('\''));
+				addFieldError(fieldName, getText("validation.required"));
+			} else {
+				throw e;
+			}
 		}
 		return execute();
 	}

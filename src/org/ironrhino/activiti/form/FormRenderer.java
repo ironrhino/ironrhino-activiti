@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.component;
+package org.ironrhino.activiti.form;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,10 +17,19 @@ import org.activiti.engine.impl.form.EnumFormType;
 import org.activiti.engine.impl.form.LongFormType;
 import org.activiti.engine.impl.form.StringFormType;
 import org.apache.commons.lang3.StringUtils;
+import org.ironrhino.common.support.DictionaryControl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.util.LocalizedTextUtil;
 
 @Component
 public class FormRenderer {
+
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	public List<FormElement> render(StartFormData startFormData) {
 		return render(startFormData.getFormProperties());
@@ -66,6 +75,28 @@ public class FormRenderer {
 			} else if (type instanceof LongFormType) {
 				fe.addCssClass("integer");
 			} else if (type instanceof StringFormType) {
+			} else if (type instanceof TextareaFormType) {
+				fe.setType("textarea");
+				fe.addCssClass("input-xxlarge");
+			} else if (type instanceof DictionaryFormType) {
+				try {
+					DictionaryControl dc = applicationContext
+							.getBean(DictionaryControl.class);
+					fe.setType("select");
+					Map<String, String> map = dc.getItemsAsMap(fp.getId());
+					for (Map.Entry<String, String> entry : map.entrySet()) {
+						if (StringUtils.isBlank(entry.getValue())) {
+							String value = LocalizedTextUtil.findText(
+									getClass(), entry.getKey(), ActionContext
+											.getContext().getLocale(), entry
+											.getKey(), null);
+							entry.setValue(value);
+						}
+					}
+					fe.setValues(map);
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
 			}
 			list.add(fe);
 		}

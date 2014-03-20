@@ -17,9 +17,7 @@
 		<label class="control-label" for="${id}">${action.getText(fe.label)}</label>
 		<div class="controls">
 		<#if type=='textarea'>
-		<textarea id="${id}" name="${fe.name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>>
-		${fe.value!}
-		</textarea>
+		<textarea id="${id}" name="${fe.name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>>${fe.value!}</textarea>
 		<#elseif type=='select'>
 		<select id="${id}" name="${fe.name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>>
 		<option></option>

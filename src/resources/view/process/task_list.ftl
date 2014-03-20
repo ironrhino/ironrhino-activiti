@@ -4,9 +4,9 @@
 <title>待办列表</title>
 </head>
 <body>
-<#assign columns={"owner":{"width":"100px"},"name":{"width":"100px"},"description":{},"createDate":{},"dueDate":{},"suspended":{}}>
+<#assign columns={"value.name":{"alias":"流程名","width":"100px"},"key.name":{"alias":"任务名","width":"100px"},"key.description":{"alias":"任务描述"},"key.createDate":{"width":"130px"},"key.dueDate":{"width":"130px"},"key.suspended":{"width":"70px"}}>
 <#assign actionColumnButtons=r'
-<#if !entity.assignee??>
+<#if !entity.key.assignee??>
 <button type="button" class="btn" data-action="claim">签收</button>
 <#else>
 <button type="button" class="btn" data-action="unclaim">撤销</button>

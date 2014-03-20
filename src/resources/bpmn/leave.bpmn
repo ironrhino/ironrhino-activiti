@@ -1,44 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <process id="leave" name="leave">
+  <process id="leave" name="请假流程">
   	<extensionElements>
       	  <activiti:executionListener event="start" delegateExpression="${startLeaveProcessor}"/>
     </extensionElements>
     <startEvent id="startevent" name="Start" activiti:initiator="applyUserId">
 	    <extensionElements>
-		    <activiti:formProperty id="startTime" type="date" required="true" />
-		    <activiti:formProperty id="endTime" type="date" required="true" />
-		    <activiti:formProperty id="leaveType" type="enum" required="true">
-				<activiti:value id="公休" name="公休" />
-				<activiti:value id="病假" name="病假" />
-		    </activiti:formProperty>
-		    <activiti:formProperty id="reason" required="true" />
+		    <activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" required="true" />
+		    <activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" required="true" />
+		    <activiti:formProperty id="leaveType" type="dictionary" required="true"/>
+		    <activiti:formProperty id="reason" type="textarea" required="true" />
 		</extensionElements>
     </startEvent>
     <userTask id="deptLeaderAudit" name="部门领导审批" activiti:candidateGroups="deptLeader">
 	    <extensionElements>
-	    	<activiti:formProperty id="deptLeaderMemo" />
+	    	<activiti:formProperty id="deptLeaderMemo" type="textarea" />
 	    	<activiti:formProperty id="deptLeaderPass" name="审批通过" type="boolean" required="true" />
 		</extensionElements>
     </userTask>
     <userTask id="hrAudit" name="人事审批" activiti:candidateGroups="hr">
 	    <extensionElements>
-	    	<activiti:formProperty id="hrMemo" />
+	    	<activiti:formProperty id="hrMemo" type="textarea" />
 	    	<activiti:formProperty id="hrPass" name="审批通过" type="boolean" required="true" />
 		</extensionElements>
     </userTask>
     <userTask id="reportBack" name="销假" activiti:assignee="${applyUserId}">
 	    <extensionElements>
-	      	<activiti:formProperty id="realityStartTime" value="${startTime}" type="date" required="true" />
-	   		<activiti:formProperty id="realityEndTime" value="${endTime}" type="date" required="true" />
+	      	<activiti:formProperty id="realityStartTime" value="${startTime}" type="date" datePattern="yyyy-MM-dd" required="true" />
+	   		<activiti:formProperty id="realityEndTime" value="${endTime}" type="date" datePattern="yyyy-MM-dd" required="true" />
 	   		<activiti:formProperty id="notify" name="是否邮件通知" type="boolean" required="true" />
 	        <activiti:taskListener event="complete" delegateExpression="${reportBackEndProcessor}"/>
 	    </extensionElements>
     </userTask>
     <userTask id="modifyApply" name="调整申请" activiti:assignee="${applyUserId}">
 	    <extensionElements>
-	      	<activiti:formProperty id="startTime" value="${startTime}" type="date" required="true" />
-	    	<activiti:formProperty id="endTime" value="${endTime}" type="date" required="true" />
+	      	<activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" required="true" />
+	    	<activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" required="true" />
 	    	<activiti:formProperty id="reApply" name="是否重新申请" type="boolean" required="true" />
 	        <activiti:taskListener event="complete" delegateExpression="${afterModifyApplyContentProcessor}"/>
 	    </extensionElements>
