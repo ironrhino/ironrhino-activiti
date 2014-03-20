@@ -178,7 +178,8 @@ public class ProcessDefinitionAction extends BaseAction {
 					new FileInputStream(file));
 			repositoryService.createDeployment().name(fileFileName)
 					.addZipInputStream(zipInputStream).deploy();
-		} else if (fileFileName.endsWith(".xml")) {
+		} else if (fileFileName.endsWith(".xml")
+				|| fileFileName.endsWith(".bpmn")) {
 			repositoryService.createDeployment().name(fileFileName)
 					.addInputStream(fileFileName, new FileInputStream(file))
 					.deploy();
