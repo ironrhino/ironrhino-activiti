@@ -73,6 +73,7 @@ public class FormRenderer {
 				values.put("false", "false");
 				fe.setValues(values);
 			} else if (type instanceof LongFormType) {
+				fe.setInputType("number");
 				fe.addCssClass("integer");
 			} else if (type instanceof StringFormType) {
 			} else if (type instanceof TextareaFormType) {
@@ -97,6 +98,9 @@ public class FormRenderer {
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
+			} else if (type instanceof DecimalFormType) {
+				fe.setInputType("number");
+				fe.addCssClass("double");
 			}
 			list.add(fe);
 		}
