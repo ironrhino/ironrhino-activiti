@@ -160,12 +160,12 @@ public class TaskAction extends BaseAction {
 				title += " - " + processDefinition.getName();
 			TaskFormData taskFormData = formService.getTaskFormData(taskId);
 			formElements = formRenderer.render(taskFormData);
-			ProcessInstance processInstance = runtimeService
-					.createProcessInstanceQuery()
-					.processInstanceId(task.getProcessInstanceId())
-					.singleResult();
-			Map<String, Object> vars = processInstance.getProcessVariables();
-			System.out.println(vars);
+			// ProcessInstance processInstance = runtimeService
+			// .createProcessInstanceQuery()
+			// .processInstanceId(task.getProcessInstanceId())
+			// .singleResult();
+			// Map<String, Object> vars = processInstance.getProcessVariables();
+			// System.out.println(vars);
 			// TODO show info
 		}
 		return "form";

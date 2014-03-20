@@ -4,7 +4,7 @@
 <title>流程定义</title>
 </head>
 <body>
-<#assign columns={"key.id":{"alias":"流程定义ID","width":"120px"},"key.deploymentId":{"alias":"部署ID","width":"60px"},"key.key":{"alias":"KEY","width":"100px"},"key.name":{},"key.version":{"width":"60px"},"value.deploymentTime":{"width":"130px","template":r"${value?string('yyyy-MM-dd HH:mm:ss')}"},
+<#assign columns={"key.id":{"alias":"流程定义ID","width":"120px"},"key.deploymentId":{"alias":"部署ID","width":"60px"},"key.key":{"alias":"KEY","width":"100px"},"key.name":{},"key.version":{"width":"60px"},"value.deploymentTime":{"width":"130px"},
 "key.resourceName":{"alias":"流程定义XML","width":"120px","template":r"<a href='${actionBaseUrl}/download?deploymentId=${entity.key.deploymentId}&resourceName=${value}' download='${value}'>${value}</a>"},
 "key.diagramResourceName":{"alias":"流程图","width":"120px","template":r"<#if value?has_content><a href='${actionBaseUrl}/download?deploymentId=${entity.key.deploymentId}&resourceName=${value}' download='${value}'>${value}</a></#if>"}}>
 <#assign bottomButtons=r'
