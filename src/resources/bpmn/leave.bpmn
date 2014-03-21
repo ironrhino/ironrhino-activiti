@@ -14,13 +14,13 @@
     </startEvent>
     <userTask id="deptLeaderAudit" name="部门领导审批" activiti:assignee="${userService.findDeptLeader(applyUserId)}" activiti:candidateUsers="${userService.findDeptLeaders(applyUserId)}">
 	    <extensionElements>
-	    	<activiti:formProperty id="deptLeaderMemo" type="textarea" />
+	    	<activiti:formProperty id="deptLeaderMemo" name="领导意见" type="textarea" />
 	    	<activiti:formProperty id="deptLeaderPass" name="审批通过" type="boolean" required="true" />
 		</extensionElements>
     </userTask>
     <userTask id="hrAudit" name="人事审批" activiti:candidateGroups="hr">
 	    <extensionElements>
-	    	<activiti:formProperty id="hrMemo" type="textarea" />
+	    	<activiti:formProperty id="hrMemo" name="人事意见" type="textarea" />
 	    	<activiti:formProperty id="hrPass" name="审批通过" type="boolean" required="true" />
 		</extensionElements>
     </userTask>
