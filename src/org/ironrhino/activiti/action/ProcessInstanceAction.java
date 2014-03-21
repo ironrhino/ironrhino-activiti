@@ -22,10 +22,12 @@ import org.ironrhino.core.metadata.JsonConfig;
 import org.ironrhino.core.model.ResultPage;
 import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.struts.BaseAction;
+import org.ironrhino.core.util.AuthzUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @AutoConfig
-@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
+@Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ProcessInstanceAction extends BaseAction {
 
 	private static final long serialVersionUID = -6657349245825745444L;
@@ -39,7 +41,7 @@ public class ProcessInstanceAction extends BaseAction {
 	@Autowired
 	private ProcessTraceService processTraceService;
 
-	private ResultPage<Tuple<ProcessInstance, ProcessDefinition>> resultPage;
+	private ResultPage resultPage;
 
 	private ProcessInstance processInstance;
 
@@ -49,12 +51,11 @@ public class ProcessInstanceAction extends BaseAction {
 
 	private List<Map<String, Object>> activities;
 
-	public ResultPage<Tuple<ProcessInstance, ProcessDefinition>> getResultPage() {
+	public ResultPage getResultPage() {
 		return resultPage;
 	}
 
-	public void setResultPage(
-			ResultPage<Tuple<ProcessInstance, ProcessDefinition>> resultPage) {
+	public void setResultPage(ResultPage resultPage) {
 		this.resultPage = resultPage;
 	}
 
@@ -91,6 +92,8 @@ public class ProcessInstanceAction extends BaseAction {
 			resultPage = new ResultPage<Tuple<ProcessInstance, ProcessDefinition>>();
 		ProcessInstanceQuery query = runtimeService
 				.createProcessInstanceQuery();
+		if (!AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null))
+			query.involvedUser(AuthzUtils.getUsername());
 		String processDefinitionId = getUid();
 		if (StringUtils.isNotBlank(processDefinitionId))
 			query = query.processDefinitionId(processDefinitionId);
@@ -114,21 +117,85 @@ public class ProcessInstanceAction extends BaseAction {
 		return LIST;
 	}
 
-	@Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
+	public String started() {
+		if (resultPage == null)
+			resultPage = new ResultPage<Tuple<ProcessInstance, ProcessDefinition>>();
+		ProcessInstanceQuery query = runtimeService
+				.createProcessInstanceQuery().variableValueEquals(
+						"applyUserId", AuthzUtils.getUsername());
+		if (StringUtils.isNotBlank(keyword))
+			query = query.processDefinitionName(keyword);
+		long count = query.count();
+		List<ProcessInstance> processInstances = query
+				.orderByProcessInstanceId().desc()
+				.listPage(resultPage.getStart(), resultPage.getPageSize());
+		List<Tuple<ProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<ProcessInstance, ProcessDefinition>>(
+				processInstances.size());
+		for (ProcessInstance pi : processInstances) {
+			Tuple<ProcessInstance, ProcessDefinition> tuple = new Tuple<ProcessInstance, ProcessDefinition>();
+			tuple.setId(pi.getId());
+			tuple.setKey(pi);
+			tuple.setValue(repositoryService.createProcessDefinitionQuery()
+					.processDefinitionId(pi.getProcessDefinitionId())
+					.singleResult());
+			list.add(tuple);
+		}
+		resultPage.setTotalResults(count);
+		resultPage.setResult(list);
+		return "started";
+	}
+
+	public String involved() {
+		if (resultPage == null)
+			resultPage = new ResultPage<Tuple<ProcessInstance, ProcessDefinition>>();
+		ProcessInstanceQuery query = runtimeService
+				.createProcessInstanceQuery()
+				.involvedUser(AuthzUtils.getUsername())
+				.excludeSubprocesses(true);
+		if (StringUtils.isNotBlank(keyword))
+			query = query.processDefinitionName(keyword);
+		long count = query.count();
+		List<ProcessInstance> processInstances = query
+				.orderByProcessInstanceId().desc()
+				.listPage(resultPage.getStart(), resultPage.getPageSize());
+		List<Tuple<ProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<ProcessInstance, ProcessDefinition>>(
+				processInstances.size());
+		for (ProcessInstance pi : processInstances) {
+			Tuple<ProcessInstance, ProcessDefinition> tuple = new Tuple<ProcessInstance, ProcessDefinition>();
+			tuple.setId(pi.getId());
+			tuple.setKey(pi);
+			tuple.setValue(repositoryService.createProcessDefinitionQuery()
+					.processDefinitionId(pi.getProcessDefinitionId())
+					.singleResult());
+			list.add(tuple);
+		}
+		resultPage.setTotalResults(count);
+		resultPage.setResult(list);
+		return "involved";
+	}
+
 	public String view() {
 		processInstance = runtimeService.createProcessInstanceQuery()
 				.processInstanceId(getUid()).singleResult();
+		if (processInstance == null)
+			processInstance = runtimeService.createProcessInstanceQuery()
+					.processInstanceBusinessKey(getUid()).singleResult();
 		if (processInstance == null)
 			return NOTFOUND;
 		return VIEW;
 	}
 
-	@Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 	public String diagram() throws Exception {
 		InputStream resourceAsStream = null;
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery().processInstanceId(getUid())
 				.singleResult();
+		if (processInstance == null)
+			processInstance = runtimeService.createProcessInstanceQuery()
+					.processInstanceId(getUid()).singleResult();
+		if (processInstance == null)
+			processInstance = runtimeService.createProcessInstanceQuery()
+					.processInstanceBusinessKey(getUid()).singleResult();
 		ProcessDefinition processDefinition = repositoryService
 				.createProcessDefinitionQuery()
 				.processDefinitionId(processInstance.getProcessDefinitionId())
@@ -147,17 +214,18 @@ public class ProcessInstanceAction extends BaseAction {
 	}
 
 	@JsonConfig(root = "activities")
-	@Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 	public String trace() throws Exception {
 		activities = processTraceService.traceProcessInstance(getUid());
 		return JSON;
 	}
 
+	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String suspend() throws Exception {
 		runtimeService.suspendProcessInstanceById(getUid());
 		return SUCCESS;
 	}
 
+	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String activate() throws Exception {
 		runtimeService.activateProcessInstanceById(getUid());
 		return SUCCESS;

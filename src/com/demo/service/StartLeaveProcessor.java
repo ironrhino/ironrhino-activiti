@@ -28,14 +28,12 @@ public class StartLeaveProcessor implements ExecutionListener {
 
 	@Override
 	public void notify(DelegateExecution delegateExecution) throws Exception {
-		String processInstanceId = delegateExecution.getProcessInstanceId();
 		Leave leave = new Leave();
 		String applyUserId = (String) delegateExecution
 				.getVariable("applyUserId");
 		if (applyUserId == null)
 			throw new NullPointerException("applyUserId is null");
 		leave.setUser((User) userManager.loadUserByUsername(applyUserId));
-		leave.setProcessInstanceId(processInstanceId);
 		leave.setNumber(delegateExecution.getProcessBusinessKey());
 		leave.setLeaveType((String) delegateExecution.getVariable("leaveType"));
 		leave.setStartTime((Date) delegateExecution.getVariable("startTime"));

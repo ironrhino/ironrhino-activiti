@@ -74,12 +74,23 @@ public class ProcessTraceService {
 	}
 
 	public List<Map<String, Object>> traceProcessInstance(
-			String processInstanceId) throws Exception {
-		Execution execution = runtimeService.createExecutionQuery()
-				.executionId(processInstanceId).singleResult();
+			String processInstanceIdOrBusinessKey) throws Exception {
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery()
-				.processInstanceId(processInstanceId).singleResult();
+				.processInstanceId(processInstanceIdOrBusinessKey)
+				.singleResult();
+		Execution execution;
+		if (processInstance == null) {
+			processInstance = runtimeService.createProcessInstanceQuery()
+					.processInstanceBusinessKey(processInstanceIdOrBusinessKey)
+					.singleResult();
+			execution = runtimeService.createExecutionQuery()
+					.executionId(processInstance.getId()).singleResult();
+		} else {
+			execution = runtimeService.createExecutionQuery()
+					.executionId(processInstanceIdOrBusinessKey).singleResult();
+		}
+
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processInstance
 						.getProcessDefinitionId());
@@ -94,8 +105,8 @@ public class ProcessTraceService {
 			if (id.equals(execution.getActivityId()))
 				current = true;
 			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
-					activity, processInstance, current,
-					deployment != null && deployment.getName() != null
+					activity, processInstance, current, deployment != null
+							&& deployment.getName() != null
 							&& !deployment.getName().endsWith(".zip"));
 			activities.add(activityImageInfo);
 		}
