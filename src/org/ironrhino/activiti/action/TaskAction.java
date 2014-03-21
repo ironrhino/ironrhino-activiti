@@ -6,12 +6,15 @@ import java.util.Map;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.FormService;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.form.StartFormData;
 import org.activiti.engine.form.TaskFormData;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
@@ -47,6 +50,9 @@ public class TaskAction extends BaseAction {
 	private RuntimeService runtimeService;
 
 	@Autowired
+	private HistoryService historyService;
+
+	@Autowired
 	private TaskService taskService;
 
 	@Autowired
@@ -67,6 +73,12 @@ public class TaskAction extends BaseAction {
 	private String processDefinitionId;
 
 	private String processDefinitionKey;
+
+	private ProcessDefinition processDefinition;
+
+	private HistoricProcessInstance historicProcessInstance;
+
+	private List<HistoricTaskInstance> historicTaskInstances;
 
 	public String getProcessDefinitionId() {
 		return processDefinitionId;
@@ -100,6 +112,18 @@ public class TaskAction extends BaseAction {
 		return list;
 	}
 
+	public ProcessDefinition getProcessDefinition() {
+		return processDefinition;
+	}
+
+	public HistoricProcessInstance getHistoricProcessInstance() {
+		return historicProcessInstance;
+	}
+
+	public List<HistoricTaskInstance> getHistoricTaskInstances() {
+		return historicTaskInstances;
+	}
+
 	public String execute() {
 		String userid = AuthzUtils.getUsername();
 		List<Task> taskAssignees = taskService.createTaskQuery()
@@ -127,7 +151,6 @@ public class TaskAction extends BaseAction {
 	public String form() {
 		String taskId = getUid();
 		if (taskId == null) {
-			ProcessDefinition processDefinition = null;
 			if (processDefinitionId == null) {
 				if (processDefinitionKey != null) {
 					List<ProcessDefinition> processDefinitions = repositoryService
@@ -165,7 +188,7 @@ public class TaskAction extends BaseAction {
 					|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 				return ACCESSDENIED;
 			title = task.getName();
-			ProcessDefinition processDefinition = repositoryService
+			processDefinition = repositoryService
 					.createProcessDefinitionQuery()
 					.processDefinitionId(task.getProcessDefinitionId())
 					.singleResult();
@@ -173,17 +196,14 @@ public class TaskAction extends BaseAction {
 				title += " - " + processDefinition.getName();
 			TaskFormData taskFormData = formService.getTaskFormData(taskId);
 			formElements = formRenderer.render(taskFormData);
-			// ProcessInstance processInstance = runtimeService
-			// .createProcessInstanceQuery()
-			// .processInstanceId(task.getProcessInstanceId())
-			// .singleResult();
-			// Map<String, Object> vars = processInstance.getProcessVariables();
-			// System.out.println(vars);
-			// TODO show info
-			List<IdentityLink> identityLinks = runtimeService
-					.getIdentityLinksForProcessInstance(task
-							.getProcessInstanceId());
-			System.out.println(identityLinks);
+			historicProcessInstance = historyService
+					.createHistoricProcessInstanceQuery()
+					.processInstanceId(task.getProcessInstanceId())
+					.singleResult();
+			historicTaskInstances = historyService
+					.createHistoricTaskInstanceQuery()
+					.processInstanceId(task.getProcessInstanceId()).finished()
+					.list();
 		}
 		return "form";
 	}
@@ -195,7 +215,6 @@ public class TaskAction extends BaseAction {
 		properties.remove("processDefinitionId");
 		try {
 			if (taskId == null) {
-				ProcessDefinition processDefinition = null;
 				if (processDefinitionId == null) {
 					if (processDefinitionKey != null) {
 						List<ProcessDefinition> processDefinitions = repositoryService

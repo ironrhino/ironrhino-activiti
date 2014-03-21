@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="leave" name="请假流程" activiti:candidateStarterGroups="user">
+  	<documentation>请填写准确的信息</documentation>
   	<extensionElements>
       	<activiti:executionListener event="start" delegateExpression="${startLeaveProcessor}"/>
     </extensionElements>
@@ -14,12 +15,22 @@
     </startEvent>
     <userTask id="deptLeaderAudit" name="部门领导审批" activiti:assignee="${userService.findDeptLeader(applyUserId)}" activiti:candidateUsers="${userService.findDeptLeaders(applyUserId)}">
 	    <extensionElements>
+	    	<activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" writable="false" />
+		    <activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" writable="false" />
+		    <activiti:formProperty id="leaveType" type="dictionary" writable="false"/>
+		    <activiti:formProperty id="reason" type="textarea" writable="false" />
+		    <activiti:formProperty id="hrMemo" name="人事意见" type="textarea" writable="false" />
 	    	<activiti:formProperty id="deptLeaderMemo" name="领导意见" type="textarea" />
 	    	<activiti:formProperty id="deptLeaderPass" name="审批通过" type="boolean" required="true" />
 		</extensionElements>
     </userTask>
     <userTask id="hrAudit" name="人事审批" activiti:candidateGroups="hr">
 	    <extensionElements>
+	    	<activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" writable="false" />
+		    <activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" writable="false" />
+		    <activiti:formProperty id="leaveType" type="dictionary" writable="false"/>
+		    <activiti:formProperty id="reason" type="textarea" writable="false" />
+	    	<activiti:formProperty id="deptLeaderMemo" name="领导意见" type="textarea" writable="false" />
 	    	<activiti:formProperty id="hrMemo" name="人事意见" type="textarea" />
 	    	<activiti:formProperty id="hrPass" name="审批通过" type="boolean" required="true" />
 		</extensionElements>
@@ -34,8 +45,12 @@
     </userTask>
     <userTask id="modifyApply" name="调整申请" activiti:assignee="${applyUserId}">
 	    <extensionElements>
+	    	<activiti:formProperty id="deptLeaderMemo" name="领导意见" type="textarea" writable="false" />
+	    	<activiti:formProperty id="hrMemo" name="人事意见" type="textarea" writable="false" />
 	      	<activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" required="true" />
 	    	<activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" required="true" />
+	    	<activiti:formProperty id="leaveType" type="dictionary" required="true"/>
+		    <activiti:formProperty id="reason" type="textarea" required="true" />
 	    	<activiti:formProperty id="reApply" name="是否重新申请" type="boolean" required="true" />
 	        <activiti:taskListener event="complete" delegateExpression="${afterModifyApplyContentProcessor}"/>
 	    </extensionElements>
