@@ -52,6 +52,8 @@ public class ProcessDefinitionAction extends BaseAction {
 
 	private String resourceName;
 
+	private String key;
+
 	private ProcessDefinition processDefinition;
 
 	private List<Map<String, Object>> activities;
@@ -97,6 +99,14 @@ public class ProcessDefinitionAction extends BaseAction {
 		this.resourceName = resourceName;
 	}
 
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
 	public ProcessDefinition getProcessDefinition() {
 		return processDefinition;
 	}
@@ -112,6 +122,8 @@ public class ProcessDefinitionAction extends BaseAction {
 				.createProcessDefinitionQuery();
 		if (StringUtils.isNoneBlank(keyword))
 			query.processDefinitionNameLike(keyword);
+		if (StringUtils.isNotBlank(key))
+			query.processDefinitionKey(key);
 		long count = query.count();
 		List<ProcessDefinition> processDefinitions = query
 				.orderByProcessDefinitionKey().asc()
