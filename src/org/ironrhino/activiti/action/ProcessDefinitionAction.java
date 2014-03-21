@@ -10,8 +10,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletOutputStream;
 
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
@@ -40,7 +40,7 @@ public class ProcessDefinitionAction extends BaseAction {
 	private RepositoryService repositoryService;
 
 	@Autowired
-	private RuntimeService runtimeService;
+	private HistoryService historyService;
 
 	private File file;
 
@@ -158,11 +158,12 @@ public class ProcessDefinitionAction extends BaseAction {
 		if (id != null) {
 			boolean deletable = true;
 			for (String processDefinitionId : id) {
-				long count = runtimeService.createProcessInstanceQuery()
+				long count = historyService
+						.createHistoricProcessInstanceQuery()
 						.processDefinitionId(processDefinitionId).count();
 				if (count > 0) {
 					deletable = false;
-					addActionError(processDefinitionId + " 已经有流程实例了,不能删除!");
+					addActionError(processDefinitionId + " 已经启动过流程了,不能删除!");
 					break;
 				}
 			}
