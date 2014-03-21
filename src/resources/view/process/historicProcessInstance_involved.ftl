@@ -10,7 +10,7 @@
 <button type="button" class="btn reload">${action.getText("reload")}</button>
 '>
 <#assign actionColumnButtons='
-<button type="button" class="btn" data-view="view" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("view")}</button>
+<button type="button" class="btn" data-view="view">${action.getText("view")}</button>
 '>
 
 <@richtable entityName="historicProcessInstance" action="${actionBaseUrl}/involved" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>

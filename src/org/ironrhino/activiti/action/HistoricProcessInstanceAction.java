@@ -32,12 +32,18 @@ public class HistoricProcessInstanceAction extends BaseAction {
 
 	private ResultPage resultPage;
 
+	private HistoricProcessInstance historicProcessInstance;
+
 	public ResultPage getResultPage() {
 		return resultPage;
 	}
 
 	public void setResultPage(ResultPage resultPage) {
 		this.resultPage = resultPage;
+	}
+
+	public HistoricProcessInstance getHistoricProcessInstance() {
+		return historicProcessInstance;
 	}
 
 	public String execute() {
@@ -100,6 +106,20 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		resultPage.setTotalResults(count);
 		resultPage.setResult(list);
 		return "involved";
+	}
+
+	public String view() {
+		historicProcessInstance = historyService
+				.createHistoricProcessInstanceQuery()
+				.processInstanceId(getUid()).singleResult();
+		if (historicProcessInstance == null)
+			historicProcessInstance = historyService
+					.createHistoricProcessInstanceQuery()
+					.processInstanceBusinessKey(getUid()).singleResult();
+		if (historicProcessInstance == null)
+			return NOTFOUND;
+		//TODO check auth
+		return VIEW;
 	}
 
 }

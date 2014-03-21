@@ -163,6 +163,7 @@ public class ProcessInstanceAction extends BaseAction {
 					.processInstanceBusinessKey(getUid()).singleResult();
 		if (processInstance == null)
 			return NOTFOUND;
+		//TODO check auth
 		return VIEW;
 	}
 
