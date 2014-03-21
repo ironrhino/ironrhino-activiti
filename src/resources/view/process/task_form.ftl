@@ -5,7 +5,7 @@
 </head>
 <body>
 
-<form action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal">
+<form action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable">
 	<#if processDefinitionId?has_content>
 	<input type="hidden" name="processDefinitionId" value="${processDefinitionId}"/>
 	</#if>
