@@ -12,7 +12,7 @@
 		    <activiti:formProperty id="reason" type="textarea" required="true" />
 		</extensionElements>
     </startEvent>
-    <userTask id="deptLeaderAudit" name="部门领导审批" activiti:candidateGroups="deptLeader">
+    <userTask id="deptLeaderAudit" name="部门领导审批" activiti:assignee="${userService.findDeptLeader(applyUserId)}" activiti:candidateUsers="${userService.findDeptLeaders(applyUserId)}">
 	    <extensionElements>
 	    	<activiti:formProperty id="deptLeaderMemo" type="textarea" />
 	    	<activiti:formProperty id="deptLeaderPass" name="审批通过" type="boolean" required="true" />

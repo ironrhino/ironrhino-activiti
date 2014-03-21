@@ -67,7 +67,7 @@ Observation.app = function(container) {
 										}
 									}
 									div.attr('title', title.join('\n'));
-									if (v.currentActiviti) {
+									if (v.current) {
 										div.css({
 													'border' : '2px solid red',
 													'border-radius' : '12px'

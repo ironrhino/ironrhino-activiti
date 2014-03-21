@@ -63,11 +63,11 @@ public class ProcessTraceService {
 				.singleResult();
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
+		boolean offset = deployment != null && deployment.getName() != null
+				&& !deployment.getName().endsWith(".zip");
 		for (ActivityImpl activity : activitiList) {
 			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
-					activity, null, false,
-					deployment != null && deployment.getName() != null
-							&& !deployment.getName().endsWith(".zip"));
+					activity, null, false, offset);
 			activities.add(activityImageInfo);
 		}
 		return activities;
@@ -77,7 +77,6 @@ public class ProcessTraceService {
 			String processInstanceId) throws Exception {
 		Execution execution = runtimeService.createExecutionQuery()
 				.executionId(processInstanceId).singleResult();
-		String activityId = execution.getActivityId();
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery()
 				.processInstanceId(processInstanceId).singleResult();
@@ -90,12 +89,12 @@ public class ProcessTraceService {
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (ActivityImpl activity : activitiList) {
-			boolean currentActiviti = false;
+			boolean current = false;
 			String id = activity.getId();
-			if (id.equals(activityId))
-				currentActiviti = true;
+			if (id.equals(execution.getActivityId()))
+				current = true;
 			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
-					activity, processInstance, currentActiviti,
+					activity, processInstance, current,
 					deployment != null && deployment.getName() != null
 							&& !deployment.getName().endsWith(".zip"));
 			activities.add(activityImageInfo);
@@ -105,10 +104,10 @@ public class ProcessTraceService {
 
 	private Map<String, Object> packageSingleActivitiInfo(
 			ActivityImpl activity, ProcessInstance processInstance,
-			boolean currentActiviti, boolean offset) throws Exception {
+			boolean current, boolean offset) throws Exception {
 		Map<String, Object> vars = new HashMap<String, Object>();
 		Map<String, Object> activityInfo = new HashMap<String, Object>();
-		activityInfo.put("currentActiviti", currentActiviti);
+		activityInfo.put("current", current);
 		setPosition(activity, activityInfo, offset);
 		setWidthAndHeight(activity, activityInfo);
 
@@ -119,20 +118,15 @@ public class ProcessTraceService {
 		ActivityBehavior activityBehavior = activity.getActivityBehavior();
 		if (activityBehavior instanceof UserTaskActivityBehavior) {
 			Task currentTask = null;
-			if (currentActiviti) {
+			if (current) {
 				currentTask = getCurrentTaskInfo(processInstance);
+				setCurrentTaskAssignee(vars, currentTask);
 			}
 			UserTaskActivityBehavior userTaskActivityBehavior = (UserTaskActivityBehavior) activityBehavior;
 			TaskDefinition taskDefinition = userTaskActivityBehavior
 					.getTaskDefinition();
-			Set<Expression> candidateGroupIdExpressions = taskDefinition
-					.getCandidateGroupIdExpressions();
-			if (!candidateGroupIdExpressions.isEmpty()) {
-				setTaskGroup(vars, candidateGroupIdExpressions);
-				if (currentTask != null) {
-					setCurrentTaskAssignee(vars, currentTask);
-				}
-			}
+			setTaskGroup(vars, taskDefinition);
+
 		}
 		vars.put("节点说明", properties.get("documentation"));
 		String description = activity.getProcessDefinition().getDescription();
@@ -142,12 +136,33 @@ public class ProcessTraceService {
 	}
 
 	private void setTaskGroup(Map<String, Object> vars,
-			Set<Expression> candidateGroupIdExpressions) {
+			TaskDefinition taskDefinition) {
+		Set<Expression> candidateGroupIdExpressions = taskDefinition
+				.getCandidateGroupIdExpressions();
 		StringBuilder roles = new StringBuilder();
 		for (Expression expression : candidateGroupIdExpressions) {
 			String expressionText = expression.getExpressionText();
-			Group g = identityService.createGroupQuery()
-					.groupId(expressionText).singleResult();
+			if (expressionText.indexOf("${") < 0) {
+				appendRoles(roles, expressionText);
+			}
+		}
+		if (roles.length() > 0) {
+			roles.deleteCharAt(roles.length() - 1);
+			vars.put("任务所属角色", roles.toString());
+		}
+	}
+
+	private void appendRoles(StringBuilder roles, String text) {
+		String[] groups = text.split("\\s*,\\s*");
+		for (String s : groups) {
+			appendRole(roles, s);
+		}
+	}
+
+	private void appendRole(StringBuilder roles, String role) {
+		Group g = identityService.createGroupQuery().groupId(role)
+				.singleResult();
+		if (g != null) {
 			String roleName = g.getName();
 			if (roleName == null) {
 				roleName = g.getId();
@@ -156,9 +171,6 @@ public class ProcessTraceService {
 			}
 			roles.append(roleName).append(" ");
 		}
-		if (roles.length() > 0)
-			roles.deleteCharAt(roles.length() - 1);
-		vars.put("任务所属角色", roles.toString());
 	}
 
 	private void setCurrentTaskAssignee(Map<String, Object> vars,
