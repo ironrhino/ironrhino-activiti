@@ -74,23 +74,12 @@ public class ProcessTraceService {
 	}
 
 	public List<Map<String, Object>> traceProcessInstance(
-			String processInstanceIdOrBusinessKey) throws Exception {
+			String processInstanceId) throws Exception {
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery()
-				.processInstanceId(processInstanceIdOrBusinessKey)
-				.singleResult();
-		Execution execution;
-		if (processInstance == null) {
-			processInstance = runtimeService.createProcessInstanceQuery()
-					.processInstanceBusinessKey(processInstanceIdOrBusinessKey)
-					.singleResult();
-			execution = runtimeService.createExecutionQuery()
-					.executionId(processInstance.getId()).singleResult();
-		} else {
-			execution = runtimeService.createExecutionQuery()
-					.executionId(processInstanceIdOrBusinessKey).singleResult();
-		}
-
+				.processInstanceId(processInstanceId).singleResult();
+		Execution execution = runtimeService.createExecutionQuery()
+				.executionId(processInstanceId).singleResult();
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processInstance
 						.getProcessDefinitionId());
