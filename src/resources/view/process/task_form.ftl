@@ -81,7 +81,11 @@ ${processDefinition.description}
 	</#if>
 	</#list>
 	</#if>
+	<#if !historicProcessInstance??>
+	<@s.submit value="%{getText('start')}" cssClass="btn-primary"/>
+	<#else>
 	<@s.submit value="%{getText('submit')}" cssClass="btn-primary"/>
+	</#if>
 </form>
 </body>
 </html></#escape>
