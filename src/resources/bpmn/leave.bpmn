@@ -37,8 +37,8 @@
     </userTask>
     <userTask id="reportBack" name="销假" activiti:assignee="${applyUserId}">
 	    <extensionElements>
-	      	<activiti:formProperty id="realityStartTime" value="${startTime}" type="date" datePattern="yyyy-MM-dd" required="true" />
-	   		<activiti:formProperty id="realityEndTime" value="${endTime}" type="date" datePattern="yyyy-MM-dd" required="true" />
+	      	<activiti:formProperty id="realityStartTime" default="${startTime}" type="date" datePattern="yyyy-MM-dd" required="true" />
+	   		<activiti:formProperty id="realityEndTime" default="${endTime}" type="date" datePattern="yyyy-MM-dd" required="true" />
 	   		<activiti:formProperty id="notify" name="是否邮件通知" type="boolean" required="true" />
 	        <activiti:taskListener event="complete" delegateExpression="${reportBackEndProcessor}"/>
 	    </extensionElements>
@@ -63,7 +63,6 @@
     <serviceTask id="mailMsg" name="邮件通知" activiti:type="mail">
       <extensionElements>
         <activiti:field name="to" expression="${to}"></activiti:field>
-        <activiti:field name="from" expression="${from}"></activiti:field>
         <activiti:field name="subject" expression="请假流程回执单"></activiti:field>
         <activiti:field name="charset" expression="utf-8"></activiti:field>
         <activiti:field name="html">
