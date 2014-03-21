@@ -12,6 +12,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
+import org.activiti.engine.task.IdentityLink;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -163,11 +164,12 @@ public class ProcessInstanceAction extends BaseAction {
 					.processInstanceBusinessKey(getUid()).singleResult();
 		if (processInstance == null)
 			return NOTFOUND;
-		//TODO check auth
-		return VIEW;
+		return canView(processInstance.getId()) ? VIEW : ACCESSDENIED;
 	}
 
 	public String diagram() throws Exception {
+		if (!canView(getUid()))
+			return NOTFOUND;
 		InputStream resourceAsStream = null;
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery().processInstanceId(getUid())
@@ -197,6 +199,8 @@ public class ProcessInstanceAction extends BaseAction {
 
 	@JsonConfig(root = "activities")
 	public String trace() throws Exception {
+		if (!canView(getUid()))
+			return NOTFOUND;
 		activities = processTraceService.traceProcessInstance(getUid());
 		return JSON;
 	}
@@ -211,5 +215,15 @@ public class ProcessInstanceAction extends BaseAction {
 	public String activate() throws Exception {
 		runtimeService.activateProcessInstanceById(getUid());
 		return SUCCESS;
+	}
+
+	private boolean canView(String processInstanceId) {
+		String userId = AuthzUtils.getUsername();
+		List<IdentityLink> identityLinks = runtimeService
+				.getIdentityLinksForProcessInstance(processInstanceId);
+		for (IdentityLink identityLink : identityLinks)
+			if (userId.equals(identityLink.getUserId()))
+				return true;
+		return false;
 	}
 }

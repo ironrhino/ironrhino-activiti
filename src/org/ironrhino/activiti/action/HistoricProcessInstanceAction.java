@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -118,8 +119,17 @@ public class HistoricProcessInstanceAction extends BaseAction {
 					.processInstanceBusinessKey(getUid()).singleResult();
 		if (historicProcessInstance == null)
 			return NOTFOUND;
-		//TODO check auth
-		return VIEW;
+		return canView(historicProcessInstance.getId()) ? VIEW : ACCESSDENIED;
+	}
+
+	private boolean canView(String processInstanceId) {
+		String userId = AuthzUtils.getUsername();
+		List<HistoricIdentityLink> historicIdentityLinks = historyService
+				.getHistoricIdentityLinksForProcessInstance(processInstanceId);
+		for (HistoricIdentityLink historicIdentityLink : historicIdentityLinks)
+			if (userId.equals(historicIdentityLink.getUserId()))
+				return true;
+		return false;
 	}
 
 }
