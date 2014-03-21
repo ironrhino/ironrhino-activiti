@@ -45,10 +45,6 @@ public class ProcessInstanceAction extends BaseAction {
 
 	private ProcessInstance processInstance;
 
-	private String resourceType;
-
-	private String executionId;
-
 	private List<Map<String, Object>> activities;
 
 	public ResultPage getResultPage() {
@@ -61,22 +57,6 @@ public class ProcessInstanceAction extends BaseAction {
 
 	public ProcessInstance getProcessInstance() {
 		return processInstance;
-	}
-
-	public String getResourceType() {
-		return resourceType;
-	}
-
-	public void setResourceType(String resourceType) {
-		this.resourceType = resourceType;
-	}
-
-	public String getExecutionId() {
-		return executionId;
-	}
-
-	public void setExecutionId(String executionId) {
-		this.executionId = executionId;
 	}
 
 	public List<Map<String, Object>> getActivities() {
@@ -121,8 +101,9 @@ public class ProcessInstanceAction extends BaseAction {
 		if (resultPage == null)
 			resultPage = new ResultPage<Tuple<ProcessInstance, ProcessDefinition>>();
 		ProcessInstanceQuery query = runtimeService
-				.createProcessInstanceQuery().variableValueEquals(
-						"applyUserId", AuthzUtils.getUsername());
+				.createProcessInstanceQuery()
+				.variableValueEquals("applyUserId", AuthzUtils.getUsername())
+				.excludeSubprocesses(true);
 		if (StringUtils.isNotBlank(keyword))
 			query = query.processDefinitionName(keyword);
 		long count = query.count();

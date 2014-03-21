@@ -12,15 +12,6 @@
 <#assign actionColumnButtons='
 <button type="button" class="btn" data-view="view" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("view")}</button>
 '>
-<@authorize ifAnyGranted="ROLE_ADMINISTRATOR">
-<#assign actionColumnButtons=actionColumnButtons+r'
-<#if entity.key.suspended>
-<button type="button" class="btn confirm" data-action="activate">${action.getText("activate")}</button>
-<#else>
-<button type="button" class="btn confirm" data-action="suspend">${action.getText("suspend")}</button>
-</#if>
-'>
-</@authorize>
 
 <@richtable entityName="processInstance" action="${actionBaseUrl}/started" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 </body>
