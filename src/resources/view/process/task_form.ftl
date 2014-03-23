@@ -49,7 +49,6 @@ ${processDefinition.description}
 <#if formTemplate?has_content>
 	<@formTemplate?interpret/>
 <#else>
-${reason!}
 <form action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable">
 	<#if processDefinitionId?has_content>
 	<input type="hidden" name="processDefinitionId" value="${processDefinitionId}"/>
