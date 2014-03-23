@@ -30,6 +30,6 @@
 '>
 </@authorize>
 
-<@richtable entityName="processInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false showCheckColumn=false/>
+<@richtable entityName="processInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 </body>
 </html></#escape>

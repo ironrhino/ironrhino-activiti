@@ -23,6 +23,6 @@
 </#if>
 '>
 
-<@richtable entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false showCheckColumn=false/>
+<@richtable entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 </body>
 </html></#escape>

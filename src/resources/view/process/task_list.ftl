@@ -25,6 +25,6 @@
 <#assign bottomButtons='
 <button type="button" class="btn reload">${action.getText("reload")}</button>
 '>
-<@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false showCheckColumn=false/>
+<@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
 </body>
 </html></#escape>
