@@ -1,5 +1,6 @@
 package org.ironrhino.process.action;
 
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -17,6 +18,8 @@ public class Row {
 	private ProcessInstance processInstance;
 
 	private HistoricProcessInstance historicProcessInstance;
+
+	private HistoricActivityInstance historicActivityInstance;
 
 	private Task task;
 
@@ -59,6 +62,15 @@ public class Row {
 	public void setHistoricProcessInstance(
 			HistoricProcessInstance historicProcessInstance) {
 		this.historicProcessInstance = historicProcessInstance;
+	}
+
+	public HistoricActivityInstance getHistoricActivityInstance() {
+		return historicActivityInstance;
+	}
+
+	public void setHistoricActivityInstance(
+			HistoricActivityInstance historicActivityInstance) {
+		this.historicActivityInstance = historicActivityInstance;
 	}
 
 	public Task getTask() {

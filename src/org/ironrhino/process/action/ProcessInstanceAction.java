@@ -100,6 +100,12 @@ public class ProcessInstanceAction extends BaseAction {
 						.createProcessDefinitionQuery()
 						.processDefinitionId(pi.getProcessDefinitionId())
 						.singleResult());
+				String activityId = pi.getActivityId();
+				if (activityId != null)
+					row.setHistoricActivityInstance(historyService
+							.createHistoricActivityInstanceQuery()
+							.executionId(pi.getId()).activityId(activityId)
+							.singleResult());
 				list.add(row);
 			}
 			resultPage.setResult(list);

@@ -6,9 +6,11 @@ import java.util.List;
 
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang3.StringUtils;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
@@ -26,6 +28,9 @@ public class HistoricProcessInstanceAction extends BaseAction {
 
 	@Autowired
 	private RepositoryService repositoryService;
+
+	@Autowired
+	private RuntimeService runtimeService;
 
 	@Autowired
 	private HistoryService historyService;
@@ -131,6 +136,17 @@ public class HistoricProcessInstanceAction extends BaseAction {
 						.createProcessDefinitionQuery()
 						.processDefinitionId(pi.getProcessDefinitionId())
 						.singleResult());
+				if (pi.getEndTime() == null) {
+					ProcessInstance instance = runtimeService
+							.createProcessInstanceQuery()
+							.processInstanceId(pi.getId()).singleResult();
+					String activityId = instance.getActivityId();
+					if (activityId != null)
+						row.setHistoricActivityInstance(historyService
+								.createHistoricActivityInstanceQuery()
+								.executionId(pi.getId()).activityId(activityId)
+								.singleResult());
+				}
 				list.add(row);
 			}
 			resultPage.setResult(list);
