@@ -4,7 +4,7 @@ import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.Group;
 import org.ironrhino.core.event.EntityOperationEvent;
 import org.ironrhino.core.model.Persistable;
-import org.ironrhino.security.model.User;
+import org.ironrhino.core.security.role.RoledUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -21,8 +21,8 @@ public class IdentitySynchronizer implements
 		if (!event.isLocal())
 			return;
 		Persistable<?> entity = event.getEntity();
-		if (entity.getClass() == User.class) {
-			User user = (User) entity;
+		if (RoledUserDetails.class.isAssignableFrom(entity.getClass())) {
+			RoledUserDetails user = (RoledUserDetails) entity;
 			switch (event.getType()) {
 			case CREATE:
 			case UPDATE:
@@ -31,8 +31,6 @@ public class IdentitySynchronizer implements
 						.singleResult();
 				if (u == null) {
 					u = identityService.newUser(user.getUsername());
-					u.setFirstName(user.getName());
-					u.setEmail(user.getEmail());
 					identityService.saveUser(u);
 				}
 				for (Group group : identityService.createGroupQuery()
