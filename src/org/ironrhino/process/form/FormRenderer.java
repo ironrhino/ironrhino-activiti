@@ -1,6 +1,5 @@
 package org.ironrhino.process.form;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,20 +30,20 @@ public class FormRenderer {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	public List<FormElement> render(StartFormData startFormData) {
+	public Map<String, FormElement> render(StartFormData startFormData) {
 		return render(startFormData.getFormProperties());
 	}
 
-	public List<FormElement> render(TaskFormData taskFormData) {
+	public Map<String, FormElement> render(TaskFormData taskFormData) {
 		return render(taskFormData.getFormProperties());
 	}
 
 	@SuppressWarnings("unchecked")
-	protected List<FormElement> render(List<FormProperty> formProperties) {
-		List<FormElement> list = new ArrayList<FormElement>();
+	protected Map<String, FormElement> render(List<FormProperty> formProperties) {
+		Map<String, FormElement> elements = new LinkedHashMap<String, FormElement>();
 		for (FormProperty fp : formProperties) {
 			FormElement fe = new FormElement();
-			fe.setName(fp.getId());
+			elements.put(fp.getId(), fe);
 			fe.setValue(fp.getValue());
 			String label = fp.getName();
 			if (StringUtils.isBlank(label))
@@ -102,16 +101,13 @@ public class FormRenderer {
 				fe.setInputType("number");
 				fe.addCssClass("double");
 			}
-			list.add(fe);
 		}
-		return list;
+		return elements;
 	}
 
 	public static class FormElement {
 
 		private String label;
-
-		private String name;
 
 		private String value;
 
@@ -137,14 +133,6 @@ public class FormRenderer {
 
 		public void setLabel(String label) {
 			this.label = label;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
 		}
 
 		public String getValue() {

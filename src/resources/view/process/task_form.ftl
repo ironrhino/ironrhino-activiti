@@ -26,7 +26,7 @@ ${processDefinition.description}
 	<tbody>
 	<tr>
 		<td>${action.getText('startProcessInstance')}</td>
-		<td><span class="user" data-username="${value}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(historicProcessInstance.startUserId))!}</span></td>
+		<td><span class="user" data-username="${historicProcessInstance.startUserId!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(historicProcessInstance.startUserId!))!}</span></td>
 		<td>${historicProcessInstance.startTime?datetime}</td>
 		<td></td>
 		<td></td>
@@ -54,28 +54,28 @@ ${processDefinition.description}
 	<input type="hidden" name="processDefinitionId" value="${processDefinitionId}"/>
 	</#if>
 	<#if formElements??>
-	<#list formElements as fe>
-	<#assign id='_'+fe.name/>
-	<#assign type=fe.type/>
+	<#list formElements.entrySet() as entry>
+	<#assign id='form_'+entry.key/>
+	<#assign fe=entry.value/>
 	<#if !fe.disabled || fe.value?has_content>
 	<div class="control-group">
 		<label class="control-label" for="${id}">${action.getText(fe.label)}</label>
 		<div class="controls">
-		<#if type=='textarea'>
-		<textarea id="${id}" name="${fe.name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>>${fe.value!}</textarea>
-		<#elseif type=='select'>
-		<select id="${id}" name="${fe.name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>>
+		<#if fe.type=='textarea'>
+		<textarea id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>${fe.value!}</textarea>
+		<#elseif fe.type=='select'>
+		<select id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>
 		<option></option>
-		<#list fe.values.entrySet() as entry>
-		<option value="${entry.key}"<#if fe.value??&&fe.value==entry.key> selected</#if>>${entry.value}</option>
+		<#list fe.values.entrySet() as en>
+		<option value="${en.key}"<#if fe.value??&&fe.value==en.key> selected</#if>>${en.value}</option>
 		</#list>
 		</select>
-		<#elseif type=='radio'>
-		<#list fe.values.entrySet() as entry>
-		<label for="${id}_${entry.key}" class="radio inline"><input id="${id}_${entry.key}" type="radio" name="${fe.name}" value="${entry.key}"<#if fe.value??&&fe.value==entry.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(entry.value)}</label>
+		<#elseif fe.type=='radio'>
+		<#list fe.values.entrySet() as en>
+		<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${entry.key}" value="${en.key}"<#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
 		</#list>
 		<#else>
-		<input id="${id}" type="${fe.inputType}" name="${fe.name}" value="${fe.value!}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as entry> ${entry.key}="${entry.value}"</#list>/>
+		<input id="${id}" type="${fe.inputType}" name="${entry.key}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>
 		</#if>
 		</div>
 	</div>

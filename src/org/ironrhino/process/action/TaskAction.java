@@ -71,7 +71,7 @@ public class TaskAction extends BaseAction {
 
 	private String title;
 
-	private List<FormElement> formElements;
+	private Map<String,FormElement> formElements;
 
 	private String formTemplate;
 
@@ -111,7 +111,7 @@ public class TaskAction extends BaseAction {
 		this.title = title;
 	}
 
-	public List<FormElement> getFormElements() {
+	public Map<String,FormElement> getFormElements() {
 		return formElements;
 	}
 
