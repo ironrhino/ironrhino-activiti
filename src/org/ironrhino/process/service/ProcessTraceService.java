@@ -14,6 +14,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -81,8 +82,8 @@ public class ProcessTraceService {
 
 	public List<Map<String, Object>> traceProcessInstance(
 			String processInstanceId) throws Exception {
-		ProcessInstance processInstance = runtimeService
-				.createProcessInstanceQuery()
+		HistoricProcessInstance processInstance = historyService
+				.createHistoricProcessInstanceQuery()
 				.processInstanceId(processInstanceId).singleResult();
 		Execution execution = runtimeService.createExecutionQuery()
 				.executionId(processInstanceId).singleResult();
@@ -97,10 +98,10 @@ public class ProcessTraceService {
 		for (ActivityImpl activity : activitiList) {
 			boolean current = false;
 			String id = activity.getId();
-			if (id.equals(execution.getActivityId()))
+			if (execution != null && id.equals(execution.getActivityId()))
 				current = true;
 			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
-					activity, processInstance, current, deployment != null
+					activity, processInstanceId, current, deployment != null
 							&& deployment.getName() != null
 							&& !deployment.getName().endsWith(".zip"));
 			activities.add(activityImageInfo);
@@ -109,33 +110,36 @@ public class ProcessTraceService {
 	}
 
 	private Map<String, Object> packageSingleActivitiInfo(
-			ActivityImpl activity, ProcessInstance processInstance,
-			boolean current, boolean offset) throws Exception {
+			ActivityImpl activity, String processInstanceId, boolean current,
+			boolean offset) throws Exception {
 		Map<String, Object> activityInfo = new HashMap<String, Object>();
 		activityInfo.put("current", current);
 		setPosition(activity, activityInfo, offset);
 		setWidthAndHeight(activity, activityInfo);
 		Map<String, Object> vars = new LinkedHashMap<String, Object>();
-		HistoricActivityInstance hai = historyService
-				.createHistoricActivityInstanceQuery()
-				.processInstanceId(processInstance.getId())
-				.activityId(activity.getId()).singleResult();
-		if (hai != null) {
-			if (hai.getAssignee() != null) {
-				User assigneeUser = identityService.createUserQuery()
-						.userId(hai.getAssignee()).singleResult();
-				try {
-					UserDetails userDetails = userDetailsService
-							.loadUserByUsername(assigneeUser.getId());
-					vars.put(translate("assignee"), userDetails.toString());
-				} catch (UsernameNotFoundException e) {
-					vars.put(translate("assignee"), assigneeUser.getFirstName());
+		if (processInstanceId != null) {
+			HistoricActivityInstance hai = historyService
+					.createHistoricActivityInstanceQuery()
+					.processInstanceId(processInstanceId)
+					.activityId(activity.getId()).singleResult();
+			if (hai != null) {
+				if (hai.getAssignee() != null) {
+					User assigneeUser = identityService.createUserQuery()
+							.userId(hai.getAssignee()).singleResult();
+					try {
+						UserDetails userDetails = userDetailsService
+								.loadUserByUsername(assigneeUser.getId());
+						vars.put(translate("assignee"), userDetails.toString());
+					} catch (UsernameNotFoundException e) {
+						vars.put(translate("assignee"),
+								assigneeUser.getFirstName());
+					}
 				}
+				if (hai.getStartTime() != null)
+					vars.put(translate("startTime"), hai.getStartTime());
+				if (hai.getEndTime() != null)
+					vars.put(translate("endTime"), hai.getEndTime());
 			}
-			if (hai.getStartTime() != null)
-				vars.put(translate("startTime"), hai.getStartTime());
-			if (hai.getEndTime() != null)
-				vars.put(translate("endTime"), hai.getEndTime());
 		}
 
 		Map<String, Object> properties = activity.getProperties();
@@ -145,8 +149,9 @@ public class ProcessTraceService {
 		if (activityBehavior instanceof UserTaskActivityBehavior) {
 			Task currentTask = null;
 			if (current) {
-				currentTask = getCurrentTaskInfo(processInstance);
-				setCurrentTaskAssignee(vars, currentTask);
+				currentTask = getCurrentTaskInfo(processInstanceId);
+				if (currentTask != null)
+					setCurrentTaskAssignee(vars, currentTask);
 			}
 			UserTaskActivityBehavior userTaskActivityBehavior = (UserTaskActivityBehavior) activityBehavior;
 			TaskDefinition taskDefinition = userTaskActivityBehavior
@@ -214,19 +219,18 @@ public class ProcessTraceService {
 		}
 	}
 
-	private Task getCurrentTaskInfo(ProcessInstance processInstance) {
-		Task currentTask = null;
-		try {
+	private Task getCurrentTaskInfo(String processInstanceId) {
+		ProcessInstance processInstance = runtimeService
+				.createProcessInstanceQuery()
+				.processInstanceId(processInstanceId).singleResult();
+		if (processInstance != null) {
 			String activitiId = processInstance.getActivityId();
-			currentTask = taskService.createTaskQuery()
+			return taskService.createTaskQuery()
 					.processInstanceId(processInstance.getId())
 					.taskDefinitionKey(activitiId).singleResult();
-		} catch (Exception e) {
-			logger.error(
-					"can not get property activityId from processInstance: {}",
-					processInstance);
+		} else {
+			return null;
 		}
-		return currentTask;
 	}
 
 	private void setWidthAndHeight(ActivityImpl activity,

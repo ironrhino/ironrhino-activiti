@@ -10,6 +10,7 @@ import javax.servlet.ServletOutputStream;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
@@ -130,14 +131,12 @@ public class ProcessInstanceAction extends BaseAction {
 		if (!canView(getUid()))
 			return NOTFOUND;
 		InputStream resourceAsStream = null;
-		ProcessInstance processInstance = runtimeService
-				.createProcessInstanceQuery().processInstanceId(getUid())
-				.singleResult();
+		HistoricProcessInstance processInstance = historyService
+				.createHistoricProcessInstanceQuery()
+				.processInstanceId(getUid()).singleResult();
 		if (processInstance == null)
-			processInstance = runtimeService.createProcessInstanceQuery()
-					.processInstanceId(getUid()).singleResult();
-		if (processInstance == null)
-			processInstance = runtimeService.createProcessInstanceQuery()
+			processInstance = historyService
+					.createHistoricProcessInstanceQuery()
 					.processInstanceBusinessKey(getUid()).singleResult();
 		ProcessDefinition processDefinition = repositoryService
 				.createProcessDefinitionQuery()
@@ -146,7 +145,6 @@ public class ProcessInstanceAction extends BaseAction {
 		String resourceName = processDefinition.getDiagramResourceName();
 		resourceAsStream = repositoryService.getResourceAsStream(
 				processDefinition.getDeploymentId(), resourceName);
-		runtimeService.getActiveActivityIds(processInstance.getId());
 		byte[] byteArray = IOUtils.toByteArray(resourceAsStream);
 		ServletOutputStream servletOutputStream = ServletActionContext
 				.getResponse().getOutputStream();

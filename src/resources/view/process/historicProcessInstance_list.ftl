@@ -18,9 +18,7 @@
 '>
 <#assign actionColumnButtons='
 <button type="button" class="btn" data-view="view">${action.getText("view")}</button>
-<#if !entity.historicProcessInstance.endTime??>
 <button type="button" class="btn" data-view="trace" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("trace")}</button>
-</#if>
 '>
 
 <@richtable entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
