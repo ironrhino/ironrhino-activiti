@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+	<target name="pre-jar">
+		<delete file="${target.dir}/ironrhino-process-1.0.jar" />
+	</target>
+
+	<target name="post-jar">
+		<mkdir dir="${classes.dir}/META-INF/resources/assets/scripts" />
+		<copy todir="${classes.dir}/META-INF/resources/assets/scripts" file="${webapp.dir}/assets/scripts/ironrhino.process.js" />
+		<jar jarfile="${target.dir}/ironrhino-process-1.0.jar" basedir="${classes.dir}" includes="org/ironrhino/process/**,META-INF/resources/**,resources/spring/applicationContext-process.xml,resources/view/process/**,resources/i18n/process/**" />
+		<delete dir="${classes.dir}/META-INF" />
+	</target>
+
+</project>
