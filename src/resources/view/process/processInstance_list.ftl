@@ -7,7 +7,7 @@
 <#assign columns={"processInstance.id":{"alias":"流程实例ID","width":"120px"},
 "processInstance.processDefinitionId":{"alias":"流程定义ID","width":"100px","template":r"<#if id?has_content>${value}<#else><a href='${actionBaseUrl}/list/${value}' class='ajax view'>${value}</a></#if>"},
 "processDefinition.key":{"alias":"流程定义KEY","width":"100px"},
-"processDefinition.name":{},
+"processDefinition.name":{"alias":"流程名"},
 "processInstance.businessKey":{"alias":"业务KEY","width":"100px"},
 "historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(value)!}</span>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},

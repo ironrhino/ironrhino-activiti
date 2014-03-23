@@ -9,9 +9,9 @@
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},
 "task.name":{"alias":"任务名","width":"100px"},
 "task.createTime":{"alias":"任务创建时间","width":"130px"},
-"task.dueDate":{"width":"130px"},
+"task.dueDate":{"width":"80px"},
 "task.description":{"alias":"任务描述"},
-"task.suspended":{"width":"70px"}}>
+"task.suspended":{"width":"60px"}}>
 <#assign actionColumnButtons=r'
 <#if !entity.task.suspended>
 <#if !entity.task.assignee??>

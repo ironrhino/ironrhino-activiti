@@ -4,11 +4,12 @@
 <title><#if request.requestURI?ends_with('/involved')><#if startedBy??&&startedBy>发起的流程<#else>经办的流程</#if><#else>流程列表</#if></title>
 </head>
 <body>
-<#assign columns={"processDefinition.name":{"width":"150px"},
+<#assign columns={
+"historicProcessInstance.id":{"alias":"流程ID","width":"100px"},
+"processDefinition.name":{"alias":"流程名"},
 "historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(value)!}</span>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},
-"historicProcessInstance.endTime":{"width":"130px"},
-"historicProcessInstance.deleteReason":{}}>
+"historicProcessInstance.endTime":{"width":"130px"}}>
 
 <#assign bottomButtons='
 <button type="button" class="btn reload">${action.getText("reload")}</button>
