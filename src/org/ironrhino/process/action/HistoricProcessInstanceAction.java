@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.action;
+package org.ironrhino.process.action;
 
 import java.util.ArrayList;
 import java.util.Collections;

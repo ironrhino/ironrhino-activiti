@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.service;
+package org.ironrhino.process.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;

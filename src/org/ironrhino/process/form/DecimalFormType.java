@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.form;
+package org.ironrhino.process.form;
 
 import java.math.BigDecimal;
 

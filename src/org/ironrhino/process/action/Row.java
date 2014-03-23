@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.action;
+package org.ironrhino.process.action;
 
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.Deployment;

@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.action;
+package org.ironrhino.process.action;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +24,6 @@ import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
 import org.apache.struts2.ServletActionContext;
-import org.ironrhino.activiti.form.FormRenderer;
-import org.ironrhino.activiti.form.FormRenderer.FormElement;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.security.role.UserRole;
@@ -33,6 +31,8 @@ import org.ironrhino.core.sequence.CyclicSequence;
 import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
 import org.ironrhino.core.util.RequestUtils;
+import org.ironrhino.process.form.FormRenderer;
+import org.ironrhino.process.form.FormRenderer.FormElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
@@ -44,7 +44,7 @@ public class TaskAction extends BaseAction {
 
 	private static final long serialVersionUID = 314143213105332544L;
 
-	@Autowired
+	@Autowired(required = false)
 	@Qualifier("businessKeySequence")
 	private CyclicSequence businessKeySequence;
 
@@ -285,9 +285,11 @@ public class TaskAction extends BaseAction {
 					return ACCESSDENIED;
 				if (!canStartProcess(processDefinitionId))
 					return ACCESSDENIED;
+				String businessKey = businessKeySequence != null ? businessKeySequence
+						.nextStringValue() : String.valueOf(System
+						.currentTimeMillis());
 				ProcessInstance processInstance = formService
-						.submitStartFormData(processDefinitionId,
-								businessKeySequence.nextStringValue(),
+						.submitStartFormData(processDefinitionId, businessKey,
 								properties);
 				addActionMessage("启动流程: " + processInstance.getId());
 			} else {

@@ -22,9 +22,9 @@
         <property name="labelFontName" value="宋体"/>
 		<property name="customFormTypes">
 			<list>
-				<bean class="org.ironrhino.activiti.form.TextareaFormType"/>
-				<bean class="org.ironrhino.activiti.form.DictionaryFormType"/>
-				<bean class="org.ironrhino.activiti.form.DecimalFormType"/>
+				<bean class="org.ironrhino.process.form.TextareaFormType"/>
+				<bean class="org.ironrhino.process.form.DictionaryFormType"/>
+				<bean class="org.ironrhino.process.form.DecimalFormType"/>
 			</list>
 		</property>
 	</bean>

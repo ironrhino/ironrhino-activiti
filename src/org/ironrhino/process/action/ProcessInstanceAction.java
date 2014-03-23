@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.action;
+package org.ironrhino.process.action;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,7 +17,6 @@ import org.activiti.engine.task.IdentityLink;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
-import org.ironrhino.activiti.service.ProcessTraceService;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.metadata.JsonConfig;
@@ -25,6 +24,7 @@ import org.ironrhino.core.model.ResultPage;
 import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
+import org.ironrhino.process.service.ProcessTraceService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @AutoConfig

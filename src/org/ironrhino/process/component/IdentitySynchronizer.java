@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.component;
+package org.ironrhino.process.component;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.Group;

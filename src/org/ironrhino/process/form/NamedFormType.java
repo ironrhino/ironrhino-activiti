@@ -1,4 +1,4 @@
-package org.ironrhino.activiti.form;
+package org.ironrhino.process.form;
 
 import org.activiti.engine.form.AbstractFormType;
 import org.apache.commons.lang3.StringUtils;
