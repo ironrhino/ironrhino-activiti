@@ -7,6 +7,7 @@ import java.util.List;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
@@ -141,11 +142,17 @@ public class HistoricProcessInstanceAction extends BaseAction {
 							.createProcessInstanceQuery()
 							.processInstanceId(pi.getId()).singleResult();
 					String activityId = instance.getActivityId();
-					if (activityId != null)
-						row.setHistoricActivityInstance(historyService
+					if (activityId != null) {
+						List<HistoricActivityInstance> historicActivityInstances = historyService
 								.createHistoricActivityInstanceQuery()
 								.executionId(pi.getId()).activityId(activityId)
-								.singleResult());
+								.orderByHistoricActivityInstanceStartTime()
+								.desc().list();
+						if (!historicActivityInstances.isEmpty())
+							row.setHistoricActivityInstance(historicActivityInstances
+									.get(0));
+					}
+
 				}
 				list.add(row);
 			}

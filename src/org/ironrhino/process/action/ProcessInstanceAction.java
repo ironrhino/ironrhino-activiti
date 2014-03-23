@@ -10,6 +10,7 @@ import javax.servlet.ServletOutputStream;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -102,11 +103,16 @@ public class ProcessInstanceAction extends BaseAction {
 						.processDefinitionId(pi.getProcessDefinitionId())
 						.singleResult());
 				String activityId = pi.getActivityId();
-				if (activityId != null)
-					row.setHistoricActivityInstance(historyService
+				if (activityId != null) {
+					List<HistoricActivityInstance> historicActivityInstances = historyService
 							.createHistoricActivityInstanceQuery()
 							.executionId(pi.getId()).activityId(activityId)
-							.singleResult());
+							.orderByHistoricActivityInstanceStartTime().desc()
+							.list();
+					if (!historicActivityInstances.isEmpty())
+						row.setHistoricActivityInstance(historicActivityInstances
+								.get(0));
+				}
 				list.add(row);
 			}
 			resultPage.setResult(list);

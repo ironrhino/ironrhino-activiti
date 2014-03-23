@@ -118,11 +118,13 @@ public class ProcessTraceService {
 		setWidthAndHeight(activity, activityInfo);
 		Map<String, Object> vars = new LinkedHashMap<String, Object>();
 		if (processInstanceId != null) {
-			HistoricActivityInstance hai = historyService
+			List<HistoricActivityInstance> historicActivityInstances = historyService
 					.createHistoricActivityInstanceQuery()
-					.processInstanceId(processInstanceId)
-					.activityId(activity.getId()).singleResult();
-			if (hai != null) {
+					.executionId(processInstanceId)
+					.activityId(activity.getId())
+					.orderByHistoricActivityInstanceStartTime().desc().list();
+			if (!historicActivityInstances.isEmpty()) {
+				HistoricActivityInstance hai = historicActivityInstances.get(0);
 				if (hai.getAssignee() != null) {
 					User assigneeUser = identityService.createUserQuery()
 							.userId(hai.getAssignee()).singleResult();
