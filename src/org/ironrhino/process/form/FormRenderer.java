@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
+import com.opensymphony.xwork2.util.ValueStack;
 
 @Component
 public class FormRenderer {
@@ -40,8 +41,13 @@ public class FormRenderer {
 
 	@SuppressWarnings("unchecked")
 	protected Map<String, FormElement> render(List<FormProperty> formProperties) {
+		ValueStack vs = null;
+		if (ActionContext.getContext() != null)
+			vs = ActionContext.getContext().getValueStack();
 		Map<String, FormElement> elements = new LinkedHashMap<String, FormElement>();
 		for (FormProperty fp : formProperties) {
+			if (vs != null && fp.getValue() != null)
+				vs.set(fp.getId(), fp.getValue());
 			FormElement fe = new FormElement();
 			elements.put(fp.getId(), fe);
 			fe.setValue(fp.getValue());

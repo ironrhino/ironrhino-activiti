@@ -35,7 +35,7 @@ ${processDefinition.description}
 	<#list historicTaskInstances as task>
 	<tr>
 		<td>${task.name}</td>
-		<td>${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.assignee))!}</td>
+		<td><span class="user" data-username="${task.assignee!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.assignee))!}</span></td>
 		<td>${task.startTime?datetime}</td>
 		<td>${(task.claimTime?datetime)!}</td>
 		<td>${task.endTime?datetime}</td>
@@ -49,6 +49,7 @@ ${processDefinition.description}
 <#if formTemplate?has_content>
 	<@formTemplate?interpret/>
 <#else>
+${reason!}
 <form action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable">
 	<#if processDefinitionId?has_content>
 	<input type="hidden" name="processDefinitionId" value="${processDefinitionId}"/>
