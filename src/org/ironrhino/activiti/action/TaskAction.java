@@ -75,7 +75,7 @@ public class TaskAction extends BaseAction {
 
 	private String formTemplate;
 
-	private List<Tuple<Task, ProcessDefinition>> list;
+	private List<Row> list;
 
 	private String processDefinitionId;
 
@@ -119,7 +119,7 @@ public class TaskAction extends BaseAction {
 		return formTemplate;
 	}
 
-	public List<Tuple<Task, ProcessDefinition>> getList() {
+	public List<Row> getList() {
 		return list;
 	}
 
@@ -146,14 +146,19 @@ public class TaskAction extends BaseAction {
 		List<Task> all = new ArrayList<Task>();
 		all.addAll(taskAssignees);
 		all.addAll(taskCandidates);
-		list = new ArrayList<Tuple<Task, ProcessDefinition>>();
+		list = new ArrayList<Row>();
 		for (Task task : all) {
-			Tuple<Task, ProcessDefinition> tuple = new Tuple<Task, ProcessDefinition>();
-			list.add(tuple);
-			tuple.setId(task.getId());
-			tuple.setKey(task);
-			tuple.setValue(repositoryService.createProcessDefinitionQuery()
+			Row row = new Row();
+			list.add(row);
+			row.setId(task.getId());
+			row.setTask(task);
+			row.setProcessDefinition(repositoryService
+					.createProcessDefinitionQuery()
 					.processDefinitionId(task.getProcessDefinitionId())
+					.singleResult());
+			row.setHistoricProcessInstance(historyService
+					.createHistoricProcessInstanceQuery()
+					.processInstanceId(task.getProcessInstanceId())
 					.singleResult());
 		}
 		return LIST;

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -28,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ProcessInstanceAction extends BaseAction {
 
 	private static final long serialVersionUID = -6657349245825745444L;
@@ -40,19 +40,22 @@ public class ProcessInstanceAction extends BaseAction {
 	private RuntimeService runtimeService;
 
 	@Autowired
+	private HistoryService historyService;
+
+	@Autowired
 	private ProcessTraceService processTraceService;
 
-	private ResultPage resultPage;
+	private ResultPage<Row> resultPage;
 
 	private ProcessInstance processInstance;
 
 	private List<Map<String, Object>> activities;
 
-	public ResultPage getResultPage() {
+	public ResultPage<Row> getResultPage() {
 		return resultPage;
 	}
 
-	public void setResultPage(ResultPage resultPage) {
+	public void setResultPage(ResultPage<Row> resultPage) {
 		this.resultPage = resultPage;
 	}
 
@@ -70,7 +73,7 @@ public class ProcessInstanceAction extends BaseAction {
 
 	public String list() {
 		if (resultPage == null)
-			resultPage = new ResultPage<Tuple<ProcessInstance, ProcessDefinition>>();
+			resultPage = new ResultPage<Row>();
 		ProcessInstanceQuery query = runtimeService
 				.createProcessInstanceQuery();
 		if (!AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null))
@@ -79,81 +82,29 @@ public class ProcessInstanceAction extends BaseAction {
 		if (StringUtils.isNotBlank(processDefinitionId))
 			query = query.processDefinitionId(processDefinitionId);
 		long count = query.count();
-		List<ProcessInstance> processInstances = query
-				.orderByProcessInstanceId().desc()
-				.listPage(resultPage.getStart(), resultPage.getPageSize());
-		List<Tuple<ProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<ProcessInstance, ProcessDefinition>>(
-				processInstances.size());
-		for (ProcessInstance pi : processInstances) {
-			Tuple<ProcessInstance, ProcessDefinition> tuple = new Tuple<ProcessInstance, ProcessDefinition>();
-			tuple.setId(pi.getId());
-			tuple.setKey(pi);
-			tuple.setValue(repositoryService.createProcessDefinitionQuery()
-					.processDefinitionId(pi.getProcessDefinitionId())
-					.singleResult());
-			list.add(tuple);
-		}
 		resultPage.setTotalResults(count);
-		resultPage.setResult(list);
+		if (count > 0) {
+			List<ProcessInstance> processInstances = query
+					.orderByProcessInstanceId().desc()
+					.listPage(resultPage.getStart(), resultPage.getPageSize());
+			List<Row> list = new ArrayList<Row>(processInstances.size());
+			for (ProcessInstance pi : processInstances) {
+				Row row = new Row();
+				row.setId(pi.getId());
+				row.setProcessInstance(pi);
+				row.setHistoricProcessInstance(historyService
+						.createHistoricProcessInstanceQuery()
+						.processInstanceId(pi.getProcessInstanceId())
+						.singleResult());
+				row.setProcessDefinition(repositoryService
+						.createProcessDefinitionQuery()
+						.processDefinitionId(pi.getProcessDefinitionId())
+						.singleResult());
+				list.add(row);
+			}
+			resultPage.setResult(list);
+		}
 		return LIST;
-	}
-
-	public String started() {
-		if (resultPage == null)
-			resultPage = new ResultPage<Tuple<ProcessInstance, ProcessDefinition>>();
-		ProcessInstanceQuery query = runtimeService
-				.createProcessInstanceQuery()
-				.variableValueEquals("applyUserId", AuthzUtils.getUsername())
-				.excludeSubprocesses(true);
-		if (StringUtils.isNotBlank(keyword))
-			query = query.processDefinitionName(keyword);
-		long count = query.count();
-		List<ProcessInstance> processInstances = query
-				.orderByProcessInstanceId().desc()
-				.listPage(resultPage.getStart(), resultPage.getPageSize());
-		List<Tuple<ProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<ProcessInstance, ProcessDefinition>>(
-				processInstances.size());
-		for (ProcessInstance pi : processInstances) {
-			Tuple<ProcessInstance, ProcessDefinition> tuple = new Tuple<ProcessInstance, ProcessDefinition>();
-			tuple.setId(pi.getId());
-			tuple.setKey(pi);
-			tuple.setValue(repositoryService.createProcessDefinitionQuery()
-					.processDefinitionId(pi.getProcessDefinitionId())
-					.singleResult());
-			list.add(tuple);
-		}
-		resultPage.setTotalResults(count);
-		resultPage.setResult(list);
-		return "started";
-	}
-
-	public String involved() {
-		if (resultPage == null)
-			resultPage = new ResultPage<Tuple<ProcessInstance, ProcessDefinition>>();
-		ProcessInstanceQuery query = runtimeService
-				.createProcessInstanceQuery()
-				.involvedUser(AuthzUtils.getUsername())
-				.excludeSubprocesses(true);
-		if (StringUtils.isNotBlank(keyword))
-			query = query.processDefinitionName(keyword);
-		long count = query.count();
-		List<ProcessInstance> processInstances = query
-				.orderByProcessInstanceId().desc()
-				.listPage(resultPage.getStart(), resultPage.getPageSize());
-		List<Tuple<ProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<ProcessInstance, ProcessDefinition>>(
-				processInstances.size());
-		for (ProcessInstance pi : processInstances) {
-			Tuple<ProcessInstance, ProcessDefinition> tuple = new Tuple<ProcessInstance, ProcessDefinition>();
-			tuple.setId(pi.getId());
-			tuple.setKey(pi);
-			tuple.setValue(repositoryService.createProcessDefinitionQuery()
-					.processDefinitionId(pi.getProcessDefinitionId())
-					.singleResult());
-			list.add(tuple);
-		}
-		resultPage.setTotalResults(count);
-		resultPage.setResult(list);
-		return "involved";
 	}
 
 	public String view() {

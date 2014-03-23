@@ -4,7 +4,14 @@
 <title>流程实例</title>
 </head>
 <body>
-<#assign columns={"key.id":{"alias":"流程实例ID","width":"120px"},"key.processDefinitionId":{"alias":"流程定义ID","width":"100px","template":r"<#if id?has_content>${value}<#else><a href='${actionBaseUrl}/list/${value}' class='ajax view'>${value}</a></#if>"},"value.key":{"alias":"KEY","width":"100px"},"value.name":{},"key.businessKey":{"alias":"业务键值","width":"200px"},"key.suspended":{"width":"80px"},"key.ended":{"width":"80px"}}>
+<#assign columns={"processInstance.id":{"alias":"流程实例ID","width":"120px"},
+"processInstance.processDefinitionId":{"alias":"流程定义ID","width":"100px","template":r"<#if id?has_content>${value}<#else><a href='${actionBaseUrl}/list/${value}' class='ajax view'>${value}</a></#if>"},
+"processDefinition.key":{"alias":"流程定义KEY","width":"100px"},
+"processDefinition.name":{},
+"processInstance.businessKey":{"alias":"业务KEY","width":"100px"},
+"historicProcessInstance.startUserId":{"alias","startUser","width":"80px","template":r"${statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(value)!}"},
+"historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},
+"processInstance.suspended":{"width":"60px"}}>
 
 <#assign bottomButtons='
 <button type="button" class="btn reload">${action.getText("reload")}</button>
@@ -14,7 +21,7 @@
 '>
 <@authorize ifAnyGranted="ROLE_ADMINISTRATOR">
 <#assign actionColumnButtons=actionColumnButtons+r'
-<#if entity.key.suspended>
+<#if entity.processInstance.suspended>
 <button type="button" class="btn confirm" data-action="activate">${action.getText("activate")}</button>
 <#else>
 <button type="button" class="btn confirm" data-action="suspend">${action.getText("suspend")}</button>

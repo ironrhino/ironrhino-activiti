@@ -12,7 +12,6 @@ import javax.servlet.ServletOutputStream;
 
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.apache.commons.io.IOUtils;
@@ -46,7 +45,7 @@ public class ProcessDefinitionAction extends BaseAction {
 
 	private String fileFileName;
 
-	private ResultPage<Tuple<ProcessDefinition, Deployment>> resultPage;
+	private ResultPage<Row> resultPage;
 
 	private String deploymentId;
 
@@ -74,12 +73,11 @@ public class ProcessDefinitionAction extends BaseAction {
 		this.fileFileName = fileFileName;
 	}
 
-	public ResultPage<Tuple<ProcessDefinition, Deployment>> getResultPage() {
+	public ResultPage<Row> getResultPage() {
 		return resultPage;
 	}
 
-	public void setResultPage(
-			ResultPage<Tuple<ProcessDefinition, Deployment>> resultPage) {
+	public void setResultPage(ResultPage<Row> resultPage) {
 		this.resultPage = resultPage;
 	}
 
@@ -117,7 +115,7 @@ public class ProcessDefinitionAction extends BaseAction {
 
 	public String execute() {
 		if (resultPage == null)
-			resultPage = new ResultPage<Tuple<ProcessDefinition, Deployment>>();
+			resultPage = new ResultPage<Row>();
 		ProcessDefinitionQuery query = repositoryService
 				.createProcessDefinitionQuery();
 		if (StringUtils.isNoneBlank(keyword))
@@ -125,23 +123,24 @@ public class ProcessDefinitionAction extends BaseAction {
 		if (StringUtils.isNotBlank(key))
 			query.processDefinitionKey(key);
 		long count = query.count();
-		List<ProcessDefinition> processDefinitions = query
-				.orderByProcessDefinitionKey().asc()
-				.orderByProcessDefinitionVersion().desc()
-				.listPage(resultPage.getStart(), resultPage.getPageSize());
-
-		List<Tuple<ProcessDefinition, Deployment>> list = new ArrayList<Tuple<ProcessDefinition, Deployment>>(
-				processDefinitions.size());
-		for (ProcessDefinition pd : processDefinitions) {
-			Tuple<ProcessDefinition, Deployment> tuple = new Tuple<ProcessDefinition, Deployment>();
-			tuple.setId(pd.getId());
-			tuple.setKey(pd);
-			tuple.setValue(repositoryService.createDeploymentQuery()
-					.deploymentId(pd.getDeploymentId()).singleResult());
-			list.add(tuple);
-		}
 		resultPage.setTotalResults(count);
-		resultPage.setResult(list);
+		if (count > 0) {
+			List<ProcessDefinition> processDefinitions = query
+					.orderByProcessDefinitionKey().asc()
+					.orderByProcessDefinitionVersion().desc()
+					.listPage(resultPage.getStart(), resultPage.getPageSize());
+
+			List<Row> list = new ArrayList<Row>(processDefinitions.size());
+			for (ProcessDefinition pd : processDefinitions) {
+				Row row = new Row();
+				row.setId(pd.getId());
+				row.setProcessDefinition(pd);
+				row.setDeployment(repositoryService.createDeploymentQuery()
+						.deploymentId(pd.getDeploymentId()).singleResult());
+				list.add(row);
+			}
+			resultPage.setResult(list);
+		}
 		return LIST;
 	}
 

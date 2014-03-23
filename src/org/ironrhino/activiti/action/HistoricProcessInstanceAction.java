@@ -9,7 +9,6 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
-import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
@@ -31,7 +30,7 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	@Autowired
 	private HistoryService historyService;
 
-	private ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>> resultPage;
+	private ResultPage<Row> resultPage;
 
 	private HistoricProcessInstance historicProcessInstance;
 
@@ -65,12 +64,11 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		this.finished = finished;
 	}
 
-	public ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>> getResultPage() {
+	public ResultPage<Row> getResultPage() {
 		return resultPage;
 	}
 
-	public void setResultPage(
-			ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>> resultPage) {
+	public void setResultPage(ResultPage<Row> resultPage) {
 		this.resultPage = resultPage;
 	}
 
@@ -86,7 +84,7 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String list() {
 		if (resultPage == null)
-			resultPage = new ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>>();
+			resultPage = new ResultPage<Row>();
 		HistoricProcessInstanceQuery query = historyService
 				.createHistoricProcessInstanceQuery();
 		if (StringUtils.isNoneBlank(processDefinitionId))
@@ -98,7 +96,7 @@ public class HistoricProcessInstanceAction extends BaseAction {
 
 	public String involved() {
 		if (resultPage == null)
-			resultPage = new ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>>();
+			resultPage = new ResultPage<Row>();
 		String username = AuthzUtils.getUsername();
 		HistoricProcessInstanceQuery query = historyService
 				.createHistoricProcessInstanceQuery().excludeSubprocesses(true);
@@ -124,16 +122,16 @@ public class HistoricProcessInstanceAction extends BaseAction {
 			List<HistoricProcessInstance> historicProcessInstances = query
 					.orderByProcessInstanceStartTime().desc()
 					.listPage(resultPage.getStart(), resultPage.getPageSize());
-			List<Tuple<HistoricProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<HistoricProcessInstance, ProcessDefinition>>(
-					historicProcessInstances.size());
+			List<Row> list = new ArrayList<Row>(historicProcessInstances.size());
 			for (HistoricProcessInstance pi : historicProcessInstances) {
-				Tuple<HistoricProcessInstance, ProcessDefinition> tuple = new Tuple<HistoricProcessInstance, ProcessDefinition>();
-				tuple.setId(pi.getId());
-				tuple.setKey(pi);
-				tuple.setValue(repositoryService.createProcessDefinitionQuery()
+				Row row = new Row();
+				row.setId(pi.getId());
+				row.setHistoricProcessInstance(pi);
+				row.setProcessDefinition(repositoryService
+						.createProcessDefinitionQuery()
 						.processDefinitionId(pi.getProcessDefinitionId())
 						.singleResult());
-				list.add(tuple);
+				list.add(row);
 			}
 			resultPage.setResult(list);
 		} else {
