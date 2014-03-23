@@ -5,7 +5,7 @@
 </head>
 <body>
 <#assign columns={"processDefinition.name":{"width":"150px"},
-"historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r"${statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(value)!}"},
+"historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(value)!}</span>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},
 "historicProcessInstance.endTime":{"width":"130px"},
 "historicProcessInstance.deleteReason":{}}>

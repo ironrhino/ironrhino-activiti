@@ -9,7 +9,7 @@
 "processDefinition.key":{"alias":"流程定义KEY","width":"100px"},
 "processDefinition.name":{},
 "processInstance.businessKey":{"alias":"业务KEY","width":"100px"},
-"historicProcessInstance.startUserId":{"alias","startUser","width":"80px","template":r"${statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(value)!}"},
+"historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(value)!}</span>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},
 "processInstance.suspended":{"width":"60px"}}>
 

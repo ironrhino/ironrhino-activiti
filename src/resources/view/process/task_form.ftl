@@ -26,7 +26,7 @@ ${processDefinition.description}
 	<tbody>
 	<tr>
 		<td>${action.getText('startProcessInstance')}</td>
-		<td>${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(historicProcessInstance.startUserId))!}</td>
+		<td><span class="user" data-username="${value}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(historicProcessInstance.startUserId))!}</span></td>
 		<td>${historicProcessInstance.startTime?datetime}</td>
 		<td></td>
 		<td></td>
