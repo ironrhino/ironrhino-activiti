@@ -45,9 +45,10 @@ ${processDefinition.description}
 	</tbody>
 </table>
 </div>
-
-
 </#if>
+<#if formTemplate?has_content>
+	<@formTemplate?interpret/>
+<#else>
 <form action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable">
 	<#if processDefinitionId?has_content>
 	<input type="hidden" name="processDefinitionId" value="${processDefinitionId}"/>
@@ -87,5 +88,6 @@ ${processDefinition.description}
 	<@s.submit value="%{getText('submit')}" cssClass="btn-primary"/>
 	</#if>
 </form>
+</#if>
 </body>
 </html></#escape>

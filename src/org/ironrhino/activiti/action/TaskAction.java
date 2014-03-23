@@ -1,5 +1,8 @@
 package org.ironrhino.activiti.action;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,8 @@ import org.ironrhino.core.util.AuthzUtils;
 import org.ironrhino.core.util.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StreamUtils;
 
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
@@ -67,6 +72,8 @@ public class TaskAction extends BaseAction {
 	private String title;
 
 	private List<FormElement> formElements;
+
+	private String formTemplate;
 
 	private List<Tuple<Task, ProcessDefinition>> list;
 
@@ -106,6 +113,10 @@ public class TaskAction extends BaseAction {
 
 	public List<FormElement> getFormElements() {
 		return formElements;
+	}
+
+	public String getFormTemplate() {
+		return formTemplate;
 	}
 
 	public List<Tuple<Task, ProcessDefinition>> getList() {
@@ -181,6 +192,19 @@ public class TaskAction extends BaseAction {
 			StartFormData startFormData = formService
 					.getStartFormData(processDefinitionId);
 			formElements = formRenderer.render(startFormData);
+			StringBuilder sb = new StringBuilder();
+			sb.append("resources/view/process/form/");
+			sb.append(processDefinition.getKey());
+			sb.append(".ftl");
+			ClassPathResource cpr = new ClassPathResource(sb.toString());
+			if (cpr.exists() && cpr.isReadable()) {
+				try (InputStream is = cpr.getInputStream()) {
+					formTemplate = StreamUtils.copyToString(is,
+							Charset.forName("UTF-8"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		} else {
 			Task task = taskService.createTaskQuery().taskId(taskId)
 					.singleResult();
@@ -196,6 +220,21 @@ public class TaskAction extends BaseAction {
 				title += " - " + processDefinition.getName();
 			TaskFormData taskFormData = formService.getTaskFormData(taskId);
 			formElements = formRenderer.render(taskFormData);
+			StringBuilder sb = new StringBuilder();
+			sb.append("resources/view/process/form/");
+			sb.append(processDefinition.getKey());
+			sb.append("_");
+			sb.append(task.getTaskDefinitionKey());
+			sb.append(".ftl");
+			ClassPathResource cpr = new ClassPathResource(sb.toString());
+			if (cpr.exists() && cpr.isReadable()) {
+				try (InputStream is = cpr.getInputStream()) {
+					formTemplate = StreamUtils.copyToString(is,
+							Charset.forName("UTF-8"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			historicProcessInstance = historyService
 					.createHistoricProcessInstanceQuery()
 					.processInstanceId(task.getProcessInstanceId())
