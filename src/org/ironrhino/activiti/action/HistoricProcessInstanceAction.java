@@ -1,6 +1,7 @@
 package org.ironrhino.activiti.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.activiti.engine.HistoryService;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class HistoricProcessInstanceAction extends BaseAction {
 
 	private static final long serialVersionUID = -6657349245825745444L;
@@ -31,15 +31,46 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	@Autowired
 	private HistoryService historyService;
 
-	private ResultPage resultPage;
+	private ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>> resultPage;
 
 	private HistoricProcessInstance historicProcessInstance;
 
-	public ResultPage getResultPage() {
+	private String processDefinitionId;
+
+	private Boolean startedBy;
+
+	private Boolean finished;
+
+	public String getProcessDefinitionId() {
+		return processDefinitionId;
+	}
+
+	public void setProcessDefinitionId(String processDefinitionId) {
+		this.processDefinitionId = processDefinitionId;
+	}
+
+	public Boolean getStartedBy() {
+		return startedBy;
+	}
+
+	public void setStartedBy(Boolean startedBy) {
+		this.startedBy = startedBy;
+	}
+
+	public Boolean getFinished() {
+		return finished;
+	}
+
+	public void setFinished(Boolean finished) {
+		this.finished = finished;
+	}
+
+	public ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>> getResultPage() {
 		return resultPage;
 	}
 
-	public void setResultPage(ResultPage resultPage) {
+	public void setResultPage(
+			ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>> resultPage) {
 		this.resultPage = resultPage;
 	}
 
@@ -47,66 +78,68 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		return historicProcessInstance;
 	}
 
+	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String execute() {
-		return started();
+		return list();
 	}
 
-	public String started() {
+	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
+	public String list() {
 		if (resultPage == null)
 			resultPage = new ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>>();
 		HistoricProcessInstanceQuery query = historyService
-				.createHistoricProcessInstanceQuery()
-				.variableValueEquals("applyUserId", AuthzUtils.getUsername())
-				.excludeSubprocesses(true).finished();
+				.createHistoricProcessInstanceQuery();
+		if (StringUtils.isNoneBlank(processDefinitionId))
+			query.processDefinitionId(processDefinitionId);
 		if (StringUtils.isNotBlank(keyword))
 			query = query.processDefinitionKey(keyword);
-		long count = query.count();
-		List<HistoricProcessInstance> historicProcessInstances = query
-				.orderByProcessInstanceStartTime().desc()
-				.listPage(resultPage.getStart(), resultPage.getPageSize());
-		List<Tuple<HistoricProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<HistoricProcessInstance, ProcessDefinition>>(
-				historicProcessInstances.size());
-		for (HistoricProcessInstance pi : historicProcessInstances) {
-			Tuple<HistoricProcessInstance, ProcessDefinition> tuple = new Tuple<HistoricProcessInstance, ProcessDefinition>();
-			tuple.setId(pi.getId());
-			tuple.setKey(pi);
-			tuple.setValue(repositoryService.createProcessDefinitionQuery()
-					.processDefinitionId(pi.getProcessDefinitionId())
-					.singleResult());
-			list.add(tuple);
-		}
-		resultPage.setTotalResults(count);
-		resultPage.setResult(list);
-		return "started";
+		return doQuery(query);
 	}
 
 	public String involved() {
 		if (resultPage == null)
 			resultPage = new ResultPage<Tuple<HistoricProcessInstance, ProcessDefinition>>();
+		String username = AuthzUtils.getUsername();
 		HistoricProcessInstanceQuery query = historyService
-				.createHistoricProcessInstanceQuery()
-				.involvedUser(AuthzUtils.getUsername())
-				.excludeSubprocesses(true).finished();
+				.createHistoricProcessInstanceQuery().excludeSubprocesses(true);
+		if (startedBy != null && startedBy)
+			query.startedBy(username);
+		else
+			query.involvedUser(username);
+		if (finished != null)
+			if (finished)
+				query.finished();
+			else
+				query.unfinished();
 		if (StringUtils.isNotBlank(keyword))
 			query = query.processDefinitionKey(keyword);
+		return doQuery(query);
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	private String doQuery(HistoricProcessInstanceQuery query) {
 		long count = query.count();
-		List<HistoricProcessInstance> historicProcessInstances = query
-				.orderByProcessInstanceStartTime().desc()
-				.listPage(resultPage.getStart(), resultPage.getPageSize());
-		List<Tuple<HistoricProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<HistoricProcessInstance, ProcessDefinition>>(
-				historicProcessInstances.size());
-		for (HistoricProcessInstance pi : historicProcessInstances) {
-			Tuple<HistoricProcessInstance, ProcessDefinition> tuple = new Tuple<HistoricProcessInstance, ProcessDefinition>();
-			tuple.setId(pi.getId());
-			tuple.setKey(pi);
-			tuple.setValue(repositoryService.createProcessDefinitionQuery()
-					.processDefinitionId(pi.getProcessDefinitionId())
-					.singleResult());
-			list.add(tuple);
-		}
 		resultPage.setTotalResults(count);
-		resultPage.setResult(list);
-		return "involved";
+		if (count > 0) {
+			List<HistoricProcessInstance> historicProcessInstances = query
+					.orderByProcessInstanceStartTime().desc()
+					.listPage(resultPage.getStart(), resultPage.getPageSize());
+			List<Tuple<HistoricProcessInstance, ProcessDefinition>> list = new ArrayList<Tuple<HistoricProcessInstance, ProcessDefinition>>(
+					historicProcessInstances.size());
+			for (HistoricProcessInstance pi : historicProcessInstances) {
+				Tuple<HistoricProcessInstance, ProcessDefinition> tuple = new Tuple<HistoricProcessInstance, ProcessDefinition>();
+				tuple.setId(pi.getId());
+				tuple.setKey(pi);
+				tuple.setValue(repositoryService.createProcessDefinitionQuery()
+						.processDefinitionId(pi.getProcessDefinitionId())
+						.singleResult());
+				list.add(tuple);
+			}
+			resultPage.setResult(list);
+		} else {
+			resultPage.setResult(Collections.EMPTY_LIST);
+		}
+		return LIST;
 	}
 
 	public String view() {
@@ -120,6 +153,20 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		if (historicProcessInstance == null)
 			return NOTFOUND;
 		return canView(historicProcessInstance.getId()) ? VIEW : ACCESSDENIED;
+	}
+
+	public String trace() {
+		historicProcessInstance = historyService
+				.createHistoricProcessInstanceQuery()
+				.processInstanceId(getUid()).singleResult();
+		if (historicProcessInstance == null)
+			historicProcessInstance = historyService
+					.createHistoricProcessInstanceQuery()
+					.processInstanceBusinessKey(getUid()).singleResult();
+		if (historicProcessInstance == null)
+			return NOTFOUND;
+		return canView(historicProcessInstance.getId()) ? "trace"
+				: ACCESSDENIED;
 	}
 
 	private boolean canView(String processInstanceId) {

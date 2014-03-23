@@ -4,7 +4,7 @@
 <title>流程部署</title>
 </head>
 <body>
-<#assign columns={"key.id":{"alias":"流程定义ID","width":"120px","template":r'<a href="<@url value="/process/processInstance/list/${value}"/>" class="ajax view">${value}</a>'},
+<#assign columns={"key.id":{"alias":"流程定义ID","width":"120px","template":r'<a href="<@url value="/process/historicProcessInstance/list?processDefinitionId=${value}"/>" class="ajax view">${value}</a>'},
 "key.key":{"alias":"KEY","width":"100px","template":r'<#if Parameters.key??>${value}<#else><a href="${actionBaseUrl}?key=${value}" class="ajax view">${value}</a></#if>'},
 "key.name":{},"key.version":{"width":"60px"},"value.deploymentTime":{"width":"130px"},
 "key.resourceName":{"alias":"流程定义XML","width":"120px","template":r'<a href="${actionBaseUrl}/download?deploymentId=${entity.key.deploymentId}&resourceName=${value}" download="${value}">${value}</a>'},
