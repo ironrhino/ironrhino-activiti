@@ -2,15 +2,18 @@ package org.ironrhino.process.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.Expression;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -41,6 +44,9 @@ public class ProcessTraceService {
 
 	@Autowired
 	protected RuntimeService runtimeService;
+
+	@Autowired
+	protected HistoryService historyService;
 
 	@Autowired
 	protected TaskService taskService;
@@ -105,16 +111,36 @@ public class ProcessTraceService {
 	private Map<String, Object> packageSingleActivitiInfo(
 			ActivityImpl activity, ProcessInstance processInstance,
 			boolean current, boolean offset) throws Exception {
-		Map<String, Object> vars = new HashMap<String, Object>();
 		Map<String, Object> activityInfo = new HashMap<String, Object>();
 		activityInfo.put("current", current);
 		setPosition(activity, activityInfo, offset);
 		setWidthAndHeight(activity, activityInfo);
+		Map<String, Object> vars = new LinkedHashMap<String, Object>();
+		HistoricActivityInstance hai = historyService
+				.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId(activity.getId()).singleResult();
+		if (hai != null) {
+			if (hai.getAssignee() != null) {
+				User assigneeUser = identityService.createUserQuery()
+						.userId(hai.getAssignee()).singleResult();
+				try {
+					UserDetails userDetails = userDetailsService
+							.loadUserByUsername(assigneeUser.getId());
+					vars.put(translate("assignee"), userDetails.toString());
+				} catch (UsernameNotFoundException e) {
+					vars.put(translate("assignee"), assigneeUser.getFirstName());
+				}
+			}
+			if (hai.getStartTime() != null)
+				vars.put(translate("startTime"), hai.getStartTime());
+			if (hai.getEndTime() != null)
+				vars.put(translate("endTime"), hai.getEndTime());
+		}
 
 		Map<String, Object> properties = activity.getProperties();
 		String type = (String) properties.get("type");
-		vars.put("任务类型", LocalizedTextUtil.findText(getClass(), type,
-				ActionContext.getContext().getLocale(), type, null));
+		vars.put(translate("taskType"), translate(type));
 		ActivityBehavior activityBehavior = activity.getActivityBehavior();
 		if (activityBehavior instanceof UserTaskActivityBehavior) {
 			Task currentTask = null;
@@ -128,9 +154,9 @@ public class ProcessTraceService {
 			setTaskGroup(vars, taskDefinition);
 
 		}
-		vars.put("节点说明", properties.get("documentation"));
-		String description = activity.getProcessDefinition().getDescription();
-		vars.put("描述", description);
+
+		vars.put(translate("documentation"), properties.get("documentation"));
+
 		activityInfo.put("vars", vars);
 		return activityInfo;
 	}
@@ -148,7 +174,7 @@ public class ProcessTraceService {
 		}
 		if (roles.length() > 0) {
 			roles.deleteCharAt(roles.length() - 1);
-			vars.put("任务所属角色", roles.toString());
+			vars.put(translate("candidateGroup"), roles.toString());
 		}
 	}
 
@@ -166,8 +192,7 @@ public class ProcessTraceService {
 			String roleName = g.getName();
 			if (roleName == null) {
 				roleName = g.getId();
-				roleName = LocalizedTextUtil.findText(getClass(), roleName,
-						ActionContext.getContext().getLocale(), roleName, null);
+				roleName = translate(roleName);
 			}
 			roles.append(roleName).append(" ");
 		}
@@ -182,9 +207,9 @@ public class ProcessTraceService {
 			try {
 				UserDetails userDetails = userDetailsService
 						.loadUserByUsername(assigneeUser.getId());
-				vars.put("当前处理人", userDetails.toString());
+				vars.put(translate("assignee"), userDetails.toString());
 			} catch (UsernameNotFoundException e) {
-				vars.put("当前处理人", assigneeUser.getFirstName());
+				vars.put(translate("assignee"), assigneeUser.getFirstName());
 			}
 		}
 	}
@@ -214,5 +239,10 @@ public class ProcessTraceService {
 			Map<String, Object> activityInfo, boolean offset) {
 		activityInfo.put("x", offset ? activity.getX() - 164 : activity.getX());
 		activityInfo.put("y", offset ? activity.getY() - 134 : activity.getY());
+	}
+
+	private String translate(String key) {
+		return LocalizedTextUtil.findText(getClass(), key, ActionContext
+				.getContext().getLocale(), key, null);
 	}
 }
