@@ -121,7 +121,9 @@ public class ProcessInstanceAction extends BaseAction {
 					.processInstanceBusinessKey(getUid()).singleResult();
 		if (processInstance == null)
 			return NOTFOUND;
-		return canView(processInstance.getId()) ? VIEW : ACCESSDENIED;
+		if (!canView(processInstance.getId()))
+			return ACCESSDENIED;
+		return VIEW;
 	}
 
 	public String diagram() throws Exception {
@@ -175,6 +177,8 @@ public class ProcessInstanceAction extends BaseAction {
 	}
 
 	private boolean canView(String processInstanceId) {
+		if (AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null))
+			return true;
 		String userId = AuthzUtils.getUsername();
 		List<IdentityLink> identityLinks = runtimeService
 				.getIdentityLinksForProcessInstance(processInstanceId);

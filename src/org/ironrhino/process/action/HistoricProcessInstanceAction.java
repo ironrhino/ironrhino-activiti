@@ -184,6 +184,8 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	}
 
 	private boolean canView(String processInstanceId) {
+		if (AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null))
+			return true;
 		String userId = AuthzUtils.getUsername();
 		List<HistoricIdentityLink> historicIdentityLinks = historyService
 				.getHistoricIdentityLinksForProcessInstance(processInstanceId);
