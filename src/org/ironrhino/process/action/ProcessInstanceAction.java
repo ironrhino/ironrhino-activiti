@@ -26,6 +26,7 @@ import org.ironrhino.core.model.ResultPage;
 import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
+import org.ironrhino.process.model.Row;
 import org.ironrhino.process.service.ProcessTraceService;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -19,6 +19,9 @@ import org.ironrhino.core.model.ResultPage;
 import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
+import org.ironrhino.process.model.ActivityDetail;
+import org.ironrhino.process.model.Row;
+import org.ironrhino.process.service.ProcessTraceService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @AutoConfig
@@ -36,6 +39,9 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	@Autowired
 	private HistoryService historyService;
 
+	@Autowired
+	private ProcessTraceService processTraceService;
+
 	private ResultPage<Row> resultPage;
 
 	private HistoricProcessInstance historicProcessInstance;
@@ -45,6 +51,8 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	private Boolean startedBy;
 
 	private Boolean finished;
+
+	private List<ActivityDetail> activityDetails;
 
 	public String getProcessDefinitionId() {
 		return processDefinitionId;
@@ -80,6 +88,10 @@ public class HistoricProcessInstanceAction extends BaseAction {
 
 	public HistoricProcessInstance getHistoricProcessInstance() {
 		return historicProcessInstance;
+	}
+
+	public List<ActivityDetail> getActivityDetails() {
+		return activityDetails;
 	}
 
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
@@ -173,7 +185,12 @@ public class HistoricProcessInstanceAction extends BaseAction {
 					.processInstanceBusinessKey(getUid()).singleResult();
 		if (historicProcessInstance == null)
 			return NOTFOUND;
-		return canView(historicProcessInstance.getId()) ? VIEW : ACCESSDENIED;
+
+		if (!canView(historicProcessInstance.getId()))
+			return ACCESSDENIED;
+		activityDetails = processTraceService
+				.traceHistoricProcessInstance(historicProcessInstance.getId());
+		return VIEW;
 	}
 
 	public String trace() {

@@ -7,14 +7,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.activiti.engine.ActivitiObjectNotFoundException;
+import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.Expression;
+import org.activiti.engine.form.FormProperty;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricDetail;
+import org.activiti.engine.history.HistoricFormProperty;
 import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -27,6 +33,8 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.ironrhino.process.form.FormRenderer;
+import org.ironrhino.process.model.ActivityDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +58,12 @@ public class ProcessTraceService {
 	protected HistoryService historyService;
 
 	@Autowired
+	protected FormService formService;
+
+	@Autowired
+	protected FormRenderer formRenderer;
+
+	@Autowired
 	protected TaskService taskService;
 
 	@Autowired
@@ -60,6 +74,63 @@ public class ProcessTraceService {
 
 	@Autowired
 	protected UserDetailsService userDetailsService;
+
+	public List<ActivityDetail> traceHistoricProcessInstance(
+			String processInstanceId) {
+		List<ActivityDetail> details = new ArrayList<ActivityDetail>();
+		List<HistoricActivityInstance> activities = historyService
+				.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstanceId).list();
+		for (HistoricActivityInstance activity : activities) {
+			if (!"userTask".equals(activity.getActivityType())
+					&& !"startEvent".equals(activity.getActivityType()))
+				continue;
+			ActivityDetail detail = new ActivityDetail();
+			detail.setStartTime(activity.getStartTime());
+			detail.setEndTime(activity.getEndTime());
+			details.add(detail);
+			List<FormProperty> formProperties;
+			if ("startEvent".equals(activity.getActivityType())) {
+				HistoricProcessInstance hpi = historyService
+						.createHistoricProcessInstanceQuery()
+						.processInstanceId(processInstanceId).singleResult();
+				detail.setName("startProcessInstance");
+				detail.setAssignee(hpi.getStartUserId());
+				formProperties = formService.getStartFormData(
+						activity.getProcessDefinitionId()).getFormProperties();
+
+			} else {
+				detail.setName(activity.getActivityName());
+				detail.setAssignee(activity.getAssignee());
+				HistoricTaskInstance task = historyService
+						.createHistoricTaskInstanceQuery()
+						.processInstanceId(processInstanceId)
+						.taskId(activity.getTaskId()).singleResult();
+				try {
+					formProperties = formService.getTaskFormData(task.getId())
+							.getFormProperties();
+				} catch (ActivitiObjectNotFoundException o) {
+					formProperties = null;
+					//TODO not translated
+				}
+			}
+			List<HistoricDetail> list = historyService
+					.createHistoricDetailQuery()
+					.activityInstanceId(activity.getId()).list();
+			for (HistoricDetail hd : list) {
+				if (hd instanceof HistoricFormProperty) {
+					HistoricFormProperty hfp = (HistoricFormProperty) hd;
+					if (hfp.getPropertyValue() != null)
+						detail.getData().put(hfp.getPropertyId(),
+								hfp.getPropertyValue());
+				}
+			}
+			detail.setData(formRenderer.display(formProperties,
+					detail.getData()));
+
+		}
+		return details;
+	}
 
 	public List<Map<String, Object>> traceProcessDefinition(
 			String processDefinitionId) throws Exception {

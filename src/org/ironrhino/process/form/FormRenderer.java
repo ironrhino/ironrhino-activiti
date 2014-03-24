@@ -17,6 +17,7 @@ import org.activiti.engine.impl.form.LongFormType;
 import org.activiti.engine.impl.form.StringFormType;
 import org.apache.commons.lang3.StringUtils;
 import org.ironrhino.common.support.DictionaryControl;
+import org.ironrhino.core.struts.I18N;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -109,6 +110,44 @@ public class FormRenderer {
 			}
 		}
 		return elements;
+	}
+
+	public Map<String, String> display(List<FormProperty> formProperties,
+			Map<String, String> data) {
+		if (formProperties == null || formProperties.size() == 0)
+			return data;
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		for (FormProperty fp : formProperties) {
+			String value = data.get(fp.getId());
+			if (value == null)
+				continue;
+			String name = fp.getName();
+			if (StringUtils.isBlank(name))
+				name = fp.getId();
+			FormType type = fp.getType();
+			if (type instanceof BooleanFormType) {
+				value = I18N.getText(value);
+			} else if (type instanceof EnumFormType) {
+				@SuppressWarnings("unchecked")
+				Map<String, String> temp = (Map<String, String>) type
+						.getInformation("values");
+				if (temp != null)
+					value = temp.get(value);
+			} else if (type instanceof DictionaryFormType) {
+				try {
+					DictionaryControl dc = applicationContext
+							.getBean(DictionaryControl.class);
+					Map<String, String> temp = dc.getItemsAsMap(fp.getId());
+					String v = temp.get(value);
+					if (StringUtils.isNotBlank(v))
+						value = v;
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			}
+			map.put(name, value);
+		}
+		return map;
 	}
 
 	public static class FormElement {
