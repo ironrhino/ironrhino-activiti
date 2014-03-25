@@ -17,8 +17,11 @@
 <#if !entity.task.assignee??>
 <button type="button" class="btn" data-action="claim">签收</button>
 <#else>
-<button type="button" class="btn" data-action="unclaim">撤销</button>
 <button type="button" class="btn" data-view="form">办理</button>
+<#if !entity.task.delegationState??>
+<button type="button" class="btn" data-view="delegate">${action.getText("delegate")}</button>
+<button type="button" class="btn" data-action="unclaim">撤销</button>
+</#if>
 </#if>
 </#if>
 '>

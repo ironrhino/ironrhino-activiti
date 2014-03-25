@@ -18,8 +18,10 @@ import org.activiti.engine.form.StartFormData;
 import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
@@ -38,6 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
+
+import com.opensymphony.xwork2.interceptor.annotations.InputConfig;
 
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
@@ -70,9 +74,11 @@ public class TaskAction extends BaseAction {
 	@Autowired
 	private FormRenderer formRenderer;
 
+	private String assignee;
+
 	private String title;
 
-	private Map<String,FormElement> formElements;
+	private Map<String, FormElement> formElements;
 
 	private String formTemplate;
 
@@ -104,6 +110,14 @@ public class TaskAction extends BaseAction {
 		this.processDefinitionKey = processDefinitionKey;
 	}
 
+	public String getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(String assignee) {
+		this.assignee = assignee;
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -112,7 +126,7 @@ public class TaskAction extends BaseAction {
 		this.title = title;
 	}
 
-	public Map<String,FormElement> getFormElements() {
+	public Map<String, FormElement> getFormElements() {
 		return formElements;
 	}
 
@@ -253,10 +267,11 @@ public class TaskAction extends BaseAction {
 		return "form";
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public String submit() {
 		String taskId = getUid();
-		Map<String, String> properties = RequestUtils
-				.getParametersMap(ServletActionContext.getRequest());
+		Map properties = RequestUtils.getParametersMap(ServletActionContext
+				.getRequest());
 		properties.remove("processDefinitionId");
 		try {
 			if (taskId == null) {
@@ -299,7 +314,12 @@ public class TaskAction extends BaseAction {
 				if (task == null
 						|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 					return ACCESSDENIED;
-				formService.submitTaskFormData(taskId, properties);
+				DelegationState delegationState = task.getDelegationState();
+				if (DelegationState.PENDING == delegationState) {
+					taskService.resolveTask(taskId, properties);
+				} else {
+					formService.submitTaskFormData(taskId, properties);
+				}
 				addActionMessage(getText("operate.success"));
 			}
 		} catch (ActivitiException e) {
@@ -344,6 +364,9 @@ public class TaskAction extends BaseAction {
 
 	public String unclaim() {
 		String taskId = getUid();
+		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+		if (task.getDelegationState() != null)
+			return ACCESSDENIED;
 		List<IdentityLink> identityLinks = taskService
 				.getIdentityLinksForTask(taskId);
 		if (identityLinks.size() == 1) {
@@ -370,6 +393,38 @@ public class TaskAction extends BaseAction {
 				return ACCESSDENIED;
 		}
 		taskService.unclaim(taskId);
+		return execute();
+	}
+
+	@InputConfig(resultName = "delegate")
+	public String delegate() {
+		User user = null;
+		if (assignee != null)
+			user = identityService.createUserQuery().userId(assignee)
+					.singleResult();
+		if (user == null) {
+			addFieldError("assignee", "该用户不存在");
+			return "delegate";
+		}
+		String taskId = getUid();
+		List<IdentityLink> identityLinks = taskService
+				.getIdentityLinksForTask(taskId);
+		if (identityLinks.size() > 1) {
+			boolean authorized = false;
+			for (IdentityLink identityLink : identityLinks) {
+				if (identityLink.getType().equals(IdentityLinkType.ASSIGNEE)) {
+					String userId = identityLink.getUserId();
+					if (userId != null
+							&& AuthzUtils.getUsername().equals(userId)) {
+						authorized = true;
+						break;
+					}
+				}
+			}
+			if (!authorized)
+				return ACCESSDENIED;
+		}
+		taskService.delegateTask(taskId, assignee);
 		return execute();
 	}
 

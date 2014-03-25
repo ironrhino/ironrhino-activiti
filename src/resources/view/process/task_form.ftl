@@ -34,7 +34,10 @@ ${processDefinition.description}
 	<#list historicTaskInstances as task>
 	<tr>
 		<td>${task.name}</td>
-		<td><span class="user" data-username="${task.assignee!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.assignee))!}</span></td>
+		<td>
+		<span class="user" data-username="${task.assignee!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.assignee))!}</span>
+		<#if task.owner?? && task.assignee?? && task.owner!=task.assignee> (<span class="user" data-username="${task.owner!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.owner))!}</span>)</#if>
+		</td>
 		<td>${task.startTime?datetime}</td>
 		<td>${(task.claimTime?datetime)!}</td>
 		<td>${task.endTime?datetime}</td>
