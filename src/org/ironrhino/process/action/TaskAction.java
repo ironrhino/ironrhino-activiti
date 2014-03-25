@@ -1,11 +1,15 @@
 package org.ironrhino.process.action;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.ServletOutputStream;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.FormService;
@@ -21,11 +25,13 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.ironrhino.core.metadata.Authorize;
@@ -46,7 +52,7 @@ import org.springframework.util.StreamUtils;
 
 import com.opensymphony.xwork2.interceptor.annotations.InputConfig;
 
-@AutoConfig
+@AutoConfig(fileupload = "*/*")
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 public class TaskAction extends BaseAction {
 
@@ -91,6 +97,8 @@ public class TaskAction extends BaseAction {
 
 	private String processDefinitionId;
 
+	private String processInstanceId;
+
 	private String processDefinitionKey;
 
 	private Task task;
@@ -101,12 +109,60 @@ public class TaskAction extends BaseAction {
 
 	private List<HistoricTaskInstance> historicTaskInstances;
 
+	private File file;
+
+	private String fileFileName;
+
+	private String attachmentId;
+
+	private String attachmentDescription;
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public String getFileFileName() {
+		return fileFileName;
+	}
+
+	public void setFileFileName(String fileFileName) {
+		this.fileFileName = fileFileName;
+	}
+
+	public String getAttachmentId() {
+		return attachmentId;
+	}
+
+	public void setAttachmentId(String attachmentId) {
+		this.attachmentId = attachmentId;
+	}
+
+	public String getAttachmentDescription() {
+		return attachmentDescription;
+	}
+
+	public void setAttachmentDescription(String attachmentDescription) {
+		this.attachmentDescription = attachmentDescription;
+	}
+
 	public String getProcessDefinitionId() {
 		return processDefinitionId;
 	}
 
 	public void setProcessDefinitionId(String processDefinitionId) {
 		this.processDefinitionId = processDefinitionId;
+	}
+
+	public String getProcessInstanceId() {
+		return processInstanceId;
+	}
+
+	public void setProcessInstanceId(String processInstanceId) {
+		this.processInstanceId = processInstanceId;
 	}
 
 	public String getProcessDefinitionKey() {
@@ -218,7 +274,7 @@ public class TaskAction extends BaseAction {
 			return "delegate";
 		}
 		taskService.setAssignee(taskId, assignee);
-		return execute();
+		return todolist();
 	}
 
 	public String todolist() {
@@ -403,7 +459,82 @@ public class TaskAction extends BaseAction {
 				throw e;
 			}
 		}
-		return execute();
+		return todolist();
+	}
+
+	public String upload() throws IOException {
+		if (file == null)
+			return ACCESSDENIED;
+		HistoricProcessInstance processInstance = null;
+		String taskId = getUid();
+		if (taskId == null) {
+			if (processInstanceId == null) {
+				processInstance = historyService
+						.createHistoricProcessInstanceQuery()
+						.processInstanceId(processInstanceId).singleResult();
+			}
+			if (processInstance == null
+					|| !AuthzUtils.getUsername().equals(
+							processInstance.getStartUserId()))
+				return ACCESSDENIED;
+			taskService.createAttachment(null, null,
+					task.getProcessInstanceId(), fileFileName,
+					attachmentDescription, new FileInputStream(file));
+		} else {
+			task = taskService.createTaskQuery().taskId(taskId).singleResult();
+			if (task == null
+					|| !AuthzUtils.getUsername().equals(task.getAssignee()))
+				return ACCESSDENIED;
+			taskService.createAttachment(null, taskId,
+					task.getProcessInstanceId(), fileFileName,
+					attachmentDescription, new FileInputStream(file));
+		}
+		return JSON;
+	}
+
+	public String download() throws IOException {
+		if (attachmentId == null)
+			return NOTFOUND;
+		Attachment attachment = taskService.getAttachment(attachmentId);
+		if (attachment == null)
+			return NOTFOUND;
+		processInstanceId = attachment.getProcessInstanceId();
+		String taskId = attachment.getTaskId();
+		HistoricProcessInstance processInstance = null;
+		if (processInstanceId == null && taskId != null) {
+			task = taskService.createTaskQuery().taskId(taskId).singleResult();
+			if (task == null)
+				processInstanceId = task.getProcessInstanceId();
+		}
+		if (processInstanceId != null)
+			processInstance = historyService
+					.createHistoricProcessInstanceQuery()
+					.processInstanceId(processInstanceId).singleResult();
+		if (processInstance == null)
+			return NOTFOUND;
+		if (!AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null)) {
+			String userId = AuthzUtils.getUsername();
+			boolean auth = false;
+			List<IdentityLink> identityLinks = runtimeService
+					.getIdentityLinksForProcessInstance(processInstanceId);
+			for (IdentityLink identityLink : identityLinks)
+				if (userId.equals(identityLink.getUserId())) {
+					auth = true;
+					break;
+				}
+			if (!auth)
+				return ACCESSDENIED;
+		}
+		try (InputStream is = taskService.getAttachmentContent(attachmentId)) {
+			ServletActionContext.getResponse().setHeader("Content-Disposition",
+					"attachment;filename=" + attachment.getName());
+			ServletOutputStream os = ServletActionContext.getResponse()
+					.getOutputStream();
+			IOUtils.copy(is, os);
+			os.flush();
+			os.close();
+		}
+		return NONE;
 	}
 
 	public String claim() {
@@ -429,7 +560,7 @@ public class TaskAction extends BaseAction {
 		if (!authorized)
 			return ACCESSDENIED;
 		taskService.claim(taskId, AuthzUtils.getUsername());
-		return execute();
+		return todolist();
 	}
 
 	public String unclaim() {
@@ -463,7 +594,7 @@ public class TaskAction extends BaseAction {
 				return ACCESSDENIED;
 		}
 		taskService.unclaim(taskId);
-		return execute();
+		return todolist();
 	}
 
 	@InputConfig(resultName = "delegate")
@@ -500,7 +631,7 @@ public class TaskAction extends BaseAction {
 				return ACCESSDENIED;
 		}
 		taskService.delegateTask(taskId, assignee);
-		return execute();
+		return todolist();
 	}
 
 	private boolean canStartProcess(String processDefinitionId) {
