@@ -109,28 +109,38 @@ public class TaskAction extends BaseAction {
 
 	private List<HistoricTaskInstance> historicTaskInstances;
 
-	private File file;
+	private List<Attachment> attachments;
 
-	private String fileFileName;
+	private File[] file;
+
+	private String[] fileFileName;
+
+	private String[] attachmentDescription;
 
 	private String attachmentId;
 
-	private String attachmentDescription;
-
-	public File getFile() {
+	public File[] getFile() {
 		return file;
 	}
 
-	public void setFile(File file) {
+	public void setFile(File[] file) {
 		this.file = file;
 	}
 
-	public String getFileFileName() {
+	public String[] getFileFileName() {
 		return fileFileName;
 	}
 
-	public void setFileFileName(String fileFileName) {
+	public void setFileFileName(String[] fileFileName) {
 		this.fileFileName = fileFileName;
+	}
+
+	public String[] getAttachmentDescription() {
+		return attachmentDescription;
+	}
+
+	public void setAttachmentDescription(String[] attachmentDescription) {
+		this.attachmentDescription = attachmentDescription;
 	}
 
 	public String getAttachmentId() {
@@ -139,14 +149,6 @@ public class TaskAction extends BaseAction {
 
 	public void setAttachmentId(String attachmentId) {
 		this.attachmentId = attachmentId;
-	}
-
-	public String getAttachmentDescription() {
-		return attachmentDescription;
-	}
-
-	public void setAttachmentDescription(String attachmentDescription) {
-		this.attachmentDescription = attachmentDescription;
 	}
 
 	public String getProcessDefinitionId() {
@@ -223,6 +225,10 @@ public class TaskAction extends BaseAction {
 
 	public List<HistoricTaskInstance> getHistoricTaskInstances() {
 		return historicTaskInstances;
+	}
+
+	public List<Attachment> getAttachments() {
+		return attachments;
 	}
 
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
@@ -389,12 +395,14 @@ public class TaskAction extends BaseAction {
 					.createHistoricTaskInstanceQuery()
 					.processInstanceId(task.getProcessInstanceId()).finished()
 					.list();
+			attachments = taskService.getProcessInstanceAttachments(task
+					.getProcessInstanceId());
 		}
 		return "form";
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public String submit() {
+	public String submit() throws IOException {
 		String taskId = getUid();
 		Map properties = RequestUtils.getParametersMap(ServletActionContext
 				.getRequest());
@@ -434,12 +442,31 @@ public class TaskAction extends BaseAction {
 						.submitStartFormData(processDefinitionId, businessKey,
 								properties);
 				addActionMessage("启动流程: " + processInstance.getId());
+				if (fileFileName != null) {
+					for (int i = 0; i < file.length; i++) {
+						String description = attachmentDescription.length > i ? attachmentDescription[i]
+								: null;
+						taskService.createAttachment(null, null,
+								processInstance.getId(), fileFileName[i],
+								description, new FileInputStream(file[i]));
+					}
+				}
 			} else {
 				task = taskService.createTaskQuery().taskId(taskId)
 						.singleResult();
 				if (task == null
 						|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 					return ACCESSDENIED;
+
+				if (file != null) {
+					for (int i = 0; i < file.length; i++) {
+						String description = attachmentDescription.length > i ? attachmentDescription[i]
+								: null;
+						taskService.createAttachment(null, task.getId(),
+								task.getProcessInstanceId(), fileFileName[i],
+								description, new FileInputStream(file[i]));
+					}
+				}
 				DelegationState delegationState = task.getDelegationState();
 				if (DelegationState.PENDING == delegationState) {
 					taskService.resolveTask(taskId, properties);
@@ -462,37 +489,7 @@ public class TaskAction extends BaseAction {
 		return todolist();
 	}
 
-	public String upload() throws IOException {
-		if (file == null)
-			return ACCESSDENIED;
-		HistoricProcessInstance processInstance = null;
-		String taskId = getUid();
-		if (taskId == null) {
-			if (processInstanceId == null) {
-				processInstance = historyService
-						.createHistoricProcessInstanceQuery()
-						.processInstanceId(processInstanceId).singleResult();
-			}
-			if (processInstance == null
-					|| !AuthzUtils.getUsername().equals(
-							processInstance.getStartUserId()))
-				return ACCESSDENIED;
-			taskService.createAttachment(null, null,
-					task.getProcessInstanceId(), fileFileName,
-					attachmentDescription, new FileInputStream(file));
-		} else {
-			task = taskService.createTaskQuery().taskId(taskId).singleResult();
-			if (task == null
-					|| !AuthzUtils.getUsername().equals(task.getAssignee()))
-				return ACCESSDENIED;
-			taskService.createAttachment(null, taskId,
-					task.getProcessInstanceId(), fileFileName,
-					attachmentDescription, new FileInputStream(file));
-		}
-		return JSON;
-	}
-
-	public String download() throws IOException {
+	public String downloadAttachment() throws IOException {
 		if (attachmentId == null)
 			return NOTFOUND;
 		Attachment attachment = taskService.getAttachment(attachmentId);
@@ -526,8 +523,8 @@ public class TaskAction extends BaseAction {
 				return ACCESSDENIED;
 		}
 		try (InputStream is = taskService.getAttachmentContent(attachmentId)) {
-			ServletActionContext.getResponse().setHeader("Content-Disposition",
-					"attachment;filename=" + attachment.getName());
+			//ServletActionContext.getResponse().setHeader("Content-Disposition",
+			//		"attachment;filename=" + attachment.getName());
 			ServletOutputStream os = ServletActionContext.getResponse()
 					.getOutputStream();
 			IOUtils.copy(is, os);
@@ -535,6 +532,17 @@ public class TaskAction extends BaseAction {
 			os.close();
 		}
 		return NONE;
+	}
+
+	public String deleteAttachment() {
+		if (attachmentId == null)
+			return NOTFOUND;
+		Attachment attachment = taskService.getAttachment(attachmentId);
+		if (attachment == null)
+			return NOTFOUND;
+		if (AuthzUtils.getUsername().equals(attachment.getUserId()))
+			taskService.deleteAttachment(attachmentId);
+		return JSON;
 	}
 
 	public String claim() {

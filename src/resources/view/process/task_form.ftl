@@ -48,10 +48,43 @@ ${processDefinition.description}
 </table>
 </div>
 </#if>
-<#if formTemplate?has_content>
+<#if attachments?? && attachments.size() gt 0>
+	<table class="table">
+			<thead>
+			<tr>
+				<th style="width:200px;">${action.getText('file')}</th>
+				<th style="width:100px;">${action.getText('user')}</th>
+				<th>${action.getText('description')}</th>
+				<th style="width:80px;"></th>
+			</tr>
+			</thead>
+			<tbody>
+			<#list attachments as attachment>
+			<tr>
+				<td>
+				<a href="${actionBaseUrl}/downloadAttachment?attachmentId=${attachment.id}" target="_blank">${attachment.name}</a>
+				<a href="${actionBaseUrl}/downloadAttachment?attachmentId=${attachment.id}" download="${attachment.name}" style="margin-left:10px;"><i class="glyphicon glyphicon-download-alt"></i></a>
+				</td>
+				<td>
+				<#if attachment.userId??>
+				<span class="user" data-username="${attachment.userId}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(attachment.userId))!}</span>
+				</#if>
+				</td>
+				<td>${attachment.description!}</td>
+				<td>
+				<#if attachment.userId?? && attachment.userId==authentication("principal").username>
+				<a href="${actionBaseUrl}/deleteAttachment?attachmentId=${attachment.id}" class="ajax deleteAttachment">${action.getText('delete')}</a>
+				</#if>
+				</td>
+			</tr>
+			</#list>
+			</tbody>
+	</table>	
+</#if>
+<#if formTemplate?has_content && form?index_of('<form') gt -1>
 	<@formTemplate?interpret/>
 <#else>
-<form action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable">
+<form id="task-form" action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable ajaxupload">
 	<#if task?? && task.description?has_content>
 	<div class="alert alert-block">
 	${task.description}
@@ -60,39 +93,68 @@ ${processDefinition.description}
 	<#if processDefinitionId?has_content>
 	<input type="hidden" name="processDefinitionId" value="${processDefinitionId}"/>
 	</#if>
-	<#if formElements??>
-	<#list formElements.entrySet() as entry>
-	<#assign id='form_'+entry.key/>
-	<#assign fe=entry.value/>
-	<#if !fe.disabled || fe.value?has_content>
-	<div class="control-group">
-		<label class="control-label" for="${id}">${action.getText(fe.label)}</label>
-		<div class="controls">
-		<#if fe.type=='textarea'>
-		<textarea id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>${fe.value!}</textarea>
-		<#elseif fe.type=='select'>
-		<select id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>
-		<option></option>
-		<#list fe.values.entrySet() as en>
-		<option value="${en.key}"<#if fe.value??&&fe.value==en.key> selected</#if>>${en.value}</option>
-		</#list>
-		</select>
-		<#elseif fe.type=='radio'>
-		<#list fe.values.entrySet() as en>
-		<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${entry.key}" value="${en.key}"<#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
-		</#list>
-		<#else>
-		<input id="${id}" type="${fe.inputType}" name="${entry.key}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>
-		</#if>
-		</div>
-	</div>
-	</#if>
-	</#list>
-	</#if>
-	<#if !historicProcessInstance??>
-	<@s.submit value="%{getText('start')}" cssClass="btn-primary"/>
+	<#if formTemplate?has_content>
+		<@formTemplate?interpret/>
 	<#else>
-	<@s.submit value="%{getText('submit')}" cssClass="btn-primary"/>
+		<#if formElements??>
+		<#list formElements.entrySet() as entry>
+		<#assign id='form_'+entry.key/>
+		<#assign fe=entry.value/>
+		<#if !fe.disabled || fe.value?has_content>
+		<div class="control-group">
+			<label class="control-label" for="${id}">${action.getText(fe.label)}</label>
+			<div class="controls">
+			<#if fe.type=='textarea'>
+			<textarea id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>${fe.value!}</textarea>
+			<#elseif fe.type=='select'>
+			<select id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>
+			<option></option>
+			<#list fe.values.entrySet() as en>
+			<option value="${en.key}"<#if fe.value??&&fe.value==en.key> selected</#if>>${en.value}</option>
+			</#list>
+			</select>
+			<#elseif fe.type=='radio'>
+			<#list fe.values.entrySet() as en>
+			<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${entry.key}" value="${en.key}"<#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
+			</#list>
+			<#else>
+			<input id="${id}" type="${fe.inputType}" name="${entry.key}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>
+			</#if>
+			</div>
+		</div>
+		</#if>
+		</#list>
+		</#if>
+	</#if>
+	<div class="control-group attachment" style="display:none;">
+			<label class="control-label">${action.getText('attachment')}</label>
+			<div class="controls">
+			<table class="table datagrid">
+				<thead>
+				<tr>
+					<th style="width:300px;">${action.getText('file')}</th>
+					<th>${action.getText('description')}</th>
+					<th class="manipulate"></th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td><input type="file" name="file" style="width:100%;"/></td>
+					<td><input type="text" name="attachmentDescription" style="width:100%;"/></td>
+					<td class="manipulate"></td>
+				</tr>
+				</tbody>
+			</table>	
+			</div>
+	</div>		
+	<#if !historicProcessInstance??>
+	<@s.submit value="%{getText('start')}" cssClass="btn-primary">
+	<@s.param name="after"> <button type="button" class="btn attachment">${action.getText('attachment')}</button></@s.param>
+	</@s.submit>
+	<#else>
+	<@s.submit value="%{getText('submit')}" cssClass="btn-primary">
+	<@s.param name="after"> <button type="button" class="btn attachment">${action.getText('attachment')}</button></@s.param>
+	</@s.submit>
 	</#if>
 </form>
 </#if>

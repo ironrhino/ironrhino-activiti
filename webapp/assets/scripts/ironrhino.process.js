@@ -78,4 +78,8 @@ Observation.process = function(container) {
 		}
 
 	});
+	$('button.attachment', container).click(function(e) {
+				$('.control-group.attachment', $(this).closest('form'))
+						.toggle();
+			});
 }
