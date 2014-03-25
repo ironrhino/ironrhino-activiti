@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <#escape x as x?html><html>
 <head>
-<title>${action.getText('delegate')}</title>
+<title>${action.getText('reassign')}</title>
 </head>
 <body>
-<form action="${actionBaseUrl}/delegate" method="post" class="ajax form-horizontal">
+<form action="${actionBaseUrl}/reassign" method="post" class="ajax form-horizontal">
 	<@s.hidden name="id"/>
 	<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?enabled=true"/>','name':'#assignee-control','nameindex':2,'id':'#assignee','idindex':1}">
 		<@s.hidden id="assignee" name="assignee" cssClass="required"/>

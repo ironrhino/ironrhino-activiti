@@ -3,8 +3,9 @@
   <@authorize ifAnyGranted="ROLE_ADMINISTRATOR">
   <li><a href="<@url value="/user"/>" class="ajax view">${action.getText("user")}</a></li>
   <li><a href="<@url value="/process/processDefinition"/>" class="ajax view">流程部署</a></li>
-  <li><a href="<@url value="/process/processInstance"/>" class="ajax view">运行中的流程</a></li>
   <li><a href="<@url value="/process/historicProcessInstance"/>" class="ajax view">所有流程</a></li>
+  <li><a href="<@url value="/process/task"/>" class="ajax view">所有任务</a></li>
+  <li><a href="<@url value="/process/processInstance"/>" class="ajax view">运行中的流程</a></li>
   </@authorize>
   <li class="dropdown">
  	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -15,7 +16,7 @@
         <li><a href="<@url value="/process/historicProcessInstance/involved?startedBy=true"/>" class="ajax view">发起的流程</a></li>
     </ul>
   </li>
-  <li><a href="<@url value="/process/task"/>" class="ajax view">我的任务</a></li>
+  <li><a href="<@url value="/process/task/todolist"/>" class="ajax view">我的任务</a></li>
   <#assign startableProcessMap=statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('processService').findStartableProcessMap(authentication('principal').username)>
   <#if !startableProcessMap.empty>
   <li class="dropdown">

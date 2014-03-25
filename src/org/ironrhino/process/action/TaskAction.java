@@ -25,9 +25,12 @@ import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
+import org.ironrhino.core.model.ResultPage;
 import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.sequence.CyclicSequence;
 import org.ironrhino.core.struts.BaseAction;
@@ -81,6 +84,8 @@ public class TaskAction extends BaseAction {
 	private Map<String, FormElement> formElements;
 
 	private String formTemplate;
+
+	private ResultPage<Row> resultPage;
 
 	private List<Row> list;
 
@@ -136,6 +141,14 @@ public class TaskAction extends BaseAction {
 		return formTemplate;
 	}
 
+	public ResultPage<Row> getResultPage() {
+		return resultPage;
+	}
+
+	public void setResultPage(ResultPage<Row> resultPage) {
+		this.resultPage = resultPage;
+	}
+
 	public List<Row> getList() {
 		return list;
 	}
@@ -156,7 +169,59 @@ public class TaskAction extends BaseAction {
 		return historicTaskInstances;
 	}
 
+	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String execute() {
+		if (resultPage == null)
+			resultPage = new ResultPage<Row>();
+		TaskQuery query = taskService.createTaskQuery();
+		String processDefinitionId = getUid();
+		if (StringUtils.isNotBlank(processDefinitionId))
+			query = query.processDefinitionId(processDefinitionId);
+		if (StringUtils.isNotBlank(processDefinitionKey))
+			query = query.processDefinitionKey(processDefinitionKey);
+		long count = query.count();
+		resultPage.setTotalResults(count);
+		if (count > 0) {
+			List<Task> tasks = query.orderByTaskCreateTime().desc()
+					.listPage(resultPage.getStart(), resultPage.getPageSize());
+			List<Row> list = new ArrayList<Row>(tasks.size());
+			for (Task task : tasks) {
+				Row row = new Row();
+				list.add(row);
+				row.setId(task.getId());
+				row.setTask(task);
+				row.setProcessDefinition(repositoryService
+						.createProcessDefinitionQuery()
+						.processDefinitionId(task.getProcessDefinitionId())
+						.singleResult());
+				row.setHistoricProcessInstance(historyService
+						.createHistoricProcessInstanceQuery()
+						.processInstanceId(task.getProcessInstanceId())
+						.singleResult());
+			}
+			resultPage.setResult(list);
+		}
+		return LIST;
+	}
+
+	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
+	@InputConfig(resultName = "reassign")
+	public String reassign() {
+		String taskId = getUid();
+		User user = null;
+		if (assignee != null) {
+			user = identityService.createUserQuery().userId(assignee)
+					.singleResult();
+		}
+		if (user == null) {
+			addFieldError("assignee", "该用户不存在");
+			return "delegate";
+		}
+		taskService.setAssignee(taskId, assignee);
+		return execute();
+	}
+
+	public String todolist() {
 		String userid = AuthzUtils.getUsername();
 		List<Task> taskAssignees = taskService.createTaskQuery()
 				.taskAssignee(userid).orderByTaskPriority().desc()
@@ -182,7 +247,7 @@ public class TaskAction extends BaseAction {
 					.processInstanceId(task.getProcessInstanceId())
 					.singleResult());
 		}
-		return LIST;
+		return "todolist";
 	}
 
 	public String form() {
