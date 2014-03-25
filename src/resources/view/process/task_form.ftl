@@ -84,7 +84,7 @@ ${processDefinition.description}
 <#if formTemplate?has_content && form?index_of('<form') gt -1>
 	<@formTemplate?interpret/>
 <#else>
-<form id="task-form" action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable ajaxupload">
+<form id="task-form" action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable" enctype="multipart/form-data">
 	<#if task?? && task.description?has_content>
 	<div class="alert alert-block">
 	${task.description}
