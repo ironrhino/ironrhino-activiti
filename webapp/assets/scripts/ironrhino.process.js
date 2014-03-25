@@ -82,4 +82,13 @@ Observation.process = function(container) {
 				$('.control-group.attachment', $(this).closest('form'))
 						.toggle();
 			});
+
+	$('a.deleteAttachment', container).each(function() {
+				this.onprepare = function() {
+					return confirm(MessageBundle.get('confirm.action'));
+				}
+				this.onsuccess = function() {
+					$(this).closest('tr').remove();
+				}
+			});
 }

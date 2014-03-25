@@ -53,7 +53,7 @@ ${processDefinition.description}
 			<thead>
 			<tr>
 				<th style="width:200px;">${action.getText('file')}</th>
-				<th style="width:100px;">${action.getText('user')}</th>
+				<th style="width:100px;">${action.getText('owner')}</th>
 				<th>${action.getText('description')}</th>
 				<th style="width:80px;"></th>
 			</tr>
