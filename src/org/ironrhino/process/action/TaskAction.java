@@ -88,6 +88,8 @@ public class TaskAction extends BaseAction {
 
 	private String processDefinitionKey;
 
+	private Task task;
+
 	private ProcessDefinition processDefinition;
 
 	private HistoricProcessInstance historicProcessInstance;
@@ -136,6 +138,10 @@ public class TaskAction extends BaseAction {
 
 	public List<Row> getList() {
 		return list;
+	}
+
+	public Task getTask() {
+		return task;
 	}
 
 	public ProcessDefinition getProcessDefinition() {
@@ -226,8 +232,7 @@ public class TaskAction extends BaseAction {
 				}
 			}
 		} else {
-			Task task = taskService.createTaskQuery().taskId(taskId)
-					.singleResult();
+			task = taskService.createTaskQuery().taskId(taskId).singleResult();
 			if (task == null
 					|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 				return ACCESSDENIED;
@@ -309,7 +314,7 @@ public class TaskAction extends BaseAction {
 								properties);
 				addActionMessage("启动流程: " + processInstance.getId());
 			} else {
-				Task task = taskService.createTaskQuery().taskId(taskId)
+				task = taskService.createTaskQuery().taskId(taskId)
 						.singleResult();
 				if (task == null
 						|| !AuthzUtils.getUsername().equals(task.getAssignee()))
@@ -364,7 +369,7 @@ public class TaskAction extends BaseAction {
 
 	public String unclaim() {
 		String taskId = getUid();
-		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+		task = taskService.createTaskQuery().taskId(taskId).singleResult();
 		if (task.getDelegationState() != null)
 			return ACCESSDENIED;
 		List<IdentityLink> identityLinks = taskService

@@ -33,7 +33,7 @@ ${processDefinition.description}
 	<#if historicTaskInstances?? && historicTaskInstances?size gt 0>
 	<#list historicTaskInstances as task>
 	<tr>
-		<td>${task.name}</td>
+		<td>${action.getText(task.name)}</td>
 		<td>
 		<span class="user" data-username="${task.assignee!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.assignee))!}</span>
 		<#if task.owner?? && task.assignee?? && task.owner!=task.assignee> (<span class="user" data-username="${task.owner!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.owner))!}</span>)</#if>
