@@ -399,9 +399,14 @@ public class TaskAction extends BaseAction {
 	@InputConfig(resultName = "delegate")
 	public String delegate() {
 		User user = null;
-		if (assignee != null)
+		if (assignee != null) {
+			if (assignee.equals(AuthzUtils.getUsername())) {
+				addFieldError("assignee", "不能委派给自己");
+				return "delegate";
+			}
 			user = identityService.createUserQuery().userId(assignee)
 					.singleResult();
+		}
 		if (user == null) {
 			addFieldError("assignee", "该用户不存在");
 			return "delegate";
