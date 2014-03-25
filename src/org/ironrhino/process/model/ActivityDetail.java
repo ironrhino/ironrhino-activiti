@@ -3,7 +3,10 @@ package org.ironrhino.process.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.activiti.engine.task.Attachment;
 
 public class ActivityDetail implements Serializable {
 
@@ -18,6 +21,8 @@ public class ActivityDetail implements Serializable {
 	private Date endTime;
 
 	private Map<String, String> data = new LinkedHashMap<String, String>();
+
+	private List<Attachment> attachments;
 
 	public String getName() {
 		return name;
@@ -57,6 +62,14 @@ public class ActivityDetail implements Serializable {
 
 	public void setData(Map<String, String> data) {
 		this.data = data;
+	}
+
+	public List<Attachment> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(List<Attachment> attachments) {
+		this.attachments = attachments;
 	}
 
 }

@@ -7,7 +7,7 @@
 <table class="table table-bordered">
 	<thead>
 	<tr>
-		<th style="width:100px;">${action.getText('taskName')}</th>
+		<th style="width:150px;">${action.getText('taskName')}</th>
 		<th>${action.getText('assignee')}</th>
 		<th>${action.getText('startTime')}</th>
 		<th>${action.getText('endTime')}</th>
@@ -21,12 +21,31 @@
 		<td>${ad.startTime?datetime}</td>
 		<td>${(ad.endTime?datetime)!}</td>
 	</tr>
+	<#if ad.data?? && !ad.data.empty>
+	<tr>
+		<td colspan="4" style="text-align:center;font-weight:bold;">表单数据</td>
+	</tr>
 	<#list ad.data.entrySet() as entry>
 	<tr>
 		<td>${action.getText(entry.key)}</td>
 		<td colspan="3"><div style="white-space:pre-wrap;word-break:break-all;">${entry.value}</div></td>
 	</tr>
 	</#list>
+	</#if>
+	<#if ad.attachments?? && !ad.attachments.empty>
+	<tr>
+		<td colspan="4" style="text-align:center;font-weight:bold;">${action.getText('attachment')}</td>
+	</tr>
+	<#list ad.attachments as attachment>
+	<tr>
+		<td>
+		<a href="<@url value="/process/task/downloadAttachment?attachmentId=${attachment.id}"/>" target="_blank">${attachment.name}</a>
+		<a href="<@url value="/process/task/downloadAttachment?attachmentId=${attachment.id}"/>" download="${attachment.name}" style="margin-left:10px;"><i class="glyphicon glyphicon-download-alt"></i></a>
+		</td>
+		<td colspan="3">${attachment.description!}</td>
+	</tr>
+	</#list>
+	</#if>
 	</#list>
 	</tbody>
 </table>

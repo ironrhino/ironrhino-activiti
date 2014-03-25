@@ -407,6 +407,7 @@ public class TaskAction extends BaseAction {
 		Map properties = RequestUtils.getParametersMap(ServletActionContext
 				.getRequest());
 		properties.remove("processDefinitionId");
+		properties.remove("attachmentDescription");
 		try {
 			if (taskId == null) {
 				if (processDefinitionId == null) {

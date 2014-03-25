@@ -2,6 +2,7 @@ package org.ironrhino.process.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import org.activiti.engine.impl.task.TaskDefinition;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Task;
 import org.ironrhino.process.form.FormRenderer;
 import org.ironrhino.process.model.ActivityDetail;
@@ -80,7 +82,8 @@ public class ProcessTraceService {
 		List<ActivityDetail> details = new ArrayList<ActivityDetail>();
 		List<HistoricActivityInstance> activities = historyService
 				.createHistoricActivityInstanceQuery()
-				.processInstanceId(processInstanceId).list();
+				.processInstanceId(processInstanceId)
+				.orderByHistoricActivityInstanceStartTime().asc().list();
 		for (HistoricActivityInstance activity : activities) {
 			if (!"userTask".equals(activity.getActivityType())
 					&& !"startEvent".equals(activity.getActivityType()))
@@ -98,7 +101,15 @@ public class ProcessTraceService {
 				detail.setAssignee(hpi.getStartUserId());
 				formProperties = formService.getStartFormData(
 						activity.getProcessDefinitionId()).getFormProperties();
-
+				List<Attachment> attachments = taskService
+						.getProcessInstanceAttachments(hpi.getId());
+				Iterator<Attachment> it = attachments.iterator();
+				while (it.hasNext()) {
+					Attachment attachment = it.next();
+					if (!hpi.getStartUserId().equals(attachment.getUserId()))
+						it.remove();
+				}
+				detail.setAttachments(attachments);
 			} else {
 				detail.setName(activity.getActivityName());
 				detail.setAssignee(activity.getAssignee());
@@ -111,8 +122,17 @@ public class ProcessTraceService {
 							.getFormProperties();
 				} catch (ActivitiObjectNotFoundException o) {
 					formProperties = null;
-					//TODO not translated
+					// TODO not translated
 				}
+				List<Attachment> attachments = taskService
+						.getTaskAttachments(task.getId());
+				Iterator<Attachment> it = attachments.iterator();
+				while (it.hasNext()) {
+					Attachment attachment = it.next();
+					if (!task.getAssignee().equals(attachment.getUserId()))
+						it.remove();
+				}
+				detail.setAttachments(attachments);
 			}
 			List<HistoricDetail> list = historyService
 					.createHistoricDetailQuery()
