@@ -523,8 +523,8 @@ public class TaskAction extends BaseAction {
 				return ACCESSDENIED;
 		}
 		try (InputStream is = taskService.getAttachmentContent(attachmentId)) {
-			//ServletActionContext.getResponse().setHeader("Content-Disposition",
-			//		"attachment;filename=" + attachment.getName());
+			// ServletActionContext.getResponse().setHeader("Content-Disposition",
+			// "attachment;filename=" + attachment.getName());
 			ServletOutputStream os = ServletActionContext.getResponse()
 					.getOutputStream();
 			IOUtils.copy(is, os);
@@ -540,8 +540,29 @@ public class TaskAction extends BaseAction {
 		Attachment attachment = taskService.getAttachment(attachmentId);
 		if (attachment == null)
 			return NOTFOUND;
-		if (AuthzUtils.getUsername().equals(attachment.getUserId()))
+		ProcessInstance processInstance = runtimeService
+				.createProcessInstanceQuery()
+				.processInstanceId(attachment.getProcessInstanceId())
+				.singleResult();
+		if (processInstance == null) {
+			addActionError("结束的流程不允许删除附件");
+			return ACCESSDENIED;
+		}
+		List<Task> list = taskService.createTaskQuery()
+				.processInstanceId(processInstance.getId()).active().list();
+		boolean assigned = false;
+		for (Task task : list) {
+			if (AuthzUtils.getUsername().equals(task.getAssignee())) {
+				assigned = true;
+				break;
+			}
+		}
+		if (assigned && AuthzUtils.getUsername().equals(attachment.getUserId())) {
 			taskService.deleteAttachment(attachmentId);
+		} else {
+			addActionError("只能在当前任务里面删除自己的附件");
+			return ACCESSDENIED;
+		}
 		return JSON;
 	}
 

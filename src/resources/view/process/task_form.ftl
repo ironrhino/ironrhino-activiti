@@ -73,7 +73,7 @@ ${processDefinition.description}
 				<td>${attachment.description!}</td>
 				<td>
 				<#if attachment.userId?? && attachment.userId==authentication("principal").username>
-				<a href="${actionBaseUrl}/deleteAttachment?attachmentId=${attachment.id}" class="ajax deleteAttachment">${action.getText('delete')}</a>
+				<a href="${actionBaseUrl}/deleteAttachment?attachmentId=${attachment.id}" class="btn ajax deleteAttachment">${action.getText('delete')}</a>
 				</#if>
 				</td>
 			</tr>
