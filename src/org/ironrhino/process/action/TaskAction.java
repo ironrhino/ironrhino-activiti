@@ -46,6 +46,7 @@ import org.ironrhino.core.util.RequestUtils;
 import org.ironrhino.process.form.FormRenderer;
 import org.ironrhino.process.form.FormRenderer.FormElement;
 import org.ironrhino.process.model.Row;
+import org.ironrhino.process.model.TaskQueryCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
@@ -95,6 +96,8 @@ public class TaskAction extends BaseAction {
 	private ResultPage<Row> resultPage;
 
 	private List<Row> list;
+
+	private TaskQueryCriteria criteria;
 
 	private String processDefinitionId;
 
@@ -204,6 +207,14 @@ public class TaskAction extends BaseAction {
 		return list;
 	}
 
+	public TaskQueryCriteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(TaskQueryCriteria criteria) {
+		this.criteria = criteria;
+	}
+
 	public Task getTask() {
 		return task;
 	}
@@ -233,11 +244,8 @@ public class TaskAction extends BaseAction {
 		if (resultPage == null)
 			resultPage = new ResultPage<Row>();
 		TaskQuery query = taskService.createTaskQuery();
-		String processDefinitionId = getUid();
-		if (StringUtils.isNotBlank(processDefinitionId))
-			query = query.processDefinitionId(processDefinitionId);
-		if (StringUtils.isNotBlank(processDefinitionKey))
-			query = query.processDefinitionKey(processDefinitionKey);
+		if (criteria != null)
+			criteria.filter(query, true);
 		long count = query.count();
 		resultPage.setTotalResults(count);
 		if (count > 0) {
