@@ -32,20 +32,6 @@
 	</tr>
 	</#list>
 	</#if>
-	<#if ad.attachments?? && !ad.attachments.empty>
-	<tr>
-		<td colspan="4" style="text-align:center;font-weight:bold;">${action.getText('attachment')}</td>
-	</tr>
-	<#list ad.attachments as attachment>
-	<tr>
-		<td>
-		<a href="<@url value="/process/task/downloadAttachment?attachmentId=${attachment.id}"/>" target="_blank">${attachment.name}</a>
-		<a href="<@url value="/process/task/downloadAttachment?attachmentId=${attachment.id}"/>" download="${attachment.name}" style="margin-left:10px;"><i class="glyphicon glyphicon-download-alt"></i></a>
-		</td>
-		<td colspan="3">${attachment.description!}</td>
-	</tr>
-	</#list>
-	</#if>
 	<#if ad.comments?? && !ad.comments.empty>
 	<tr>
 		<td colspan="4" style="text-align:center;font-weight:bold;">${action.getText('comment')}</td>
@@ -53,6 +39,20 @@
 	<#list ad.comments as comment>
 	<tr>
 		<td colspan="4"><div style="white-space:pre-wrap;word-break:break-all;">${comment.fullMessage!}</div></td>
+	</tr>
+	</#list>
+	</#if>
+	<#if ad.attachments?? && !ad.attachments.empty>
+	<tr>
+		<td colspan="4" style="text-align:center;font-weight:bold;">${action.getText('attachment')}</td>
+	</tr>
+	<#list ad.attachments as attachment>
+	<tr>
+		<td>
+		<a href="<@url value="/process/task/downloadAttachment/${attachment.id}"/>" target="_blank">${attachment.name}</a>
+		<a href="<@url value="/process/task/downloadAttachment/${attachment.id}"/>" download="${attachment.name}" style="margin-left:10px;"><i class="glyphicon glyphicon-download-alt"></i></a>
+		</td>
+		<td colspan="3">${attachment.description!}</td>
 	</tr>
 	</#list>
 	</#if>

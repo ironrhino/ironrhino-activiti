@@ -30,7 +30,7 @@ ${processDefinition.description}
 		<td></td>
 		<td></td>
 	</tr>
-	<#if historicTaskInstances?? && historicTaskInstances?size gt 0>
+	<#if historicTaskInstances?? && !historicTaskInstances.empty>
 	<#list historicTaskInstances as task>
 	<tr>
 		<td>${action.getText(task.name)}</td>
@@ -48,7 +48,35 @@ ${processDefinition.description}
 </table>
 </div>
 </#if>
-<#if attachments?? && attachments.size() gt 0>
+<#if comments?? && !comments.empty>
+	<table class="table">
+			<thead>
+			<tr>
+				<th style="width:100px;">${action.getText('owner')}</th>
+				<th>${action.getText('comment')}</th>
+				<th style="width:80px;"></th>
+			</tr>
+			</thead>
+			<tbody>
+			<#list comments as comment>
+			<tr>
+				<td>
+				<#if comment.userId??>
+				<span class="user" data-username="${comment.userId}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(comment.userId))!}</span>
+				</#if>
+				</td>
+				<td>${comment.fullMessage!}</td>
+				<td>
+				<#if comment.userId?? && comment.userId==authentication("principal").username>
+				<a href="${actionBaseUrl}/deleteComment/${comment.id}" class="btn ajax deleteRow">${action.getText('delete')}</a>
+				</#if>
+				</td>
+			</tr>
+			</#list>
+			</tbody>
+	</table>	
+</#if>
+<#if attachments?? && !attachments.empty>
 	<table class="table">
 			<thead>
 			<tr>
@@ -62,8 +90,8 @@ ${processDefinition.description}
 			<#list attachments as attachment>
 			<tr>
 				<td>
-				<a href="${actionBaseUrl}/downloadAttachment?attachmentId=${attachment.id}" target="_blank">${attachment.name}</a>
-				<a href="${actionBaseUrl}/downloadAttachment?attachmentId=${attachment.id}" download="${attachment.name}" style="margin-left:10px;"><i class="glyphicon glyphicon-download-alt"></i></a>
+				<a href="${actionBaseUrl}/downloadAttachment/${attachment.id}" target="_blank">${attachment.name}</a>
+				<a href="${actionBaseUrl}/downloadAttachment/${attachment.id}" download="${attachment.name}" style="margin-left:10px;"><i class="glyphicon glyphicon-download-alt"></i></a>
 				</td>
 				<td>
 				<#if attachment.userId??>
@@ -73,7 +101,7 @@ ${processDefinition.description}
 				<td>${attachment.description!}</td>
 				<td>
 				<#if attachment.userId?? && attachment.userId==authentication("principal").username>
-				<a href="${actionBaseUrl}/deleteAttachment?attachmentId=${attachment.id}" class="btn ajax deleteAttachment">${action.getText('delete')}</a>
+				<a href="${actionBaseUrl}/deleteAttachment/${attachment.id}" class="btn ajax deleteRow">${action.getText('delete')}</a>
 				</#if>
 				</td>
 			</tr>
@@ -126,6 +154,12 @@ ${processDefinition.description}
 		</#list>
 		</#if>
 	</#if>
+	<div class="control-group comment" style="display:none;">
+			<label class="control-label" for="_comment_">${action.getText('comment')}</label>
+			<div class="controls">
+			<textarea id="_comment_" name="_comment_" class="input-xxlarge"></textarea>
+			</div>
+	</div>
 	<div class="control-group attachment" style="display:none;">
 			<label class="control-label">${action.getText('attachment')}</label>
 			<div class="controls">
@@ -146,14 +180,20 @@ ${processDefinition.description}
 				</tbody>
 			</table>	
 			</div>
-	</div>		
+	</div>
 	<#if !historicProcessInstance??>
 	<@s.submit value="%{getText('start')}" cssClass="btn-primary">
-	<@s.param name="after"> <button type="button" class="btn attachment">${action.getText('attachment')}</button></@s.param>
+	<@s.param name="after">
+	<button type="button" class="btn toggle-control-group" data-groupclass="comment">${action.getText('comment')}</button>
+	<button type="button" class="btn toggle-control-group" data-groupclass="attachment">${action.getText('attachment')}</button>
+	</@s.param>
 	</@s.submit>
 	<#else>
 	<@s.submit value="%{getText('submit')}" cssClass="btn-primary">
-	<@s.param name="after"> <button type="button" class="btn attachment">${action.getText('attachment')}</button></@s.param>
+	<@s.param name="after">
+	<button type="button" class="btn toggle-control-group" data-groupclass="comment">${action.getText('comment')}</button>
+	<button type="button" class="btn toggle-control-group" data-groupclass="attachment">${action.getText('attachment')}</button>
+	</@s.param>
 	</@s.submit>
 	</#if>
 </form>

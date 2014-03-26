@@ -78,12 +78,11 @@ Observation.process = function(container) {
 		}
 
 	});
-	$('button.attachment', container).click(function(e) {
-				$('.control-group.attachment', $(this).closest('form'))
-						.toggle();
-			});
-
-	$('a.deleteAttachment', container).each(function() {
+	$('button.toggle-control-group', container).click(function(e) {
+		$('.control-group.' + $(this).data('groupclass'), $(this).closest('form'))
+				.toggle();
+	});
+	$('a.deleteRow', container).each(function() {
 				this.onprepare = function() {
 					return confirm(MessageBundle.get('confirm.action'));
 				}

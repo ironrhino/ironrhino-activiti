@@ -26,6 +26,7 @@ import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Attachment;
+import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
@@ -111,13 +112,13 @@ public class TaskAction extends BaseAction {
 
 	private List<Attachment> attachments;
 
+	private List<Comment> comments;
+
 	private File[] file;
 
 	private String[] fileFileName;
 
 	private String[] attachmentDescription;
-
-	private String attachmentId;
 
 	public File[] getFile() {
 		return file;
@@ -141,14 +142,6 @@ public class TaskAction extends BaseAction {
 
 	public void setAttachmentDescription(String[] attachmentDescription) {
 		this.attachmentDescription = attachmentDescription;
-	}
-
-	public String getAttachmentId() {
-		return attachmentId;
-	}
-
-	public void setAttachmentId(String attachmentId) {
-		this.attachmentId = attachmentId;
 	}
 
 	public String getProcessDefinitionId() {
@@ -229,6 +222,10 @@ public class TaskAction extends BaseAction {
 
 	public List<Attachment> getAttachments() {
 		return attachments;
+	}
+
+	public List<Comment> getComments() {
+		return comments;
 	}
 
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
@@ -397,6 +394,8 @@ public class TaskAction extends BaseAction {
 					.list();
 			attachments = taskService.getProcessInstanceAttachments(task
 					.getProcessInstanceId());
+			comments = taskService.getProcessInstanceComments(task
+					.getProcessInstanceId());
 		}
 		return "form";
 	}
@@ -408,6 +407,7 @@ public class TaskAction extends BaseAction {
 				.getRequest());
 		properties.remove("processDefinitionId");
 		properties.remove("attachmentDescription");
+		String comment = (String) properties.remove("_comment_");
 		try {
 			if (taskId == null) {
 				if (processDefinitionId == null) {
@@ -452,6 +452,9 @@ public class TaskAction extends BaseAction {
 								description, new FileInputStream(file[i]));
 					}
 				}
+				if (StringUtils.isNotBlank(comment))
+					taskService.addComment(null, processInstance.getId(),
+							comment);
 			} else {
 				task = taskService.createTaskQuery().taskId(taskId)
 						.singleResult();
@@ -459,7 +462,7 @@ public class TaskAction extends BaseAction {
 						|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 					return ACCESSDENIED;
 
-				if (file != null) {
+				if (fileFileName != null) {
 					for (int i = 0; i < file.length; i++) {
 						String description = attachmentDescription.length > i ? attachmentDescription[i]
 								: null;
@@ -468,6 +471,9 @@ public class TaskAction extends BaseAction {
 								description, new FileInputStream(file[i]));
 					}
 				}
+				if (StringUtils.isNotBlank(comment))
+					taskService.addComment(task.getId(),
+							task.getProcessInstanceId(), comment);
 				DelegationState delegationState = task.getDelegationState();
 				if (DelegationState.PENDING == delegationState) {
 					taskService.resolveTask(taskId, properties);
@@ -491,6 +497,7 @@ public class TaskAction extends BaseAction {
 	}
 
 	public String downloadAttachment() throws IOException {
+		String attachmentId = getUid();
 		if (attachmentId == null)
 			return NOTFOUND;
 		Attachment attachment = taskService.getAttachment(attachmentId);
@@ -536,6 +543,7 @@ public class TaskAction extends BaseAction {
 	}
 
 	public String deleteAttachment() {
+		String attachmentId = getUid();
 		if (attachmentId == null)
 			return NOTFOUND;
 		Attachment attachment = taskService.getAttachment(attachmentId);
@@ -562,6 +570,39 @@ public class TaskAction extends BaseAction {
 			taskService.deleteAttachment(attachmentId);
 		} else {
 			addActionError("只能在当前任务里面删除自己的附件");
+			return ACCESSDENIED;
+		}
+		return JSON;
+	}
+
+	public String deleteComment() {
+		String commentId = getUid();
+		if (commentId == null)
+			return NOTFOUND;
+		Comment comment = taskService.getComment(commentId);
+		if (comment == null)
+			return NOTFOUND;
+		ProcessInstance processInstance = runtimeService
+				.createProcessInstanceQuery()
+				.processInstanceId(comment.getProcessInstanceId())
+				.singleResult();
+		if (processInstance == null) {
+			addActionError("结束的流程不允许删除附件");
+			return ACCESSDENIED;
+		}
+		List<Task> list = taskService.createTaskQuery()
+				.processInstanceId(processInstance.getId()).active().list();
+		boolean assigned = false;
+		for (Task task : list) {
+			if (AuthzUtils.getUsername().equals(task.getAssignee())) {
+				assigned = true;
+				break;
+			}
+		}
+		if (assigned && AuthzUtils.getUsername().equals(comment.getUserId())) {
+			taskService.deleteComment(commentId);
+		} else {
+			addActionError("只能在当前任务里面删除自己的备注");
 			return ACCESSDENIED;
 		}
 		return JSON;
