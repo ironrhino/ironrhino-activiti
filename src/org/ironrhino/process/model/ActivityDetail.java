@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.task.Attachment;
+import org.activiti.engine.task.Comment;
 
 public class ActivityDetail implements Serializable {
 
@@ -23,6 +24,8 @@ public class ActivityDetail implements Serializable {
 	private Map<String, String> data = new LinkedHashMap<String, String>();
 
 	private List<Attachment> attachments;
+
+	private List<Comment> comments;
 
 	public String getName() {
 		return name;
@@ -70,6 +73,14 @@ public class ActivityDetail implements Serializable {
 
 	public void setAttachments(List<Attachment> attachments) {
 		this.attachments = attachments;
+	}
+
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
 	}
 
 }

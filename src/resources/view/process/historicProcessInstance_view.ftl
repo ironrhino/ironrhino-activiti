@@ -46,6 +46,16 @@
 	</tr>
 	</#list>
 	</#if>
+	<#if ad.comments?? && !ad.comments.empty>
+	<tr>
+		<td colspan="4" style="text-align:center;font-weight:bold;">${action.getText('comment')}</td>
+	</tr>
+	<#list ad.comments as comment>
+	<tr>
+		<td colspan="4"><div style="white-space:pre-wrap;word-break:break-all;">${comment.fullMessage!}</div></td>
+	</tr>
+	</#list>
+	</#if>
 	</#list>
 	</tbody>
 </table>

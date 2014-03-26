@@ -34,6 +34,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Attachment;
+import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.ironrhino.process.form.FormRenderer;
 import org.ironrhino.process.model.ActivityDetail;
@@ -110,6 +111,16 @@ public class ProcessTraceService {
 						it.remove();
 				}
 				detail.setAttachments(attachments);
+
+				List<Comment> comments = taskService
+						.getProcessInstanceComments(hpi.getId());
+				Iterator<Comment> itc = comments.iterator();
+				while (itc.hasNext()) {
+					Comment comment = itc.next();
+					if (!hpi.getStartUserId().equals(comment.getUserId()))
+						itc.remove();
+				}
+				detail.setComments(comments);
 			} else {
 				detail.setName(activity.getActivityName());
 				detail.setAssignee(activity.getAssignee());
@@ -133,6 +144,15 @@ public class ProcessTraceService {
 						it.remove();
 				}
 				detail.setAttachments(attachments);
+				List<Comment> comments = taskService.getTaskComments(task
+						.getId());
+				Iterator<Comment> itc = comments.iterator();
+				while (itc.hasNext()) {
+					Comment comment = itc.next();
+					if (!task.getAssignee().equals(comment.getUserId()))
+						itc.remove();
+				}
+				detail.setComments(comments);
 			}
 			List<HistoricDetail> list = historyService
 					.createHistoricDetailQuery()
