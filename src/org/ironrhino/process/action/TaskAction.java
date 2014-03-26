@@ -377,8 +377,9 @@ public class TaskAction extends BaseAction {
 					.createProcessDefinitionQuery()
 					.processDefinitionId(task.getProcessDefinitionId())
 					.singleResult();
-			if (processDefinition != null)
-				title += " - " + processDefinition.getName();
+			if (processDefinition == null)
+				return ACCESSDENIED;
+			title += " - " + processDefinition.getName();
 			TaskFormData taskFormData = formService.getTaskFormData(taskId);
 			formElements = formRenderer.render(taskFormData);
 			StringBuilder sb = new StringBuilder();
@@ -520,7 +521,7 @@ public class TaskAction extends BaseAction {
 		HistoricProcessInstance processInstance = null;
 		if (processInstanceId == null && taskId != null) {
 			task = taskService.createTaskQuery().taskId(taskId).singleResult();
-			if (task == null)
+			if (task != null)
 				processInstanceId = task.getProcessInstanceId();
 		}
 		if (processInstanceId != null)
