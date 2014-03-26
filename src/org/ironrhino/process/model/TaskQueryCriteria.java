@@ -191,7 +191,7 @@ public class TaskQueryCriteria implements Serializable {
 		this.taskInvolvedUser = taskInvolvedUser;
 	}
 
-	public void filter(TaskQuery query, boolean admin) {
+	public TaskQuery filter(TaskQuery query, boolean admin) {
 		if (StringUtils.isNotBlank(processDefinitionId))
 			query.processDefinitionId(processDefinitionId);
 		if (StringUtils.isNotBlank(processDefinitionKey))
@@ -230,6 +230,7 @@ public class TaskQueryCriteria implements Serializable {
 			if (StringUtils.isNotBlank(taskInvolvedUser))
 				query.taskInvolvedUser(taskInvolvedUser);
 		}
+		return query;
 	}
 
 }

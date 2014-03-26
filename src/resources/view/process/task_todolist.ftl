@@ -30,7 +30,96 @@
 '>
 <#assign bottomButtons='
 <button type="button" class="btn reload">${action.getText("reload")}</button>
+<button type="button" class="btn filter">${action.getText("filter")}</button>
 '>
 <@richtable entityName="task" action="${actionBaseUrl}/todolist" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
+
+<form method="post" class="ajax view criteria form-horizontal" style="display:none;">
+<style>
+	.row [class*="span"] .control-label{
+		width: 200px;
+		padding-right: 20px;
+	}
+</style>
+<div class="row">
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_processDefinitionName">${action.getText('processDefinitionName')}</label>
+			<div class="controls">
+				<input id="criteria_processDefinitionName" type="text" name="criteria.processDefinitionName"/>
+			</div>
+		</div>
+	</div>
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_taskName">${action.getText('taskName')}</label>
+			<div class="controls">
+				<input id="criteria_taskName" type="text" name="criteria.taskName"/>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_taskCreatedBefore">${action.getText('createdBefore')}</label>
+			<div class="controls">
+				<input id="criteria_taskCreatedBefore" type="text" name="criteria.taskCreatedBefore" class="date"/>
+			</div>
+		</div>
+	</div>
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_taskCreatedAfter">${action.getText('createdAfter')}</label>
+			<div class="controls">
+				<input id="criteria_taskCreatedAfter" type="text" name="criteria.taskCreatedAfter" class="date"/>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_dueBefore">${action.getText('dueBefore')}</label>
+			<div class="controls">
+				<input id="criteria_dueBefore" type="text" name="criteria.dueBefore" class="date"/>
+			</div>
+		</div>
+	</div>
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_dueAfter">${action.getText('dueAfter')}</label>
+			<div class="controls">
+				<input id="criteria_dueAfter" type="text" name="criteria.dueAfter" class="date"/>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_active">${action.getText('active')}</label>
+			<div class="controls">
+				<input id="criteria_active" type="checkbox" name="criteria.active" value="true" class="custom"/>
+			</div>
+		</div>
+	</div>
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_suspended">${action.getText('suspended')}</label>
+			<div class="controls">
+				<input id="criteria_suspended" type="checkbox" name="criteria.suspended" value="true" class="custom"/>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span12" style="text-align:center;">
+		<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>
+	</div>
+</div>
+</form>
+
 </body>
 </html></#escape>

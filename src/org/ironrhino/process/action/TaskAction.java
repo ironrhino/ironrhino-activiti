@@ -290,11 +290,15 @@ public class TaskAction extends BaseAction {
 
 	public String todolist() {
 		String userid = AuthzUtils.getUsername();
-		List<Task> taskAssignees = taskService.createTaskQuery()
-				.taskAssignee(userid).orderByTaskPriority().desc()
+		TaskQuery query = taskService.createTaskQuery().taskAssignee(userid);
+		if (criteria != null)
+			criteria.filter(query, true);
+		List<Task> taskAssignees = query.orderByTaskPriority().desc()
 				.orderByTaskCreateTime().desc().list();
-		List<Task> taskCandidates = taskService.createTaskQuery()
-				.taskCandidateUser(userid).orderByTaskPriority().desc()
+		query = taskService.createTaskQuery().taskCandidateUser(userid);
+		if (criteria != null)
+			criteria.filter(query, true);
+		List<Task> taskCandidates = query.orderByTaskPriority().desc()
 				.orderByTaskCreateTime().desc().list();
 		List<Task> all = new ArrayList<Task>();
 		all.addAll(taskAssignees);

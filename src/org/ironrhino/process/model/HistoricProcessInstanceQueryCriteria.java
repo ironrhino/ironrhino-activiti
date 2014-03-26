@@ -110,7 +110,8 @@ public class HistoricProcessInstanceQueryCriteria implements Serializable {
 		this.finishedAfter = finishedAfter;
 	}
 
-	public void filter(HistoricProcessInstanceQuery query, boolean admin) {
+	public HistoricProcessInstanceQuery filter(
+			HistoricProcessInstanceQuery query, boolean admin) {
 		if (StringUtils.isNotBlank(processDefinitionId))
 			query.processDefinitionId(processDefinitionId);
 		if (StringUtils.isNotBlank(processDefinitionKey))
@@ -133,6 +134,7 @@ public class HistoricProcessInstanceQueryCriteria implements Serializable {
 			query.finishedBefore(finishedBefore);
 		if (finishedAfter != null)
 			query.finishedAfter(finishedAfter);
+		return query;
 	}
 
 }
