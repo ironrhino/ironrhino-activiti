@@ -20,6 +20,7 @@ import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
 import org.ironrhino.process.model.ActivityDetail;
+import org.ironrhino.process.model.HistoricProcessInstanceQueryCriteria;
 import org.ironrhino.process.model.Row;
 import org.ironrhino.process.service.ProcessTraceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,16 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	private Boolean finished;
 
 	private List<ActivityDetail> activityDetails;
+
+	private HistoricProcessInstanceQueryCriteria criteria;
+
+	public HistoricProcessInstanceQueryCriteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(HistoricProcessInstanceQueryCriteria criteria) {
+		this.criteria = criteria;
+	}
 
 	public String getProcessDefinitionId() {
 		return processDefinitionId;
@@ -107,8 +118,8 @@ public class HistoricProcessInstanceAction extends BaseAction {
 				.createHistoricProcessInstanceQuery();
 		if (StringUtils.isNoneBlank(processDefinitionId))
 			query.processDefinitionId(processDefinitionId);
-		if (StringUtils.isNotBlank(keyword))
-			query = query.processDefinitionKey(keyword);
+		if (criteria != null)
+			criteria.filter(query, true);
 		return doQuery(query);
 	}
 
@@ -127,8 +138,8 @@ public class HistoricProcessInstanceAction extends BaseAction {
 				query.finished();
 			else
 				query.unfinished();
-		if (StringUtils.isNotBlank(keyword))
-			query = query.processDefinitionKey(keyword);
+		if (criteria != null)
+			criteria.filter(query, false);
 		return doQuery(query);
 	}
 
