@@ -150,16 +150,21 @@ public class FormRenderer {
 				value = I18N.getText(value);
 			} else if ("enum".equalsIgnoreCase(type)) {
 				Map<String, String> temp = fp.getValues();
-				if (temp != null)
-					value = temp.get(value);
+				if (temp != null) {
+					String v = temp.get(value);
+					if (StringUtils.isNotBlank(v))
+						value = v;
+				}
 			} else if ("dictionary".equalsIgnoreCase(type)) {
 				try {
 					DictionaryControl dc = applicationContext
 							.getBean(DictionaryControl.class);
 					Map<String, String> temp = dc.getItemsAsMap(fp.getId());
-					String v = temp.get(value);
-					if (StringUtils.isNotBlank(v))
-						value = v;
+					if (temp != null) {
+						String v = temp.get(value);
+						if (StringUtils.isNotBlank(v))
+							value = v;
+					}
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
