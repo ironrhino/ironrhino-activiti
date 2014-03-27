@@ -1,11 +1,19 @@
 package org.ironrhino.process.form;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.form.FormProperty;
 import org.activiti.engine.form.FormType;
 import org.activiti.engine.form.StartFormData;
@@ -15,9 +23,15 @@ import org.activiti.engine.impl.form.DateFormType;
 import org.activiti.engine.impl.form.EnumFormType;
 import org.activiti.engine.impl.form.LongFormType;
 import org.activiti.engine.impl.form.StringFormType;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.commons.lang3.StringUtils;
+import org.eaxy.Document;
+import org.eaxy.Element;
+import org.eaxy.Xml;
 import org.ironrhino.common.support.DictionaryControl;
 import org.ironrhino.core.struts.I18N;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -29,8 +43,13 @@ import com.opensymphony.xwork2.util.ValueStack;
 @Component
 public class FormRenderer {
 
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Autowired
 	private ApplicationContext applicationContext;
+
+	@Autowired
+	private RepositoryService repositoryService;
 
 	public Map<String, FormElement> render(StartFormData startFormData) {
 		return render(startFormData.getFormProperties());
@@ -112,28 +131,28 @@ public class FormRenderer {
 		return elements;
 	}
 
-	public Map<String, String> display(List<FormProperty> formProperties,
-			Map<String, String> data) {
-		if (formProperties == null || formProperties.size() == 0)
+	public Map<String, String> display(String processDefinitionId,
+			String activityId, Map<String, String> data) {
+		List<Property> formProperties = getFormProperties(processDefinitionId,
+				activityId);
+		if (formProperties == null || formProperties.isEmpty())
 			return data;
 		Map<String, String> map = new LinkedHashMap<String, String>();
-		for (FormProperty fp : formProperties) {
+		for (Property fp : formProperties) {
 			String value = data.get(fp.getId());
 			if (value == null)
 				continue;
 			String name = fp.getName();
 			if (StringUtils.isBlank(name))
 				name = fp.getId();
-			FormType type = fp.getType();
-			if (type instanceof BooleanFormType) {
+			String type = fp.getType();
+			if ("boolean".equalsIgnoreCase(type)) {
 				value = I18N.getText(value);
-			} else if (type instanceof EnumFormType) {
-				@SuppressWarnings("unchecked")
-				Map<String, String> temp = (Map<String, String>) type
-						.getInformation("values");
+			} else if ("enum".equalsIgnoreCase(type)) {
+				Map<String, String> temp = fp.getValues();
 				if (temp != null)
 					value = temp.get(value);
-			} else if (type instanceof DictionaryFormType) {
+			} else if ("dictionary".equalsIgnoreCase(type)) {
 				try {
 					DictionaryControl dc = applicationContext
 							.getBean(DictionaryControl.class);
@@ -150,7 +169,98 @@ public class FormRenderer {
 		return map;
 	}
 
-	public static class FormElement {
+	Map<String, List<Property>> cache = new ConcurrentHashMap<>();
+
+	private List<Property> getFormProperties(String processDefinitionId,
+			String activityId) {
+		String key = new StringBuilder(activityId).append("@")
+				.append(processDefinitionId).toString();
+		List<Property> list = cache.get(key);
+		if (list == null) {
+			list = new ArrayList<Property>();
+			ProcessDefinition pd = repositoryService
+					.createProcessDefinitionQuery()
+					.processDefinitionId(processDefinitionId).singleResult();
+			if (pd != null) {
+
+				try (InputStream resourceAsStream = repositoryService
+						.getResourceAsStream(pd.getDeploymentId(),
+								pd.getResourceName())) {
+					Document doc = Xml.read(new InputStreamReader(
+							resourceAsStream, "UTF-8"));
+					Element el = doc.getRootElement();
+					Iterator<Element> it = el.find("process", "userTask")
+							.iterator();
+					while (it.hasNext()) {
+						Element ele = it.next();
+						if (activityId.equals(ele.attr("id"))) {
+							el = ele;
+							break;
+						}
+					}
+					if (el != null) {
+						it = el.find("extensionElements", "formProperty")
+								.iterator();
+						while (it.hasNext()) {
+							list.add(new Property(it.next()));
+						}
+					}
+				} catch (IOException e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
+			cache.put(key, list);
+		}
+		return list;
+	}
+
+	private static class Property implements Serializable {
+
+		private static final long serialVersionUID = 3962888136575115773L;
+
+		private String id;
+
+		private String name;
+
+		private String type;
+
+		private Map<String, String> values;
+
+		public Property(Element element) {
+			this.id = element.attr("id");
+			this.name = element.attr("name");
+			this.type = element.attr("type");
+			if ("enum".equals(this.type)) {
+				Iterator<Element> it = element.find("value").iterator();
+				values = new LinkedHashMap<String, String>();
+				while (it.hasNext()) {
+					Element ele = it.next();
+					values.put(ele.attr("id"), ele.attr("name"));
+				}
+			}
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public Map<String, String> getValues() {
+			return values;
+		}
+
+	}
+
+	public static class FormElement implements Serializable {
+
+		private static final long serialVersionUID = -1192332576680858062L;
 
 		private String label;
 

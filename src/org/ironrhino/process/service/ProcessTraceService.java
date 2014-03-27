@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
@@ -16,7 +15,6 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.Expression;
-import org.activiti.engine.form.FormProperty;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricDetail;
 import org.activiti.engine.history.HistoricFormProperty;
@@ -93,15 +91,12 @@ public class ProcessTraceService {
 			detail.setStartTime(activity.getStartTime());
 			detail.setEndTime(activity.getEndTime());
 			details.add(detail);
-			List<FormProperty> formProperties;
 			if ("startEvent".equals(activity.getActivityType())) {
 				HistoricProcessInstance hpi = historyService
 						.createHistoricProcessInstanceQuery()
 						.processInstanceId(processInstanceId).singleResult();
 				detail.setName("startProcessInstance");
 				detail.setAssignee(hpi.getStartUserId());
-				formProperties = formService.getStartFormData(
-						activity.getProcessDefinitionId()).getFormProperties();
 				List<Attachment> attachments = taskService
 						.getProcessInstanceAttachments(hpi.getId());
 				Iterator<Attachment> it = attachments.iterator();
@@ -128,13 +123,6 @@ public class ProcessTraceService {
 						.createHistoricTaskInstanceQuery()
 						.processInstanceId(processInstanceId)
 						.taskId(activity.getTaskId()).singleResult();
-				try {
-					formProperties = formService.getTaskFormData(task.getId())
-							.getFormProperties();
-				} catch (ActivitiObjectNotFoundException o) {
-					formProperties = null;
-					// TODO not translated
-				}
 				List<Attachment> attachments = taskService
 						.getTaskAttachments(task.getId());
 				Iterator<Attachment> it = attachments.iterator();
@@ -165,7 +153,8 @@ public class ProcessTraceService {
 								hfp.getPropertyValue());
 				}
 			}
-			detail.setData(formRenderer.display(formProperties,
+			detail.setData(formRenderer.display(
+					activity.getProcessDefinitionId(), activity.getActivityId(),
 					detail.getData()));
 
 		}
