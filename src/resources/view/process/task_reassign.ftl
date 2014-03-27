@@ -6,7 +6,7 @@
 <body>
 <form action="${actionBaseUrl}/reassign" method="post" class="ajax form-horizontal">
 	<@s.hidden name="id"/>
-	<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?enabled=true"/>','name':'#assignee-control','nameindex':2,'id':'#assignee','idindex':1}">
+	<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','name':'#assignee-control','nameindex':2,'id':'#assignee','idindex':1}">
 		<@s.hidden id="assignee" name="assignee" cssClass="required"/>
 		<label class="control-label" for="assignee-control">${action.getText('assignee')}</label>
 		<div class="controls">

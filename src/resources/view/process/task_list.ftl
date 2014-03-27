@@ -106,7 +106,7 @@
 </div>
 <div class="row">
 	<div class="span6">
-		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?enabled=true"/>','name':'#criteria_taskInvolvedUser-control','nameindex':2,'id':'#criteria_taskInvolvedUser','idindex':1}">
+		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','name':'#criteria_taskInvolvedUser-control','nameindex':2,'id':'#criteria_taskInvolvedUser','idindex':1}">
 		<@s.hidden id="criteria_taskInvolvedUser" name="criteria.taskInvolvedUser"/>
 		<label class="control-label" for="criteria_taskInvolvedUser-control">${action.getText('involvedUser')}</label>
 		<div class="controls">
@@ -115,7 +115,7 @@
 		</div>
 	</div>
 	<div class="span6">
-		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?enabled=true"/>','name':'#criteria_taskAssignee-control','nameindex':2,'id':'#criteria_taskAssignee','idindex':1}">
+		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','name':'#criteria_taskAssignee-control','nameindex':2,'id':'#criteria_taskAssignee','idindex':1}">
 		<@s.hidden id="criteria_taskAssignee" name="criteria.taskAssignee"/>
 		<label class="control-label" for="criteria_taskAssignee-control">${action.getText('assignee')}</label>
 		<div class="controls">

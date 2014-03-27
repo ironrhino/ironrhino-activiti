@@ -69,7 +69,7 @@
 </div>
 <div class="row">
 	<div class="span6">
-		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?enabled=true"/>','name':'#criteria_involvedUser-control','nameindex':2,'id':'#criteria_involvedUser','idindex':1}">
+		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','name':'#criteria_involvedUser-control','nameindex':2,'id':'#criteria_involvedUser','idindex':1}">
 		<@s.hidden id="criteria_involvedUser" name="criteria.involvedUser"/>
 		<label class="control-label" for="criteria_involvedUser-control">${action.getText('involvedUser')}</label>
 		<div class="controls">
@@ -78,7 +78,7 @@
 		</div>
 	</div>
 	<div class="span6">
-		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?enabled=true"/>','name':'#criteria_startedBy-control','nameindex':2,'id':'#criteria_startedBy','idindex':1}">
+		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','name':'#criteria_startedBy-control','nameindex':2,'id':'#criteria_startedBy','idindex':1}">
 		<@s.hidden id="criteria_startedBy" name="criteria.startedBy"/>
 		<label class="control-label" for="criteria_startedBy-control">${action.getText('startedBy')}</label>
 		<div class="controls">
