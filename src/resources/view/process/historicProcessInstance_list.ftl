@@ -25,8 +25,11 @@
 <button type="button" class="btn" data-view="view">${action.getText("view")}</button>
 <button type="button" class="btn" data-view="trace" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("trace")}</button>
 '>
-
-<@richtable entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
+<#assign formid='historicProcessInstance_form'>
+<#if Parameters.finished??>
+<#assign formid=((Parameters.finished=='true')?string('finished','unfinished'))+'_'+formid/>
+</#if>
+<@richtable formid=formid entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;">
 <style>
 	.row [class*="span"] .control-label{
