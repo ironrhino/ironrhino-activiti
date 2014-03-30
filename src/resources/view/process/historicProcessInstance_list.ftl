@@ -8,11 +8,15 @@
 "historicProcessInstance.id":{"alias":"流程ID","width":"100px"},
 "processDefinition.name":{"alias":"流程名"},
 "historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(value)!}</span>'},
-"historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},
+"historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"}}>
+<#if !Parameters.finished?? || Parameters.finished != 'true'>
+<#assign columns=columns+{
 "activityName":{"alias":"当前活动","width":"100px","template",r'${(entity.historicActivityInstance.activityName)!}'},
-"assignee":{"alias":"当前处理人","width":"100px","template":r'<#if entity.historicActivityInstance??&&entity.historicActivityInstance.assignee?has_content><span class="user" data-username="${entity.historicActivityInstance.assignee}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(entity.historicActivityInstance.assignee)!}</span></#if>'},
-"historicProcessInstance.endTime":{"width":"130px"}}>
-
+"assignee":{"alias":"当前处理人","width":"100px","template":r'<#if entity.historicActivityInstance??&&entity.historicActivityInstance.assignee?has_content><span class="user" data-username="${entity.historicActivityInstance.assignee}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(entity.historicActivityInstance.assignee)!}</span></#if>'}}>
+</#if>
+<#if !Parameters.finished?? || Parameters.finished == 'true'>
+<#assign columns=columns+{"historicProcessInstance.endTime":{"width":"130px"}}>
+</#if>
 <#assign bottomButtons='
 <button type="button" class="btn reload">${action.getText("reload")}</button>
 <button type="button" class="btn filter">${action.getText("filter")}</button>
@@ -106,6 +110,7 @@
 		</div>
 	</div>
 </div>
+<#if !Parameters.finished?? || Parameters.finished == 'true'>
 <div class="row">
 	<div class="span6">
 		<div class="control-group">
@@ -124,6 +129,7 @@
 		</div>
 	</div>
 </div>
+</#if>
 <div class="row">
 	<div class="span12" style="text-align:center;">
 		<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>

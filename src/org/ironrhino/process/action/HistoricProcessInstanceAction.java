@@ -118,6 +118,11 @@ public class HistoricProcessInstanceAction extends BaseAction {
 				.createHistoricProcessInstanceQuery();
 		if (StringUtils.isNoneBlank(processDefinitionId))
 			query.processDefinitionId(processDefinitionId);
+		if (finished != null)
+			if (finished)
+				query.finished();
+			else
+				query.unfinished();
 		if (criteria != null)
 			criteria.filter(query, true);
 		return doQuery(query);

@@ -3,7 +3,7 @@
   <@authorize ifAnyGranted="ROLE_ADMINISTRATOR">
   <li><a href="<@url value="/user"/>" class="ajax view">${action.getText("user")}</a></li>
   <li><a href="<@url value="/process/processDefinition"/>" class="ajax view">流程部署</a></li>
-  <li><a href="<@url value="/process/historicProcessInstance"/>" class="ajax view">所有流程</a></li>
+  <li><a href="<@url value="/process/historicProcessInstance/tabs"/>" class="ajax view">所有流程</a></li>
   <li><a href="<@url value="/process/task"/>" class="ajax view">所有任务</a></li>
   <li><a href="<@url value="/process/processInstance"/>" class="ajax view">运行中的流程</a></li>
   </@authorize>
@@ -12,8 +12,8 @@
       	我的流程
     </a>
     <ul class="dropdown-menu">
-        <li><a href="<@url value="/process/historicProcessInstance/involved"/>" class="ajax view">经办的流程</a></li>
-        <li><a href="<@url value="/process/historicProcessInstance/involved?startedBy=true"/>" class="ajax view">发起的流程</a></li>
+        <li><a href="<@url value="/process/historicProcessInstance/tabs?involved"/>" class="ajax view">经办的流程</a></li>
+        <li><a href="<@url value="/process/historicProcessInstance/tabs?involved&startedBy=true"/>" class="ajax view">发起的流程</a></li>
     </ul>
   </li>
   <li><a href="<@url value="/process/task/todolist"/>" class="ajax view">我的任务</a></li>
