@@ -189,11 +189,13 @@ public class ProcessDefinitionAction extends BaseAction {
 		if (fileFileName.endsWith(".zip")) {
 			ZipInputStream zipInputStream = new ZipInputStream(
 					new FileInputStream(file));
-			repositoryService.createDeployment().name(fileFileName)
-					.addZipInputStream(zipInputStream).deploy();
+			repositoryService.createDeployment().enableDuplicateFiltering()
+					.name(fileFileName).addZipInputStream(zipInputStream)
+					.deploy();
 		} else if (fileFileName.endsWith(".xml")
 				|| fileFileName.endsWith(".bpmn")) {
-			repositoryService.createDeployment().name(fileFileName)
+			repositoryService.createDeployment().enableDuplicateFiltering()
+					.name(fileFileName)
 					.addInputStream(fileFileName, new FileInputStream(file))
 					.deploy();
 		}
