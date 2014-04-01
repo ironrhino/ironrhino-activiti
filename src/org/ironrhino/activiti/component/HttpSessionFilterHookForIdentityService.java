@@ -1,4 +1,4 @@
-package org.ironrhino.process.component;
+package org.ironrhino.activiti.component;
 
 import org.activiti.engine.IdentityService;
 import org.ironrhino.core.session.HttpSessionFilterHook;

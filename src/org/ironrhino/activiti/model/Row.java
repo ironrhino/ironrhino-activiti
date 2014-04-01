@@ -1,4 +1,4 @@
-package org.ironrhino.process.model;
+package org.ironrhino.activiti.model;
 
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;

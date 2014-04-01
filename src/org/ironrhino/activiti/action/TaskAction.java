@@ -1,4 +1,4 @@
-package org.ironrhino.process.action;
+package org.ironrhino.activiti.action;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +35,10 @@ import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
+import org.ironrhino.activiti.form.FormRenderer;
+import org.ironrhino.activiti.form.FormRenderer.FormElement;
+import org.ironrhino.activiti.model.Row;
+import org.ironrhino.activiti.model.TaskQueryCriteria;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.model.ResultPage;
@@ -43,10 +47,6 @@ import org.ironrhino.core.sequence.CyclicSequence;
 import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
 import org.ironrhino.core.util.RequestUtils;
-import org.ironrhino.process.form.FormRenderer;
-import org.ironrhino.process.form.FormRenderer.FormElement;
-import org.ironrhino.process.model.Row;
-import org.ironrhino.process.model.TaskQueryCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;

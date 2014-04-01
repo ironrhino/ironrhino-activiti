@@ -1,4 +1,4 @@
-package org.ironrhino.process.service;
+package org.ironrhino.activiti.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +34,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
-import org.ironrhino.process.form.FormRenderer;
-import org.ironrhino.process.model.ActivityDetail;
+import org.ironrhino.activiti.form.FormRenderer;
+import org.ironrhino.activiti.model.ActivityDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

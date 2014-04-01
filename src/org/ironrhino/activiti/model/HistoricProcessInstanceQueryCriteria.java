@@ -1,4 +1,4 @@
-package org.ironrhino.process.model;
+package org.ironrhino.activiti.model;
 
 import java.io.Serializable;
 import java.util.Date;

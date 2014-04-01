@@ -13,20 +13,21 @@
 		<property name="jobExecutorActivate" value="true" />
 		<property name="history" value="audit" />
 		<property name="mailServerHost" value="${mail.smtp.host:smtp.gmail.com}" />
-	    <property name="mailServerPort" value="${mail.smtp.port:465}" />
-	    <property name="mailServerUsername" value="${mail.smtp.username:ironrhinotest@gmail.com}"></property>
-	    <property name="mailServerPassword" value="${mail.smtp.password:testironrhino}"></property>
-	    <property name="mailServerDefaultFrom" value="${mail.default.from:ironrhinotest@gmail.com}"></property>
-	   	<property name="mailServerUseSSL" value="${mail.use.ssl:true}" />
-	   	<property name="activityFontName" value="宋体"/>
-        <property name="labelFontName" value="宋体"/>
+		<property name="mailServerPort" value="${mail.smtp.port:465}" />
+		<property name="mailServerUsername" value="${mail.smtp.username:ironrhinotest@gmail.com}"></property>
+		<property name="mailServerPassword" value="${mail.smtp.password:testironrhino}"></property>
+		<property name="mailServerDefaultFrom" value="${mail.default.from:ironrhinotest@gmail.com}"></property>
+		<property name="mailServerUseSSL" value="${mail.use.ssl:true}" />
+		<property name="activityFontName" value="宋体"/>
+		<property name="labelFontName" value="宋体"/>
 		<property name="customFormTypes">
 			<list>
-				<bean class="org.ironrhino.process.form.TextareaFormType"/>
-				<bean class="org.ironrhino.process.form.DictionaryFormType"/>
-				<bean class="org.ironrhino.process.form.DecimalFormType"/>
+				<bean class="org.ironrhino.activiti.form.TextareaFormType"/>
+				<bean class="org.ironrhino.activiti.form.DictionaryFormType"/>
+				<bean class="org.ironrhino.activiti.form.DecimalFormType"/>
 			</list>
 		</property>
+		<property name="deploymentResources" value="classpath*:/org/activiti/spring/test/autodeployment/autodeploy.*.bpmn20.xml" />
 	</bean>
 	
 	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean" destroy-method="destroy">

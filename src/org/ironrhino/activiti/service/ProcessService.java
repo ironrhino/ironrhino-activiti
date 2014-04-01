@@ -1,4 +1,4 @@
-package org.ironrhino.process.service;
+package org.ironrhino.activiti.service;
 
 import java.util.LinkedHashMap;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.ironrhino.process.form;
+package org.ironrhino.activiti.form;
 
 public class StringFormType extends NamedFormType {
 
