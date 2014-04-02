@@ -140,7 +140,7 @@ ${processDefinition.description}
 				</div>
 			<#else>
 				<div class="control-group">
-					<@s.hidden id=id name=entry.key value=fe.value! disabled=fe.disabled/>
+					<@s.hidden id=id name=entry.key value=fe.value! disabled=fe.disabled cssClass=fe.cssClass/>
 					<label class="control-label" for="${id}-control">${action.getText(fe.label)}</label>
 					<div class="controls text">
 					<span id="${id}-control"><#if taskVariables?? && taskVariables[entry.key]??><#if taskVariables[entry.key].fullname??>${taskVariables[entry.key].fullname!}<#else>${taskVariables[entry.key]!}</#if></#if></span>
