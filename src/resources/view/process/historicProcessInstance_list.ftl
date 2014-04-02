@@ -21,9 +21,13 @@
 <button type="button" class="btn reload">${action.getText("reload")}</button>
 <button type="button" class="btn filter">${action.getText("filter")}</button>
 '>
-<#assign actionColumnButtons='
+<#assign actionColumnButtons=r'
 <button type="button" class="btn" data-view="view">${action.getText("view")}</button>
+<#if !entity.historicProcessInstance.endTime??>
+'+'
 <button type="button" class="btn" data-view="trace" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("trace")}</button>
+'+r'
+</#if>
 '>
 <#assign formid='historicProcessInstance_form'>
 <#if Parameters.finished??>
