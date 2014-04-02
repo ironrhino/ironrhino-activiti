@@ -82,10 +82,10 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/joda-time-2.3.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-email-1.2.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-common-dictionary-1.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-bpmn-converter-5.15.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-bpmn-model-5.15.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-engine-5.15.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-process-validation-5.15.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-spring-5.15.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-bpmn-converter-5.15.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-bpmn-model-5.15.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-engine-5.15.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-process-validation-5.15.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activiti-spring-5.15.1.jar"/>
 	<classpathentry kind="output" path="webapp/WEB-INF/classes"/>
 </classpath>
