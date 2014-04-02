@@ -97,7 +97,8 @@ public class FormRenderer {
 				values.put("true", "true");
 				values.put("false", "false");
 				fe.setValues(values);
-			} else if (type instanceof LongFormType) {
+			} else if (type instanceof LongFormType
+					|| type instanceof IntegerFormType) {
 				fe.setInputType("number");
 				fe.addCssClass("integer");
 			} else if (type instanceof StringFormType) {

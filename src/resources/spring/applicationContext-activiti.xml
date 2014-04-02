@@ -24,6 +24,7 @@
 			<list>
 				<bean class="org.ironrhino.activiti.form.TextareaFormType"/>
 				<bean class="org.ironrhino.activiti.form.DictionaryFormType"/>
+				<bean class="org.ironrhino.activiti.form.IntegerFormType"/>
 				<bean class="org.ironrhino.activiti.form.DecimalFormType"/>
 			</list>
 		</property>
