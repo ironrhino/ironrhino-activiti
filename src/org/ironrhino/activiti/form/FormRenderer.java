@@ -51,6 +51,9 @@ public class FormRenderer {
 	@Autowired
 	private RepositoryService repositoryService;
 
+	@Autowired(required = false)
+	private List<PersistableFormType<?>> persistableFormTypeList;
+
 	public Map<String, FormElement> render(StartFormData startFormData) {
 		return render(startFormData.getFormProperties());
 	}
@@ -128,9 +131,13 @@ public class FormRenderer {
 				fe.setInputType("number");
 				if (fp.getId().toLowerCase().endsWith("rate")) {
 					fe.getDynamicAttributes().put("data-scale", "8");
-					fe.getDynamicAttributes().put("step", "0.0001");
+					fe.getDynamicAttributes().put("step", "0.00000001");
 				}
 				fe.addCssClass("double");
+			} else if (type instanceof PersistableFormType) {
+				PersistableFormType<?> pft = (PersistableFormType<?>) type;
+				fe.setType("listpick");
+				fe.getDynamicAttributes().put("pickUrl", pft.getPickUrl());
 			}
 		}
 		return elements;
@@ -173,6 +180,17 @@ public class FormRenderer {
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
+			} else {
+				if (persistableFormTypeList != null) {
+					for (PersistableFormType<?> ft : persistableFormTypeList) {
+						if (ft.getName().equals(type)) {
+							Object v = ft.convertFormValueToModelValue(value);
+							if (v != null)
+								value = v.toString();
+							break;
+						}
+					}
+				}
 			}
 			map.put(name, value);
 		}
@@ -199,17 +217,28 @@ public class FormRenderer {
 					Document doc = Xml.read(new InputStreamReader(
 							resourceAsStream, "UTF-8"));
 					Element el = doc.getRootElement();
-					Iterator<Element> it = el.find("process", "userTask")
+					Element elut = null;
+					Iterator<Element> it = el.find("process", "startEvent")
 							.iterator();
 					while (it.hasNext()) {
 						Element ele = it.next();
 						if (activityId.equals(ele.attr("id"))) {
-							el = ele;
+							elut = ele;
 							break;
 						}
 					}
-					if (el != null) {
-						it = el.find("extensionElements", "formProperty")
+					if (elut == null) {
+						it = el.find("process", "userTask").iterator();
+						while (it.hasNext()) {
+							Element ele = it.next();
+							if (activityId.equals(ele.attr("id"))) {
+								elut = ele;
+								break;
+							}
+						}
+					}
+					if (elut != null) {
+						it = elut.find("extensionElements", "formProperty")
 								.iterator();
 						while (it.hasNext()) {
 							list.add(new Property(it.next()));

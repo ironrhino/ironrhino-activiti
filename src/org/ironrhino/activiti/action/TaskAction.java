@@ -123,6 +123,8 @@ public class TaskAction extends BaseAction {
 
 	private String[] attachmentDescription;
 
+	private Map<String, Object> taskVariables;
+
 	public File[] getFile() {
 		return file;
 	}
@@ -237,6 +239,10 @@ public class TaskAction extends BaseAction {
 
 	public List<Comment> getComments() {
 		return comments;
+	}
+
+	public Map<String, Object> getTaskVariables() {
+		return taskVariables;
 	}
 
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
@@ -380,6 +386,7 @@ public class TaskAction extends BaseAction {
 			if (processDefinition == null)
 				return ACCESSDENIED;
 			title += " - " + processDefinition.getName();
+			taskVariables = taskService.getVariables(task.getId());
 			TaskFormData taskFormData = formService.getTaskFormData(taskId);
 			formElements = formRenderer.render(taskFormData);
 			StringBuilder sb = new StringBuilder();
