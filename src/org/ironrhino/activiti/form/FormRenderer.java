@@ -126,6 +126,10 @@ public class FormRenderer {
 				}
 			} else if (type instanceof DecimalFormType) {
 				fe.setInputType("number");
+				if (fp.getId().toLowerCase().endsWith("rate")) {
+					fe.getDynamicAttributes().put("data-scale", "8");
+					fe.getDynamicAttributes().put("step", "0.0001");
+				}
 				fe.addCssClass("double");
 			}
 		}
