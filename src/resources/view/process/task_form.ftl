@@ -112,7 +112,7 @@ ${processDefinition.description}
 <#if formTemplate?has_content && form?index_of('<form') gt -1>
 	<@formTemplate?interpret/>
 <#else>
-<form action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable" enctype="multipart/form-data">
+<form id="${processDefinition.key}<#if task??>_${task.taskDefinitionKey}</#if>" action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable<#if task??> ${task.taskDefinitionKey}</#if>" enctype="multipart/form-data">
 	<#if task?? && task.description?has_content>
 	<div class="alert alert-block">
 	${task.description}
