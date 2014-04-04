@@ -160,6 +160,13 @@ ${processDefinition.description}
 			<option value="${en.key}"<#if fe.value??&&fe.value==en.key> selected</#if>>${en.value}</option>
 			</#list>
 			</select>
+			<#elseif fe.type=='enum'>
+			<select id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if>>
+			<option></option>
+			<#list statics[fe.dynamicAttributes['enumType']].values() as en>
+			<option value="${en.name()}"<#if fe.value??&&fe.value==en.name()> selected</#if>>${en}</option>
+			</#list>
+			</select>
 			<#elseif fe.type=='radio'>
 			<#list fe.values.entrySet() as en>
 			<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${entry.key}" value="${en.key}"<#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>

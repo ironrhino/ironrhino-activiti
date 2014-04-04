@@ -54,6 +54,9 @@ public class FormRenderer {
 	@Autowired(required = false)
 	private List<PersistableFormType<?>> persistableFormTypeList;
 
+	@Autowired(required = false)
+	private List<org.ironrhino.activiti.form.EnumFormType<?>> enumFormTypeList;
+
 	public Map<String, FormElement> render(StartFormData startFormData) {
 		return render(startFormData.getFormProperties());
 	}
@@ -138,6 +141,11 @@ public class FormRenderer {
 				PersistableFormType<?> pft = (PersistableFormType<?>) type;
 				fe.setType("listpick");
 				fe.getDynamicAttributes().put("pickUrl", pft.getPickUrl());
+			} else if (type instanceof org.ironrhino.activiti.form.EnumFormType) {
+				org.ironrhino.activiti.form.EnumFormType<?> eft = (org.ironrhino.activiti.form.EnumFormType<?>) type;
+				fe.setType("enum");
+				fe.getDynamicAttributes().put("enumType",
+						eft.getEnumType().getName());
 			}
 		}
 		return elements;
@@ -181,12 +189,25 @@ public class FormRenderer {
 					e.printStackTrace();
 				}
 			} else {
+				boolean found = false;
 				if (persistableFormTypeList != null) {
 					for (PersistableFormType<?> ft : persistableFormTypeList) {
 						if (ft.getName().equals(type)) {
 							Object v = ft.convertFormValueToModelValue(value);
 							if (v != null)
 								value = v.toString();
+							found = true;
+							break;
+						}
+					}
+				}
+				if (!found && enumFormTypeList != null) {
+					for (org.ironrhino.activiti.form.EnumFormType<?> ft : enumFormTypeList) {
+						if (ft.getName().equals(type)) {
+							Object v = ft.convertFormValueToModelValue(value);
+							if (v != null)
+								value = v.toString();
+							found = true;
 							break;
 						}
 					}
