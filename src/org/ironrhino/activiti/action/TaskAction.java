@@ -359,7 +359,8 @@ public class TaskAction extends BaseAction {
 			if (processDefinition == null)
 				return ACCESSDENIED;
 			if (processPermissionChecker != null
-					&& !processPermissionChecker.canStart(processDefinition))
+					&& !processPermissionChecker.canStart(processDefinition
+							.getKey()))
 				return ACCESSDENIED;
 			if (!canStartProcess(processDefinitionId))
 				return ACCESSDENIED;
@@ -462,8 +463,8 @@ public class TaskAction extends BaseAction {
 				if (processDefinition == null)
 					return ACCESSDENIED;
 				if (processPermissionChecker != null
-						&& !processPermissionChecker
-								.canStart(processDefinition))
+						&& !processPermissionChecker.canStart(processDefinition
+								.getKey()))
 					return ACCESSDENIED;
 				if (!canStartProcess(processDefinitionId))
 					return ACCESSDENIED;
