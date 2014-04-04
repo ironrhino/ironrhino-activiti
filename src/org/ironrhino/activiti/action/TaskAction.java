@@ -35,6 +35,7 @@ import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
+import org.ironrhino.activiti.component.ProcessPermissionChecker;
 import org.ironrhino.activiti.form.FormRenderer;
 import org.ironrhino.activiti.form.FormRenderer.FormElement;
 import org.ironrhino.activiti.model.Row;
@@ -59,6 +60,9 @@ import com.opensymphony.xwork2.interceptor.annotations.InputConfig;
 public class TaskAction extends BaseAction {
 
 	private static final long serialVersionUID = 314143213105332544L;
+
+	@Autowired(required = false)
+	private ProcessPermissionChecker processPermissionChecker;
 
 	@Autowired(required = false)
 	@Qualifier("businessKeySequence")
@@ -354,6 +358,9 @@ public class TaskAction extends BaseAction {
 			}
 			if (processDefinition == null)
 				return ACCESSDENIED;
+			if (processPermissionChecker != null
+					&& !processPermissionChecker.canStart(processDefinition))
+				return ACCESSDENIED;
 			if (!canStartProcess(processDefinitionId))
 				return ACCESSDENIED;
 			title = processDefinition.getName();
@@ -453,6 +460,10 @@ public class TaskAction extends BaseAction {
 							.singleResult();
 				}
 				if (processDefinition == null)
+					return ACCESSDENIED;
+				if (processPermissionChecker != null
+						&& !processPermissionChecker
+								.canStart(processDefinition))
 					return ACCESSDENIED;
 				if (!canStartProcess(processDefinitionId))
 					return ACCESSDENIED;
