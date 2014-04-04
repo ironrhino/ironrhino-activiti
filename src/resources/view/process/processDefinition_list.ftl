@@ -4,7 +4,7 @@
 <title>流程部署</title>
 </head>
 <body>
-<#assign columns={"processDefinition.id":{"alias":"流程定义ID","width":"140px","template":r'<a href="<@url value="/process/historicProcessInstance/list?processDefinitionId=${value}"/>" class="ajax view">${value}</a>'},
+<#assign columns={"processDefinition.id":{"alias":"流程定义ID","width":"150px","template":r'<a href="<@url value="/process/historicProcessInstance/list?processDefinitionId=${value}"/>" class="ajax view">${value}</a>'},
 "processDefinition.key":{"alias":"KEY","width":"100px","template":r'<#if Parameters.key??>${value}<#else><a href="${actionBaseUrl}?key=${value}" class="ajax view">${value}</a></#if>'},
 "processDefinition.name":{"alias":"流程名"},
 "processDefinition.version":{"width":"60px"},
