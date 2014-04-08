@@ -312,7 +312,12 @@ public class TaskAction extends BaseAction {
 				.orderByTaskCreateTime().desc().list();
 		List<Task> all = new ArrayList<Task>();
 		all.addAll(taskAssignees);
-		all.addAll(taskCandidates);
+		for (Task task : taskCandidates) {
+			if (processPermissionChecker != null
+					&& !processPermissionChecker.canClaim(task))
+				continue;
+			all.add(task);
+		}
 		list = new ArrayList<Row>();
 		for (Task task : all) {
 			Row row = new Row();
@@ -660,7 +665,8 @@ public class TaskAction extends BaseAction {
 				}
 			}
 		}
-		if (!authorized)
+		if (!authorized || processPermissionChecker != null
+				&& !processPermissionChecker.canClaim(taskId))
 			return ACCESSDENIED;
 		taskService.claim(taskId, AuthzUtils.getUsername());
 		return todolist();
