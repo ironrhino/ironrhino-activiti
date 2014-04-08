@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.form.FormProperty;
 import org.activiti.engine.form.FormType;
@@ -25,6 +27,7 @@ import org.activiti.engine.impl.form.LongFormType;
 import org.activiti.engine.impl.form.StringFormType;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.eaxy.Document;
 import org.eaxy.Element;
 import org.eaxy.Xml;
@@ -68,6 +71,7 @@ public class FormRenderer {
 	@SuppressWarnings("unchecked")
 	protected Map<String, FormElement> render(List<FormProperty> formProperties) {
 		ValueStack vs = null;
+		HttpServletRequest request = ServletActionContext.getRequest();
 		if (ActionContext.getContext() != null)
 			vs = ActionContext.getContext().getValueStack();
 		Map<String, FormElement> elements = new LinkedHashMap<String, FormElement>();
@@ -77,6 +81,9 @@ public class FormRenderer {
 			FormElement fe = new FormElement();
 			elements.put(fp.getId(), fe);
 			fe.setValue(fp.getValue());
+			if (StringUtils.isBlank(fe.getValue()) && request != null
+					&& StringUtils.isNotBlank(request.getParameter(fp.getId())))
+				fe.setValue(request.getParameter(fp.getId()));
 			String label = fp.getName();
 			if (StringUtils.isBlank(label))
 				label = fp.getId();
