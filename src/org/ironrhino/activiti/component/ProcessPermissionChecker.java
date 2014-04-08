@@ -53,10 +53,15 @@ public abstract class ProcessPermissionChecker {
 				.singleResult();
 		if (hpi == null)
 			return false;
-		return canClaim(task, hpi.getStartUserId());
+		ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
+				.processDefinitionId(hpi.getProcessDefinitionId())
+				.singleResult();
+		return canClaim(pd.getKey(), task.getTaskDefinitionKey(),
+				hpi.getStartUserId());
 	}
 
-	protected boolean canClaim(Task task, String startUserId) {
+	protected boolean canClaim(String processDefinitionKey,
+			String taskDefinitionKey, String startUserId) {
 		return true;
 	}
 }
