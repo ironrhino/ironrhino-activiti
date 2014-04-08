@@ -128,10 +128,10 @@ ${processDefinition.description}
 		<#list formElements.entrySet() as entry>
 		<#assign id='form_'+entry.key/>
 		<#assign fe=entry.value/>
-		<#if !fe.disabled || fe.value?has_content>
+		<#assign hidden=fe.disabled&&!fe.value?has_content/>
 		<#if fe.type=='listpick'>
 			<#if !fe.readonly&&!fe.disabled>
-				<div class="control-group listpick" data-options="{'url':'<@url value=fe.dynamicAttributes['pickUrl']/>','name':'#${id}-control','id':'#${id}'}">
+				<div<#if hidden> style="display:none;"</#if> class="control-group listpick" data-options="{'url':'<@url value=fe.dynamicAttributes['pickUrl']/>','name':'#${id}-control','id':'#${id}'}">
 					<@s.hidden id=id name=entry.key value=fe.value! cssClass=fe.cssClass/>
 					<label class="control-label" for="${id}-control">${action.getText(fe.label)}</label>
 					<div class="controls">
@@ -139,7 +139,7 @@ ${processDefinition.description}
 					</div>
 				</div>
 			<#else>
-				<div class="control-group">
+				<div<#if hidden> style="display:none;"</#if> class="control-group">
 					<@s.hidden id=id name=entry.key value=fe.value! disabled=fe.disabled cssClass=fe.cssClass/>
 					<label class="control-label" for="${id}-control">${action.getText(fe.label)}</label>
 					<div class="controls text">
@@ -148,7 +148,7 @@ ${processDefinition.description}
 				</div>
 			</#if>
 		<#else>
-		<div class="control-group">
+		<div<#if hidden> style="display:none;"</#if> class="control-group">
 			<label class="control-label" for="${id}">${action.getText(fe.label)}</label>
 			<div class="controls">
 			<#if fe.type=='textarea'>
@@ -176,7 +176,6 @@ ${processDefinition.description}
 			</#if>
 			</div>
 		</div>
-		</#if>
 		</#if>
 		</#list>
 		</#if>
