@@ -5,13 +5,18 @@ import java.util.Collections;
 import java.util.List;
 
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
+import org.activiti.engine.identity.Group;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.ironrhino.activiti.model.ActivityDetail;
 import org.ironrhino.activiti.model.HistoricProcessInstanceQueryCriteria;
@@ -39,6 +44,12 @@ public class HistoricProcessInstanceAction extends BaseAction {
 
 	@Autowired
 	private HistoryService historyService;
+
+	@Autowired
+	private TaskService taskService;
+
+	@Autowired
+	private IdentityService identityService;
 
 	@Autowired
 	private ProcessTraceService processTraceService;
@@ -232,6 +243,29 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		for (HistoricIdentityLink historicIdentityLink : historicIdentityLinks)
 			if (userId.equals(historicIdentityLink.getUserId()))
 				return true;
+
+		List<Task> tasks = taskService.createTaskQuery().active()
+				.processInstanceId(processInstanceId).list();
+		for (Task task : tasks) {
+			if (task.getAssignee() != null)
+				continue;
+			List<IdentityLink> identityLinks = taskService
+					.getIdentityLinksForTask(task.getId());
+			for (IdentityLink identityLink : identityLinks) {
+				if (identityLink.getType().equals("candidate")) {
+					if (userId.equals(identityLink.getUserId()))
+						return true;
+					String groupId = identityLink.getGroupId();
+					if (groupId != null) {
+						Group group = identityService.createGroupQuery()
+								.groupId(groupId).groupMember(userId)
+								.singleResult();
+						if (group != null)
+							return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 
