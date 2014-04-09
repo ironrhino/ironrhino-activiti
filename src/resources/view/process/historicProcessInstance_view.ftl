@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <#escape x as x?html><html>
 <head>
-<title>查看流程历史</title>
+<title>查看流程</title>
 </head>
 <body>
 <table class="table table-bordered">
@@ -15,7 +15,7 @@
 	</thead>
 	<tbody>
 	<#list activityDetails as ad>
-	<tr class="success">
+	<tr class="<#if !historicProcessInstance.endTime??&&!ad_has_next>info<#else>success</#if>">
 		<td>${action.getText(ad.name)}</td>
 		<td><span class="user" data-username="${ad.assignee!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(ad.assignee))!}</span></td>
 		<td>${ad.startTime?datetime}</td>
