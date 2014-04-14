@@ -36,8 +36,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.ironrhino.activiti.component.ProcessPermissionChecker;
+import org.ironrhino.activiti.form.FormElement;
 import org.ironrhino.activiti.form.FormRenderer;
-import org.ironrhino.activiti.form.FormRenderer.FormElement;
+import org.ironrhino.activiti.form.FormRendererHandler;
 import org.ironrhino.activiti.model.Row;
 import org.ironrhino.activiti.model.TaskQueryCriteria;
 import org.ironrhino.core.metadata.Authorize;
@@ -63,6 +64,9 @@ public class TaskAction extends BaseAction {
 
 	@Autowired(required = false)
 	private ProcessPermissionChecker processPermissionChecker;
+
+	@Autowired(required = false)
+	private List<FormRendererHandler> formRendererHandlers;
 
 	@Autowired(required = false)
 	@Qualifier("businessKeySequence")
@@ -373,6 +377,10 @@ public class TaskAction extends BaseAction {
 			StartFormData startFormData = formService
 					.getStartFormData(processDefinitionId);
 			formElements = formRenderer.render(startFormData);
+			if (formRendererHandlers != null)
+				for (FormRendererHandler formRendererHandler : formRendererHandlers)
+					formRendererHandler.handle(formElements,
+							processDefinition.getKey(), null);
 			StringBuilder sb = new StringBuilder();
 			sb.append("resources/view/process/form/");
 			sb.append(processDefinition.getKey());
@@ -402,6 +410,11 @@ public class TaskAction extends BaseAction {
 			taskVariables = taskService.getVariables(task.getId());
 			TaskFormData taskFormData = formService.getTaskFormData(taskId);
 			formElements = formRenderer.render(taskFormData);
+			if (formRendererHandlers != null)
+				for (FormRendererHandler formRendererHandler : formRendererHandlers)
+					formRendererHandler.handle(formElements,
+							processDefinition.getKey(),
+							task.getTaskDefinitionKey());
 			StringBuilder sb = new StringBuilder();
 			sb.append("resources/view/process/form/");
 			sb.append(processDefinition.getKey());
