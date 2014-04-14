@@ -126,8 +126,11 @@ ${processDefinition.description}
 	<#else>
 		<#if formElements??>
 		<#list formElements.entrySet() as entry>
-		<#assign id='form_'+entry.key/>
 		<#assign fe=entry.value/>
+		<#assign id=fe.id!/>
+		<#if !id?has_content>
+		<#assign id='form_'+entry.key/>
+		</#if>
 		<#assign hidden=fe.disabled&&!fe.value?has_content/>
 		<#if fe.type=='listpick'>
 			<#if !fe.readonly&&!fe.disabled>

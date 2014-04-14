@@ -12,6 +12,8 @@ public class FormElement implements Serializable {
 
 	private static final long serialVersionUID = -1192332576680858062L;
 
+	private String id;
+
 	private String label;
 
 	private String value;
@@ -31,6 +33,14 @@ public class FormElement implements Serializable {
 	private Set<String> cssClasses = new LinkedHashSet<String>();
 
 	private Map<String, String> dynamicAttributes = new LinkedHashMap<String, String>();
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getLabel() {
 		return label;
