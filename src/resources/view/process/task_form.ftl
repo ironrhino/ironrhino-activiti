@@ -11,7 +11,6 @@ ${processDefinition.description}
 </div>
 </#if>
 <#else>
-<div>
 <table class="table">
 	<thead>
 	<tr>
@@ -46,13 +45,14 @@ ${processDefinition.description}
 	</#if>
 	</tbody>
 </table>
-</div>
 </#if>
 <#if comments?? && !comments.empty>
 	<table class="table">
+			<caption style="background-color: #bebec5;"><h5>${action.getText('comment')}</h5></caption>
 			<thead>
 			<tr>
-				<th style="width:100px;">${action.getText('owner')}</th>
+				<th style="width:80px;">${action.getText('owner')}</th>
+				<th style="width:130px;">${action.getText('date')}</th>
 				<th>${action.getText('comment')}</th>
 				<th style="width:80px;"></th>
 			</tr>
@@ -65,7 +65,8 @@ ${processDefinition.description}
 				<span class="user" data-username="${comment.userId}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(comment.userId))!}</span>
 				</#if>
 				</td>
-				<td>${comment.fullMessage!}</td>
+				<td>${comment.time?datetime}</td>
+				<td style="white-space:pre-wrap;word-break:break-all;">${comment.fullMessage!}</td>
 				<td>
 				<#if comment.userId?? && comment.userId==authentication("principal").username>
 				<a href="${actionBaseUrl}/deleteComment/${comment.id}" class="btn ajax deleteRow">${action.getText('delete')}</a>
@@ -78,6 +79,7 @@ ${processDefinition.description}
 </#if>
 <#if attachments?? && !attachments.empty>
 	<table class="table">
+			<caption style="background-color: #bebec5;"><h5>${action.getText('attachment')}</h5></caption>
 			<thead>
 			<tr>
 				<th style="width:200px;">${action.getText('file')}</th>
