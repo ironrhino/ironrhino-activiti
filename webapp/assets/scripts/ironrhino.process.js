@@ -48,6 +48,10 @@ Observation.process = function(container) {
 				+ '/diagram/' + pid + '" style="position:absolute;">');
 		var img = $('img', t)[0];
 		img.onload = function() {
+			$(img).closest('.ui-dialog-content').css({
+						'height' : 'auto',
+						'min-height' : img.width + 'px'
+					});
 			var ratio = img.width / img.naturalWidth;
 			$.getJSON(CONTEXT_PATH + '/process/' + entity + '/trace/' + pid,
 					function(data) {
@@ -79,8 +83,8 @@ Observation.process = function(container) {
 
 	});
 	$('button.toggle-control-group', container).click(function(e) {
-		$('.control-group.' + $(this).data('groupclass'), $(this).closest('form'))
-				.toggle();
+		$('.control-group.' + $(this).data('groupclass'),
+				$(this).closest('form')).toggle();
 	});
 	$('a.deleteRow', container).each(function() {
 				this.onprepare = function() {
