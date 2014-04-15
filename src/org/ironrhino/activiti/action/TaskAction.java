@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -283,6 +284,16 @@ public class TaskAction extends BaseAction {
 			resultPage.setResult(list);
 		}
 		return LIST;
+	}
+
+	@Override
+	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
+	public String delete() {
+		if (getId() != null) {
+			taskService.deleteTasks(Arrays.asList(getId()), true);
+			addActionMessage(getText("delete.success"));
+		}
+		return SUCCESS;
 	}
 
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)

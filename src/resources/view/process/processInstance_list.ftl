@@ -15,6 +15,7 @@
 }>
 
 <#assign bottomButtons='
+<button type="button" class="btn confirm" data-action="delete" data-shown="selected" data-filterselector=":not([data-deletable=\'false\'])">${action.getText("delete")}</button>
 <button type="button" class="btn reload">${action.getText("reload")}</button>
 '>
 <#assign actionColumnButtons='
@@ -30,6 +31,6 @@
 '>
 </@authorize>
 
-<@richtable entityName="processInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
+<@richtable entityName="processInstance" columns=columns rowDynamicAttributes=r'{"data-deletable":"${entity.processInstance.suspended?string}"}' actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 </body>
 </html></#escape>

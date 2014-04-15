@@ -2,8 +2,10 @@ package org.ironrhino.activiti.action;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 
@@ -169,15 +171,42 @@ public class ProcessInstanceAction extends BaseAction {
 		return JSON;
 	}
 
+	@Override
+	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
+	public String delete() {
+		if (getId() != null) {
+			Set<String> ids = new LinkedHashSet<>();
+			for (String id : getId()) {
+				ids.add(id);
+			}
+			List<ProcessInstance> list = runtimeService
+					.createProcessInstanceQuery().processInstanceIds(ids)
+					.list();
+			for (ProcessInstance pi : list) {
+				if (!(pi.isSuspended() || pi.isEnded())) {
+					addActionError("流程" + pi.getId() + "必须先挂起才能删除");
+					return ERROR;
+				}
+			}
+			for (ProcessInstance pi : list)
+				runtimeService.deleteProcessInstance(pi.getId(),
+						"delete by administrator");
+			addActionMessage(getText("delete.success"));
+		}
+		return SUCCESS;
+	}
+
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String suspend() throws Exception {
 		runtimeService.suspendProcessInstanceById(getUid());
+		addActionMessage(getText("operate.success"));
 		return SUCCESS;
 	}
 
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String activate() throws Exception {
 		runtimeService.activateProcessInstanceById(getUid());
+		addActionMessage(getText("operate.success"));
 		return SUCCESS;
 	}
 
