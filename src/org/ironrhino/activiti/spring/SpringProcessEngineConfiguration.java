@@ -7,6 +7,7 @@ import java.util.zip.ZipInputStream;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.form.AbstractFormType;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,21 @@ public class SpringProcessEngineConfiguration extends
 	@Autowired(required = false)
 	private List<AbstractFormType> formTypeList;
 
+	@Autowired(required = false)
+	private List<ActivitiEventListener> listeners;
+
 	protected void initFormTypes() {
 		super.initFormTypes();
 		if (formTypeList != null)
 			for (AbstractFormType customFormType : formTypeList)
 				formTypes.addFormType(customFormType);
+	}
+
+	protected void initEventDispatcher() {
+		super.initEventDispatcher();
+		if (listeners != null)
+			for (ActivitiEventListener listener : listeners)
+				this.eventDispatcher.addEventListener(listener);
 	}
 
 	protected void autoDeployResources(ProcessEngine processEngine) {

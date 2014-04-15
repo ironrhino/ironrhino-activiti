@@ -13,7 +13,7 @@
 		    <activiti:formProperty id="reason" type="textarea" required="true" />
 		</extensionElements>
     </startEvent>
-    <userTask id="deptLeaderAudit" name="部门领导审批" activiti:assignee="${userService.findDeptLeader(applyUserId)}" activiti:candidateUsers="${userService.findDeptLeaders(applyUserId)}">
+    <userTask id="deptLeaderAudit" name="部门领导审批" activiti:assignee="${userService.findDeptLeader(applyUserId)}" activiti:candidateGroups="deptLeader">
 	    <extensionElements>
 	    	<activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" writable="false" />
 		    <activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" writable="false" />
