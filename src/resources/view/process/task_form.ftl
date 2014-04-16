@@ -24,7 +24,7 @@ ${processDefinition.description}
 	<tbody>
 	<tr>
 		<td>${action.getText('startProcessInstance')}</td>
-		<td><span class="user" data-username="${historicProcessInstance.startUserId!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(historicProcessInstance.startUserId!))!}</span></td>
+		<td><span class="user" data-username="${historicProcessInstance.startUserId!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(historicProcessInstance.startUserId!))!}</span></td>
 		<td>${historicProcessInstance.startTime?datetime}</td>
 		<td></td>
 		<td></td>
@@ -34,8 +34,8 @@ ${processDefinition.description}
 	<tr>
 		<td>${action.getText(task.name)}</td>
 		<td>
-		<span class="user" data-username="${task.assignee!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.assignee))!}</span>
-		<#if task.owner?? && task.assignee?? && task.owner!=task.assignee> (<span class="user" data-username="${task.owner!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(task.owner))!}</span>)</#if>
+		<span class="user" data-username="${task.assignee!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(task.assignee))!}</span>
+		<#if task.owner?? && task.assignee?? && task.owner!=task.assignee> (<span class="user" data-username="${task.owner!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(task.owner))!}</span>)</#if>
 		</td>
 		<td>${task.startTime?datetime}</td>
 		<td>${(task.claimTime?datetime)!}</td>
@@ -62,7 +62,7 @@ ${processDefinition.description}
 			<tr>
 				<td>
 				<#if comment.userId??>
-				<span class="user" data-username="${comment.userId}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(comment.userId))!}</span>
+				<span class="user" data-username="${comment.userId}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(comment.userId))!}</span>
 				</#if>
 				</td>
 				<td>${comment.time?datetime}</td>
@@ -97,7 +97,7 @@ ${processDefinition.description}
 				</td>
 				<td>
 				<#if attachment.userId??>
-				<span class="user" data-username="${attachment.userId}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userManager').loadUserByUsername(attachment.userId))!}</span>
+				<span class="user" data-username="${attachment.userId}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(attachment.userId))!}</span>
 				</#if>
 				</td>
 				<td>${attachment.description!}</td>
