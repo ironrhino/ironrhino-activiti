@@ -7,7 +7,7 @@
 <#assign columns={
 "historicProcessInstance.id":{"alias":"流程ID","width":"100px"},
 "processDefinition.name":{"alias":"流程名"},
-"historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(value)!}</span>'},
+"historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<#if value?has_content><span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userManager").loadUserByUsername(value)!}</span></#if>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"}}>
 <#if !Parameters.finished?? || Parameters.finished != 'true'>
 <#assign columns=columns+{
