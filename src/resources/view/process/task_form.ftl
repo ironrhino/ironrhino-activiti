@@ -24,7 +24,7 @@ ${processDefinition.description}
 	<tbody>
 	<tr>
 		<td>${action.getText('startProcessInstance')}</td>
-		<td><span class="user" data-username="${historicProcessInstance.startUserId!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(historicProcessInstance.startUserId!))!}</span></td>
+		<td><#if historicProcessInstance.startUserId?has_content><span class="user" data-username="${historicProcessInstance.startUserId}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(historicProcessInstance.startUserId!))!}</span></#if></td>
 		<td>${historicProcessInstance.startTime?datetime}</td>
 		<td></td>
 		<td></td>
@@ -34,7 +34,7 @@ ${processDefinition.description}
 	<tr>
 		<td>${action.getText(task.name)}</td>
 		<td>
-		<span class="user" data-username="${task.assignee!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(task.assignee))!}</span>
+		<#if task.assignee?has_content><span class="user" data-username="${task.assignee}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(task.assignee))!}</span></#if>
 		<#if task.owner?? && task.assignee?? && task.owner!=task.assignee> (<span class="user" data-username="${task.owner!}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(task.owner))!}</span>)</#if>
 		</td>
 		<td>${task.startTime?datetime}</td>
