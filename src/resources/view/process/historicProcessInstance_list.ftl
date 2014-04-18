@@ -7,12 +7,12 @@
 <#assign columns={
 "historicProcessInstance.id":{"alias":"流程ID","width":"100px"},
 "processDefinition.name":{"alias":"流程名"},
-"historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<#if value?has_content><span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userDetailsService").loadUserByUsername(value)!}</span></#if>'},
+"historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<#if value?has_content><span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userDetailsService").loadUserByUsername(value,true)!}</span></#if>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"}}>
 <#if !Parameters.finished?? || Parameters.finished != 'true'>
 <#assign columns=columns+{
 "activityName":{"alias":"当前活动","width":"100px","template",r'${(entity.historicActivityInstance.activityName)!}'},
-"assignee":{"alias":"当前处理人","width":"100px","template":r'<#if entity.historicActivityInstance??&&entity.historicActivityInstance.assignee?has_content><span class="user" data-username="${entity.historicActivityInstance.assignee}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userDetailsService").loadUserByUsername(entity.historicActivityInstance.assignee)!}</span></#if>'}}>
+"assignee":{"alias":"当前处理人","width":"100px","template":r'<#if entity.historicActivityInstance??&&entity.historicActivityInstance.assignee?has_content><span class="user" data-username="${entity.historicActivityInstance.assignee}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userDetailsService").loadUserByUsername(entity.historicActivityInstance.assignee,true)!}</span></#if>'}}>
 </#if>
 <#if !Parameters.finished?? || Parameters.finished == 'true'>
 <#assign columns=columns+{"historicProcessInstance.endTime":{"width":"130px"}}>

@@ -17,7 +17,7 @@
 	<#list activityDetails as ad>
 	<tr class="<#if !historicProcessInstance.endTime??&&!ad_has_next>info<#else>success</#if>">
 		<td>${action.getText(ad.name)}</td>
-		<td><#if ad.assignee?has_content><span class="user" data-username="${ad.assignee}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(ad.assignee))!}</span></#if></td>
+		<td><#if ad.assignee?has_content><span class="user" data-username="${ad.assignee}">${(statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('userDetailsService').loadUserByUsername(ad.assignee,true))!}</span></#if></td>
 		<td>${ad.startTime?datetime}</td>
 		<td>${(ad.endTime?datetime)!}</td>
 	</tr>
