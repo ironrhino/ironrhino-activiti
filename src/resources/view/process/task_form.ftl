@@ -138,17 +138,17 @@ ${processDefinition.description}
 			<#if !fe.readonly&&!fe.disabled>
 				<div<#if hidden> style="display:none;"</#if> class="control-group listpick" data-options="{'url':'<@url value=fe.dynamicAttributes['pickUrl']/>'}">
 					<@s.hidden id=id name=entry.key value=fe.value! cssClass="listpick-id "+fe.cssClass/>
-					<label class="control-label" for="${id}-control">${action.getText(fe.label)}</label>
+					<label class="control-label">${action.getText(fe.label)}</label>
 					<div class="controls">
-					<span id="${id}-control" class="listpick-name"><#if taskVariables?? && taskVariables[entry.key]??><#if taskVariables[entry.key].fullname??>${taskVariables[entry.key].fullname!}<#else>${taskVariables[entry.key]!}</#if></#if></span>
+					<span class="listpick-name"><#if taskVariables?? && taskVariables[entry.key]??><#if taskVariables[entry.key].fullname??>${taskVariables[entry.key].fullname!}<#else>${taskVariables[entry.key]!}</#if></#if></span>
 					</div>
 				</div>
 			<#else>
 				<div<#if hidden> style="display:none;"</#if> class="control-group">
-					<@s.hidden id=id name=entry.key value=fe.value! disabled=fe.disabled cssClass=fe.cssClass/>
-					<label class="control-label" for="${id}-control">${action.getText(fe.label)}</label>
+					<@s.hidden id=id name=entry.key value=fe.value! disabled=fe.disabled cssClass="listpick-id "+fe.cssClass/>
+					<label class="control-label">${action.getText(fe.label)}</label>
 					<div class="controls text">
-					<span id="${id}-control"><#if taskVariables?? && taskVariables[entry.key]??><#if taskVariables[entry.key].fullname??>${taskVariables[entry.key].fullname!}<#else>${taskVariables[entry.key]!}</#if></#if></span>
+					<span class="listpick-name"><#if taskVariables?? && taskVariables[entry.key]??><#if taskVariables[entry.key].fullname??>${taskVariables[entry.key].fullname!}<#else>${taskVariables[entry.key]!}</#if></#if></span>
 					</div>
 				</div>
 			</#if>
