@@ -9,6 +9,7 @@ import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.form.AbstractFormType;
+import org.activiti.engine.impl.variable.VariableType;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -20,6 +21,9 @@ public class SpringProcessEngineConfiguration extends
 	private List<AbstractFormType> formTypeList;
 
 	@Autowired(required = false)
+	private List<VariableType> variableTypeList;
+
+	@Autowired(required = false)
 	private List<ActivitiEventListener> listeners;
 
 	protected void initFormTypes() {
@@ -27,6 +31,13 @@ public class SpringProcessEngineConfiguration extends
 		if (formTypeList != null)
 			for (AbstractFormType customFormType : formTypeList)
 				formTypes.addFormType(customFormType);
+	}
+
+	protected void initVariableTypes() {
+		super.initVariableTypes();
+		if (variableTypeList != null)
+			for (VariableType customVariableType : variableTypeList)
+				variableTypes.addType(customVariableType, 0);
 	}
 
 	protected void initEventDispatcher() {
