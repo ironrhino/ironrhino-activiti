@@ -136,7 +136,7 @@ ${processDefinition.description}
 		<#assign hidden=fe.disabled&&!fe.value?has_content/>
 		<#if fe.type=='listpick'>
 			<div<#if hidden> style="display:none;"</#if> class="control-group <#if fe.readonly||fe.disabled>_</#if>listpick" data-options="{'url':'<@url value=fe.dynamicAttributes['pickUrl']/>'}">
-				<@s.hidden id=id name=entry.key value=fe.value! cssClass="listpick-id "+fe.cssClass/>
+				<@s.hidden id=id name=entry.key value=fe.value! disabled=fe.disabled cssClass="listpick-id "+fe.cssClass/>
 				<label class="control-label">${action.getText(fe.label)}</label>
 				<div class="controls<#if fe.readonly||fe.disabled> text</#if>">
 				<span class="listpick-name"><#if taskVariables?? && taskVariables[entry.key]??><#if taskVariables[entry.key].fullname??>${taskVariables[entry.key].fullname!}<#else>${taskVariables[entry.key]!}</#if></#if></span>
