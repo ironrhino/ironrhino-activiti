@@ -135,7 +135,7 @@ public class FormRenderer {
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
-			} else if (type instanceof DecimalFormType) {
+			} else if (type instanceof BigDecimalFormType) {
 				fe.setInputType("number");
 				if (fp.getId().toLowerCase().endsWith("rate")) {
 					fe.getDynamicAttributes().put("data-scale", "8");

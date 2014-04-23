@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DecimalFormType extends NamedFormType {
+public class BigDecimalFormType extends NamedFormType {
 
 	public Object convertFormValueToModelValue(String propertyValue) {
 		try {

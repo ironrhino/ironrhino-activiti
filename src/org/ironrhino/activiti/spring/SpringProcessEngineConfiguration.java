@@ -37,7 +37,7 @@ public class SpringProcessEngineConfiguration extends
 		super.initVariableTypes();
 		if (variableTypeList != null)
 			for (VariableType customVariableType : variableTypeList)
-				variableTypes.addType(customVariableType, 0);
+				variableTypes.addType(customVariableType, 1);
 	}
 
 	protected void initEventDispatcher() {

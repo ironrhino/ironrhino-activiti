@@ -7,10 +7,10 @@ import org.activiti.engine.impl.variable.VariableType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DecimalVariableType implements VariableType {
+public class BigDecimalVariableType implements VariableType {
 
 	public String getTypeName() {
-		return "decimal";
+		return "bigDecimal";
 	}
 
 	public boolean isCachable() {
