@@ -40,7 +40,10 @@ public class EnumVariableType implements VariableType {
 		} else {
 			Enum en = (Enum) value;
 			valueFields.setTextValue(en.name());
-			valueFields.setTextValue2(en.getClass().getName());
+			Class<?> clz = en.getClass();
+			if (clz.getEnclosingClass() != null)
+				clz = clz.getEnclosingClass();
+			valueFields.setTextValue2(clz.getName());
 		}
 	}
 
