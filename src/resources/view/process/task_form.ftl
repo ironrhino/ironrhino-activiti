@@ -111,7 +111,7 @@ ${processDefinition.description}
 			</tbody>
 	</table>	
 </#if>
-<#if formTemplate?has_content && form?index_of('<form') gt -1>
+<#if formTemplate?has_content && formTemplate?index_of('<form') gt -1>
 	<@formTemplate?interpret/>
 <#else>
 <form id="${processDefinition.key}<#if task??>_${task.taskDefinitionKey}</#if>" action="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>" method="post" class="ajax form-horizontal disposable<#if task??> ${task.taskDefinitionKey}</#if>" enctype="multipart/form-data">
