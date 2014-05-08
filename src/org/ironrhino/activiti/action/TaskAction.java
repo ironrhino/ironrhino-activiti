@@ -395,6 +395,9 @@ public class TaskAction extends BaseAction {
 			StringBuilder sb = new StringBuilder();
 			sb.append("resources/view/process/form/");
 			sb.append(processDefinition.getKey());
+			String formKey = formService.getStartFormKey(processDefinitionId);
+			if (StringUtils.isNotBlank(formKey))
+				sb.append("_").append(formKey);
 			sb.append(".ftl");
 			ClassPathResource cpr = new ClassPathResource(sb.toString());
 			if (cpr.exists() && cpr.isReadable()) {
@@ -430,7 +433,10 @@ public class TaskAction extends BaseAction {
 			sb.append("resources/view/process/form/");
 			sb.append(processDefinition.getKey());
 			sb.append("_");
-			sb.append(task.getTaskDefinitionKey());
+			String formKey = formService.getTaskFormKey(processDefinitionId,
+					task.getTaskDefinitionKey());
+			sb.append(StringUtils.isNotBlank(formKey) ? formKey : task
+					.getTaskDefinitionKey());
 			sb.append(".ftl");
 			ClassPathResource cpr = new ClassPathResource(sb.toString());
 			if (cpr.exists() && cpr.isReadable()) {
