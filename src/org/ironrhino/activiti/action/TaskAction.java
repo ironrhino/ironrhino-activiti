@@ -433,8 +433,8 @@ public class TaskAction extends BaseAction {
 			sb.append("resources/view/process/form/");
 			sb.append(processDefinition.getKey());
 			sb.append("_");
-			String formKey = formService.getTaskFormKey(processDefinitionId,
-					task.getTaskDefinitionKey());
+			String formKey = formService.getTaskFormKey(
+					processDefinition.getId(), task.getTaskDefinitionKey());
 			sb.append(StringUtils.isNotBlank(formKey) ? formKey : task
 					.getTaskDefinitionKey());
 			sb.append(".ftl");
