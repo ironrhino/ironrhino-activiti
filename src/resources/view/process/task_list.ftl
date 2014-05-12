@@ -27,12 +27,6 @@
 <@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
 
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;">
-<style>
-	.row [class*="span"] .control-label{
-		width: 200px;
-		padding-right: 20px;
-	}
-</style>
 <div class="row">
 	<div class="span6">
 		<div class="control-group">

@@ -35,12 +35,6 @@
 </#if>
 <@richtable formid=formid entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;">
-<style>
-	.row [class*="span"] .control-label{
-		width: 200px;
-		padding-right: 20px;
-	}
-</style>
 <#if !request.requestURI?ends_with('/involved')>
 <div class="row">
 	<div class="span6">
