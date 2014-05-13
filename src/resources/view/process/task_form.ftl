@@ -128,50 +128,7 @@ ${processDefinition.description}
 	<#else>
 		<#if formElements??>
 		<#list formElements.entrySet() as entry>
-		<#assign fe=entry.value/>
-		<#assign id=fe.id!/>
-		<#if !id?has_content>
-		<#assign id='form_'+entry.key/>
-		</#if>
-		<#assign hidden=fe.disabled&&!fe.value?has_content/>
-		<#if fe.type=='listpick'>
-			<div<#if hidden> style="display:none;"</#if> class="control-group <#if fe.readonly||fe.disabled>_</#if>listpick" data-options="{'url':'<@url value=fe.dynamicAttributes['pickUrl']/>'}">
-				<@s.hidden id=id name=entry.key value=fe.value! disabled=fe.disabled cssClass="listpick-id "+fe.cssClass/>
-				<label class="control-label">${action.getText(fe.label)}</label>
-				<div class="controls<#if fe.readonly||fe.disabled> text</#if>">
-				<span class="listpick-name"><#if taskVariables?? && taskVariables[entry.key]??><#if taskVariables[entry.key].fullname??>${taskVariables[entry.key].fullname!}<#else>${taskVariables[entry.key]!}</#if></#if></span>
-				</div>
-			</div>
-		<#else>
-		<div<#if hidden> style="display:none;"</#if> class="control-group">
-			<label class="control-label" for="${id}">${action.getText(fe.label)}</label>
-			<div class="controls">
-			<#if fe.type=='textarea'>
-			<textarea id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>${fe.value!}</textarea>
-			<#elseif fe.type=='select'>
-			<select id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>
-			<option></option>
-			<#list fe.values.entrySet() as en>
-			<option value="${en.key}"<#if fe.value??&&fe.value==en.key> selected</#if>>${en.value}</option>
-			</#list>
-			</select>
-			<#elseif fe.type=='enum'>
-			<select id="${id}" name="${entry.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if>>
-			<option></option>
-			<#list statics[fe.dynamicAttributes['enumType']].values() as en>
-			<option value="${en.name()}"<#if fe.value??&&fe.value==en.name()> selected</#if>>${en}</option>
-			</#list>
-			</select>
-			<#elseif fe.type=='radio'>
-			<#list fe.values.entrySet() as en>
-			<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${entry.key}" value="${en.key}"<#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
-			</#list>
-			<#else>
-			<input id="${id}" type="${fe.inputType}" name="${entry.key}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>
-			</#if>
-			</div>
-		</div>
-		</#if>
+		<@processFormElement name=entry.key />
 		</#list>
 		</#if>
 	</#if>
