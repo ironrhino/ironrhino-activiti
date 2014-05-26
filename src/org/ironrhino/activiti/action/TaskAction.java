@@ -42,6 +42,7 @@ import org.ironrhino.activiti.form.FormRenderer;
 import org.ironrhino.activiti.form.FormRendererHandler;
 import org.ironrhino.activiti.model.Row;
 import org.ironrhino.activiti.model.TaskQueryCriteria;
+import org.ironrhino.activiti.service.ProcessHelper;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.model.ResultPage;
@@ -93,6 +94,9 @@ public class TaskAction extends BaseAction {
 
 	@Autowired
 	private FormRenderer formRenderer;
+
+	@Autowired
+	private ProcessHelper processHelper;
 
 	private String assignee;
 
@@ -314,25 +318,10 @@ public class TaskAction extends BaseAction {
 	}
 
 	public String todolist() {
-		String userid = AuthzUtils.getUsername();
-		TaskQuery query = taskService.createTaskQuery().taskAssignee(userid);
-		if (criteria != null)
-			criteria.filter(query, true);
-		List<Task> taskAssignees = query.orderByTaskPriority().desc()
-				.orderByTaskCreateTime().desc().list();
-		query = taskService.createTaskQuery().taskCandidateUser(userid);
-		if (criteria != null)
-			criteria.filter(query, true);
-		List<Task> taskCandidates = query.orderByTaskPriority().desc()
-				.orderByTaskCreateTime().desc().list();
+		String userId = AuthzUtils.getUsername();
 		List<Task> all = new ArrayList<Task>();
-		all.addAll(taskAssignees);
-		for (Task task : taskCandidates) {
-			if (processPermissionChecker != null
-					&& !processPermissionChecker.canClaim(task))
-				continue;
-			all.add(task);
-		}
+		all.addAll(processHelper.findAssignedTasks(userId, criteria));
+		all.addAll(processHelper.findCandidateTasks(userId, criteria));
 		list = new ArrayList<Row>();
 		for (Task task : all) {
 			Row row = new Row();

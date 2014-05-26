@@ -17,7 +17,7 @@
     </ul>
   </li>
   <li><a href="<@url value="/process/task/todolist"/>" class="ajax view">我的任务</a></li>
-  <#assign startableProcessMap=statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('processService').findStartableProcessMap(authentication('principal').username)>
+  <#assign startableProcessMap=statics['org.ironrhino.core.util.ApplicationContextUtils'].getBean('processHelper').findStartableProcessMap(authentication('principal').username)>
   <#if !startableProcessMap.empty>
   <li class="dropdown">
  	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
