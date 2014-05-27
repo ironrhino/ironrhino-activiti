@@ -98,7 +98,7 @@ public class ProcessHelper {
 				criteria.filter(query, true);
 			return query.count();
 		} else
-			return findAssignedTasks(userId, criteria).size();
+			return findCandidateTasks(userId, criteria).size();
 	}
 
 }
