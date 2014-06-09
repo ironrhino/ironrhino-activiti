@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
@@ -687,7 +688,11 @@ public class TaskAction extends BaseAction {
 		if (!authorized || processPermissionChecker != null
 				&& !processPermissionChecker.canClaim(taskId))
 			return ACCESSDENIED;
-		taskService.claim(taskId, AuthzUtils.getUsername());
+		try {
+			taskService.claim(taskId, AuthzUtils.getUsername());
+		} catch (ActivitiTaskAlreadyClaimedException e) {
+			addActionError("任务已经被别人签收了");
+		}
 		return todolist();
 	}
 
