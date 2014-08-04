@@ -160,14 +160,14 @@ ${processDefinition.description}
 			</div>
 	</div>
 	<#if !historicProcessInstance??>
-	<@s.submit value="%{getText('start')}" cssClass="btn-primary">
+	<@s.submit value="%{getText('start')}" class="btn-primary">
 	<@s.param name="after">
 	<button type="button" class="btn toggle-control-group" data-groupclass="comment">${action.getText('comment')}</button>
 	<button type="button" class="btn toggle-control-group" data-groupclass="attachment">${action.getText('attachment')}</button>
 	</@s.param>
 	</@s.submit>
 	<#else>
-	<@s.submit value="%{getText('submit')}" cssClass="btn-primary">
+	<@s.submit value="%{getText('submit')}" class="btn-primary">
 	<@s.param name="after">
 	<button type="button" class="btn toggle-control-group" data-groupclass="comment">${action.getText('comment')}</button>
 	<button type="button" class="btn toggle-control-group" data-groupclass="attachment">${action.getText('attachment')}</button>

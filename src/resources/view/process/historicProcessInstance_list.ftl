@@ -75,7 +75,7 @@
 <div class="row">
 	<div class="span6">
 		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
-		<@s.hidden id="criteria_involvedUser" name="criteria.involvedUser" cssClass="listpick-id"/>
+		<@s.hidden id="criteria_involvedUser" name="criteria.involvedUser" class="listpick-id"/>
 		<label class="control-label" for="criteria_involvedUser-control">${action.getText('involvedUser')}</label>
 		<div class="controls">
 		<span class="listpick-name"></span>
@@ -84,7 +84,7 @@
 	</div>
 	<div class="span6">
 		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
-		<@s.hidden id="criteria_startedBy" name="criteria.startedBy" cssClass="listpick-id"/>
+		<@s.hidden id="criteria_startedBy" name="criteria.startedBy" class="listpick-id"/>
 		<label class="control-label" for="criteria_startedBy-control">${action.getText('startedBy')}</label>
 		<div class="controls">
 		<span class="listpick-name"></span>

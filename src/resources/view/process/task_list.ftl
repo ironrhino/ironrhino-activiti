@@ -102,7 +102,7 @@
 <div class="row">
 	<div class="span6">
 		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
-		<@s.hidden id="criteria_taskInvolvedUser" name="criteria.taskInvolvedUser" cssClass="listpick-id"/>
+		<@s.hidden id="criteria_taskInvolvedUser" name="criteria.taskInvolvedUser" class="listpick-id"/>
 		<label class="control-label" for="criteria_taskInvolvedUser-control">${action.getText('involvedUser')}</label>
 		<div class="controls">
 		<span class="listpick-name"></span>
@@ -111,7 +111,7 @@
 	</div>
 	<div class="span6">
 		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
-		<@s.hidden id="criteria_taskAssignee" name="criteria.taskAssignee" cssClass="listpick-id"/>
+		<@s.hidden id="criteria_taskAssignee" name="criteria.taskAssignee" class="listpick-id"/>
 		<label class="control-label" for="criteria_taskAssignee-control">${action.getText('assignee')}</label>
 		<div class="controls">
 		<span class="listpick-name"></span>
