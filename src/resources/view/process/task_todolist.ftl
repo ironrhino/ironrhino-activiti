@@ -75,17 +75,17 @@
 <div class="row">
 	<div class="span6">
 		<div class="control-group">
-			<label class="control-label" for="criteria_dueBefore">${action.getText('dueBefore')}</label>
+			<label class="control-label" for="criteria_taskDueBefore">${action.getText('taskDueBefore')}</label>
 			<div class="controls">
-				<input id="criteria_dueBefore" type="text" name="criteria.dueBefore" class="date"/>
+				<input id="criteria_taskDueBefore" type="text" name="criteria.taskDueBefore" class="date"/>
 			</div>
 		</div>
 	</div>
 	<div class="span6">
 		<div class="control-group">
-			<label class="control-label" for="criteria_dueAfter">${action.getText('dueAfter')}</label>
+			<label class="control-label" for="criteria_taskDueAfter">${action.getText('taskDueAfter')}</label>
 			<div class="controls">
-				<input id="criteria_dueAfter" type="text" name="criteria.dueAfter" class="date"/>
+				<input id="criteria_taskDueAfter" type="text" name="criteria.taskDueAfter" class="date"/>
 			</div>
 		</div>
 	</div>

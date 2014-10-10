@@ -39,9 +39,9 @@ public class TaskQueryCriteria implements Serializable {
 
 	private Date taskCreatedAfter;
 
-	private Date dueBefore;
+	private Date taskDueBefore;
 
-	private Date dueAfter;
+	private Date taskDueAfter;
 
 	private String taskAssignee;
 
@@ -159,20 +159,20 @@ public class TaskQueryCriteria implements Serializable {
 		this.taskCreatedAfter = taskCreatedAfter;
 	}
 
-	public Date getDueBefore() {
-		return dueBefore;
+	public Date getTaskDueBefore() {
+		return taskDueBefore;
 	}
 
-	public void setDueBefore(Date dueBefore) {
-		this.dueBefore = dueBefore;
+	public void setTaskDueBefore(Date taskDueBefore) {
+		this.taskDueBefore = taskDueBefore;
 	}
 
-	public Date getDueAfter() {
-		return dueAfter;
+	public Date getTaskDueAfter() {
+		return taskDueAfter;
 	}
 
-	public void setDueAfter(Date dueAfter) {
-		this.dueAfter = dueAfter;
+	public void setTaskDueAfter(Date taskDueAfter) {
+		this.taskDueAfter = taskDueAfter;
 	}
 
 	public String getTaskAssignee() {
@@ -220,10 +220,10 @@ public class TaskQueryCriteria implements Serializable {
 			query.taskCreatedBefore(taskCreatedBefore);
 		if (taskCreatedAfter != null)
 			query.taskCreatedAfter(taskCreatedAfter);
-		if (dueBefore != null)
-			query.dueBefore(dueBefore);
-		if (dueAfter != null)
-			query.dueAfter(dueAfter);
+		if (taskDueBefore != null)
+			query.taskDueBefore(taskDueBefore);
+		if (taskDueAfter != null)
+			query.taskDueAfter(taskDueAfter);
 		if (admin) {
 			if (StringUtils.isNotBlank(taskAssignee))
 				query.taskAssignee(taskAssignee);
