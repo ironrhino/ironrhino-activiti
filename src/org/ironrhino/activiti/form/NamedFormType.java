@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public abstract class NamedFormType extends AbstractFormType {
 
+	private static final long serialVersionUID = 205082195400657629L;
+
 	public String getName() {
 		String name = getClass().getSimpleName();
 		if (name.endsWith("FormType"))

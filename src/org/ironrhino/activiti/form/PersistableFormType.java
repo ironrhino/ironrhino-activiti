@@ -17,6 +17,8 @@ import org.springframework.core.convert.ConversionService;
 public class PersistableFormType<T extends Persistable<?>> extends
 		NamedFormType {
 
+	private static final long serialVersionUID = 252383786159480042L;
+
 	@Autowired
 	private EntityManager<T> entityManager;
 

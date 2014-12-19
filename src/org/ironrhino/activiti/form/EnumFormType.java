@@ -8,6 +8,8 @@ import org.ironrhino.core.util.ReflectionUtils;
 @SuppressWarnings("unchecked")
 public class EnumFormType<T extends Enum<T>> extends NamedFormType {
 
+	private static final long serialVersionUID = -9196097171156184588L;
+
 	private Class<T> enumType;
 
 	@PostConstruct
