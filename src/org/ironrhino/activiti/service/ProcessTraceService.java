@@ -35,6 +35,7 @@ import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.ironrhino.activiti.form.FormRenderer;
 import org.ironrhino.activiti.model.ActivityDetail;
+import org.ironrhino.core.struts.I18N;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.util.LocalizedTextUtil;
 
 @Component
 public class ProcessTraceService {
@@ -337,7 +335,6 @@ public class ProcessTraceService {
 	}
 
 	private String translate(String key) {
-		return LocalizedTextUtil.findText(getClass(), key, ActionContext
-				.getContext().getLocale(), key, null);
+		return I18N.getText(key);
 	}
 }

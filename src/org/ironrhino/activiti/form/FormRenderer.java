@@ -38,7 +38,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import com.opensymphony.xwork2.util.ValueStack;
 
 @Component
@@ -124,10 +123,7 @@ public class FormRenderer {
 					Map<String, String> map = dc.getItemsAsMap(fp.getId());
 					for (Map.Entry<String, String> entry : map.entrySet()) {
 						if (StringUtils.isBlank(entry.getValue())) {
-							String value = LocalizedTextUtil.findText(
-									getClass(), entry.getKey(), ActionContext
-											.getContext().getLocale(), entry
-											.getKey(), null);
+							String value = I18N.getText(entry.getKey());
 							entry.setValue(value);
 						}
 					}
