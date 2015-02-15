@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class IdentitySynchronizer implements
-		ApplicationListener<EntityOperationEvent> {
+		ApplicationListener<EntityOperationEvent<?>> {
 
 	@Autowired
 	private IdentityService identityService;
 
 	@Override
-	public void onApplicationEvent(EntityOperationEvent event) {
+	public void onApplicationEvent(EntityOperationEvent<?> event) {
 		if (!event.isLocal())
 			return;
 		Persistable<?> entity = event.getEntity();
