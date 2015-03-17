@@ -21,7 +21,7 @@ public class IdentitySynchronizer implements
 		if (!event.isLocal())
 			return;
 		Persistable<?> entity = event.getEntity();
-		if (RoledUserDetails.class.isAssignableFrom(entity.getClass())) {
+		if (entity instanceof RoledUserDetails) {
 			RoledUserDetails user = (RoledUserDetails) entity;
 			switch (event.getType()) {
 			case CREATE:
