@@ -22,6 +22,7 @@ public class AfterModifyApplyContentProcessor implements TaskListener {
 	@Autowired
 	RuntimeService runtimeService;
 
+	@Override
 	public void notify(DelegateTask delegateTask) {
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery()

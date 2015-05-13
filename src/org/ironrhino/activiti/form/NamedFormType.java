@@ -7,6 +7,7 @@ public abstract class NamedFormType extends AbstractFormType {
 
 	private static final long serialVersionUID = 205082195400657629L;
 
+	@Override
 	public String getName() {
 		String name = getClass().getSimpleName();
 		if (name.endsWith("FormType"))
@@ -14,6 +15,7 @@ public abstract class NamedFormType extends AbstractFormType {
 		return StringUtils.uncapitalize(name);
 	}
 
+	@Override
 	public String convertModelValueToFormValue(Object modelValue) {
 		if (modelValue == null)
 			return null;

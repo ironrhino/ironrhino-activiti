@@ -116,6 +116,7 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		return activityDetails;
 	}
 
+	@Override
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String execute() {
 		return list();
@@ -202,6 +203,7 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		return LIST;
 	}
 
+	@Override
 	public String view() {
 		historicProcessInstance = historyService
 				.createHistoricProcessInstanceQuery()

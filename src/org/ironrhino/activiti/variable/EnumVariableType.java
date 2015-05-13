@@ -12,14 +12,17 @@ public class EnumVariableType implements VariableType {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
+	@Override
 	public String getTypeName() {
 		return "enum";
 	}
 
+	@Override
 	public boolean isCachable() {
 		return true;
 	}
 
+	@Override
 	public Object getValue(ValueFields valueFields) {
 		if (valueFields.getTextValue() == null)
 			return null;
@@ -34,6 +37,7 @@ public class EnumVariableType implements VariableType {
 
 	}
 
+	@Override
 	public void setValue(Object value, ValueFields valueFields) {
 		if (value == null) {
 			valueFields.setTextValue(null);
@@ -47,6 +51,7 @@ public class EnumVariableType implements VariableType {
 		}
 	}
 
+	@Override
 	public boolean isAbleToStore(Object value) {
 		return value != null && value instanceof Enum;
 	}

@@ -26,7 +26,7 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/disruptor-3.3.2.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/eaxy-0.1.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ehcache-core-2.6.10.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ehcache-core-2.6.11.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/freemarker-2.3.22.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/guava-18.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/hessian-4.0.38.jar"/>
@@ -41,9 +41,9 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-1.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-config-1.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-sitemesh-config-1.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-annotations-2.5.2.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-core-2.5.2.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-databind-2.5.2.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-annotations-2.5.3.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-core-2.5.3.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-databind-2.5.3.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javamail-1.4.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javassist-3.19.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jboss-logging-3.2.1.jar"/>
@@ -70,9 +70,9 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-expression-4.1.5.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-jdbc-4.1.5.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-orm-4.1.5.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-config-4.0.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-core-4.0.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-web-4.0.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-config-4.0.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-core-4.0.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-web-4.0.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-tx-4.1.5.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-web-4.1.5.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-webmvc-4.1.5.jar"/>

@@ -22,6 +22,7 @@ public class ReportBackEndProcessor implements TaskListener {
 	@Autowired
 	RuntimeService runtimeService;
 
+	@Override
 	public void notify(DelegateTask delegateTask) {
 		String processInstanceId = delegateTask.getProcessInstanceId();
 		ProcessInstance processInstance = runtimeService

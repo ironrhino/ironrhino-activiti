@@ -72,6 +72,7 @@ public class ProcessInstanceAction extends BaseAction {
 		return activities;
 	}
 
+	@Override
 	public String execute() {
 		return list();
 	}
@@ -123,6 +124,7 @@ public class ProcessInstanceAction extends BaseAction {
 		return LIST;
 	}
 
+	@Override
 	public String view() {
 		processInstance = runtimeService.createProcessInstanceQuery()
 				.processInstanceId(getUid()).singleResult();

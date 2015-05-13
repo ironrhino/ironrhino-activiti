@@ -26,6 +26,7 @@ public class SpringProcessEngineConfiguration extends
 	@Autowired(required = false)
 	private List<ActivitiEventListener> listeners;
 
+	@Override
 	protected void initFormTypes() {
 		super.initFormTypes();
 		if (formTypeList != null)
@@ -33,6 +34,7 @@ public class SpringProcessEngineConfiguration extends
 				formTypes.addFormType(customFormType);
 	}
 
+	@Override
 	protected void initVariableTypes() {
 		super.initVariableTypes();
 		if (variableTypeList != null)
@@ -40,6 +42,7 @@ public class SpringProcessEngineConfiguration extends
 				variableTypes.addType(customVariableType, 1);
 	}
 
+	@Override
 	protected void initEventDispatcher() {
 		super.initEventDispatcher();
 		if (listeners != null)
@@ -47,6 +50,7 @@ public class SpringProcessEngineConfiguration extends
 				this.eventDispatcher.addEventListener(listener);
 	}
 
+	@Override
 	protected void autoDeployResources(ProcessEngine processEngine) {
 		if (deploymentResources != null && deploymentResources.length > 0) {
 			for (Resource resource : deploymentResources) {

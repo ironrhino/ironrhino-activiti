@@ -259,6 +259,7 @@ public class TaskAction extends BaseAction {
 		return taskVariables;
 	}
 
+	@Override
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String execute() {
 		if (resultPage == null)

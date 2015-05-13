@@ -20,14 +20,17 @@ public class PersistableVariableType implements VariableType {
 	@Autowired
 	private EntityManager<?> entityManager;
 
+	@Override
 	public String getTypeName() {
 		return "persistable";
 	}
 
+	@Override
 	public boolean isCachable() {
 		return false;
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Object getValue(ValueFields valueFields) {
 		String entityClassName = valueFields.getTextValue2();
@@ -56,6 +59,7 @@ public class PersistableVariableType implements VariableType {
 		return entityManager.get(id);
 	}
 
+	@Override
 	public void setValue(Object value, ValueFields valueFields) {
 		if (value == null) {
 			valueFields.setLongValue(null);
@@ -75,6 +79,7 @@ public class PersistableVariableType implements VariableType {
 		}
 	}
 
+	@Override
 	public boolean isAbleToStore(Object value) {
 		return value != null
 				&& Persistable.class.isAssignableFrom(value.getClass());
