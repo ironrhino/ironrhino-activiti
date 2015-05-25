@@ -4,9 +4,11 @@ import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.Group;
 import org.ironrhino.core.event.EntityOperationEvent;
 import org.ironrhino.core.model.Persistable;
-import org.ironrhino.core.security.role.RoledUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,13 +18,17 @@ public class IdentitySynchronizer implements
 	@Autowired
 	private IdentityService identityService;
 
+	@Autowired
+	private UserDetailsService userDetailsService;
+
 	@Override
 	public void onApplicationEvent(EntityOperationEvent<?> event) {
 		if (!event.isLocal())
 			return;
 		Persistable<?> entity = event.getEntity();
-		if (entity instanceof RoledUserDetails) {
-			RoledUserDetails user = (RoledUserDetails) entity;
+		if (entity instanceof UserDetails) {
+			UserDetails user = (UserDetails) entity;
+			user = userDetailsService.loadUserByUsername(user.getUsername());
 			switch (event.getType()) {
 			case CREATE:
 			case UPDATE:
@@ -36,11 +42,11 @@ public class IdentitySynchronizer implements
 				for (Group group : identityService.createGroupQuery()
 						.groupMember(u.getId()).list())
 					identityService.deleteMembership(u.getId(), group.getId());
-				for (String role : user.getRoles()) {
-					Group g = identityService.createGroupQuery().groupId(role)
-							.singleResult();
+				for (GrantedAuthority ga : user.getAuthorities()) {
+					Group g = identityService.createGroupQuery()
+							.groupId(ga.getAuthority()).singleResult();
 					if (g == null) {
-						g = identityService.newGroup(role);
+						g = identityService.newGroup(ga.getAuthority());
 						identityService.saveGroup(g);
 					}
 					identityService.createMembership(u.getId(), g.getId());
