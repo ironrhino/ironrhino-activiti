@@ -1,5 +1,7 @@
 Observation.process = function(container) {
-	var form = $('#processDefinition-form', container);
+	var c = $(container);
+	var selector = '#processDefinition-form';
+	var form = c.is(selector) ? c : $(selector, container);
 	var uploadFile = function(file) {
 		var maxsize = 4 * 1024 * 1024;
 		if (file.size > maxsize) {
