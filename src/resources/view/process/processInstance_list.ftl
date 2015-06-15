@@ -15,18 +15,15 @@
 }>
 
 <#assign bottomButtons='
-<button type="button" class="btn confirm" data-action="delete" data-shown="selected" data-filterselector=":not([data-deletable=\'false\'])">${action.getText("delete")}</button>
-<button type="button" class="btn reload">${action.getText("reload")}</button>
-'>
-<#assign actionColumnButtons='
-<button type="button" class="btn" data-view="view" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("view")}</button>
-'>
+<button type="button" class="btn confirm" data-action="delete" data-shown="selected" data-filterselector=":not([data-deletable=\'false\'])">${action.getText("delete")}</button>'
++r'<@btn class="reload"/>'>
+<#assign actionColumnButtons=r'<@btn view="view" '+'windowoptions="{\'width\':\'80%\',\'height\':650}"/>'>
 <@authorize ifAnyGranted="ROLE_ADMINISTRATOR">
 <#assign actionColumnButtons=actionColumnButtons+r'
 <#if entity.processInstance.suspended>
-<button type="button" class="btn confirm" data-action="activate">${action.getText("activate")}</button>
+<@btn action="activate" confirm=true/>
 <#else>
-<button type="button" class="btn confirm" data-action="suspend">${action.getText("suspend")}</button>
+<@btn action="suspend" confirm=true/>
 </#if>
 '>
 </@authorize>

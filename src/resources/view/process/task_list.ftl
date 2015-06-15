@@ -17,13 +17,13 @@
 "task.suspended":{"width":"60px"}}>
 <#assign actionColumnButtons=r'
 <#if !entity.task.suspended>
-<button type="button" class="btn" data-view="reassign">${action.getText("reassign")}</button>
+<@btn view="reassign"/>
 </#if>
 '>
-<#assign bottomButtons='
+<#assign bottomButtons=r'
 <button type="button" class="btn confirm" data-action="delete" data-shown="selected">${action.getText("delete")}</button>
-<button type="button" class="btn reload">${action.getText("reload")}</button>
-<button type="button" class="btn filter">${action.getText("filter")}</button>
+<@btn class="reload"/>
+<@btn class="filter"/>
 '>
 <@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
 

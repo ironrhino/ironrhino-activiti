@@ -14,15 +14,15 @@
 "processDefinition.suspended":{"width":"60px"}}>
 <#assign bottomButtons=r'
 <button type="button" class="btn noajax deploy">${action.getText("deploy")}</button>
-<button type="button" class="btn confirm" data-action="delete" data-shown="selected" style="display: none;">${action.getText("delete")}</button>
-<button type="button" class="btn reload">${action.getText("reload")}</button>
+<button type="button" class="btn confirm" data-action="delete" data-shown="selected">${action.getText("delete")}</button>
+<@btn class="reload"/>
 '>
 <#assign actionColumnButtons='
-<button type="button" class="btn" data-view="view" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("view")}</button>
+<@btn view="view" windowoptions="{\'width\':\'80%\',\'height\':650}"/>'+r'
 <#if entity.processDefinition.suspended>
-<button type="button" class="btn confirm" data-action="activate">${action.getText("activate")}</button>
+<@btn action="activate" confirm=true/>
 <#else>
-<button type="button" class="btn confirm" data-action="suspend">${action.getText("suspend")}</button>
+<@btn action="suspend" confirm=true/>
 </#if>
 '>
 <@richtable formid="processDefinition-form" entityName="processDefinition" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=true celleditable=false/>

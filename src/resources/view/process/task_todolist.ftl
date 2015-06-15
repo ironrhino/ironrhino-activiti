@@ -17,21 +17,21 @@
 <a class="btn" rel="richtable" href="<@url value="/process/historicProcessInstance/view/${entity.task.processInstanceId}"/>">${action.getText("view")}</a>
 <#if !entity.task.suspended>
 <#if !entity.task.assignee??>
-<button type="button" class="btn" data-action="claim">签收</button>
+<@btn action="claim"/>
 <#else>
 '+'
-<button type="button" class="btn" data-view="form" data-windowoptions="{\'width\':\'80%\'}">办理</button>
+<@btn view="form" label="办理" windowoptions="{\'width\':\'80%\'}"/>
 '+r'
 <#if !entity.task.delegationState??>
-<button type="button" class="btn" data-view="delegate">${action.getText("delegate")}</button>
-<button type="button" class="btn" data-action="unclaim">撤销</button>
+<@btn view="delegate"/>
+<@btn action="unclaim"/>
 </#if>
 </#if>
 </#if>
 '>
 <#assign bottomButtons='
-<button type="button" class="btn reload">${action.getText("reload")}</button>
-<button type="button" class="btn filter">${action.getText("filter")}</button>
+<@btn class="reload"/>
+<@btn class="filter"/>
 '>
 <@richtable entityName="task" action="${actionBaseUrl}/todolist" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
 

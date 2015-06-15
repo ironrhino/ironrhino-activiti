@@ -18,15 +18,12 @@
 <#if !Parameters.finished?? || Parameters.finished == 'true'>
 <#assign columns=columns+{"historicProcessInstance.endTime":{"width":"130px"}}>
 </#if>
-<#assign bottomButtons='
-<button type="button" class="btn reload">${action.getText("reload")}</button>
-<button type="button" class="btn filter">${action.getText("filter")}</button>
-'>
+<#assign bottomButtons='<@btn class="reload"/> <@btn class="filter"/>'>
 <#assign actionColumnButtons=r'
-<button type="button" class="btn" data-view="view">${action.getText("view")}</button>
+<@btn view="view"/>
 <#if !entity.historicProcessInstance.endTime??>
 '+'
-<button type="button" class="btn" data-view="trace" data-windowoptions="{\'width\':\'80%\',\'height\':650}">${action.getText("trace")}</button>
+<@btn view="trace" windowoptions="{\'width\':\'80%\',\'height\':650}"/>
 '+r'
 </#if>
 '>
