@@ -200,17 +200,21 @@ public class ProcessInstanceAction extends BaseAction {
 
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String suspend() throws Exception {
-		for (String id : getId())
-			runtimeService.suspendProcessInstanceById(id);
-		addActionMessage(getText("operate.success"));
+		if (getId() != null) {
+			for (String id : getId())
+				runtimeService.suspendProcessInstanceById(id);
+			addActionMessage(getText("operate.success"));
+		}
 		return SUCCESS;
 	}
 
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 	public String activate() throws Exception {
-		for (String id : getId())
-			runtimeService.activateProcessInstanceById(id);
-		addActionMessage(getText("operate.success"));
+		if (getId() != null) {
+			for (String id : getId())
+				runtimeService.activateProcessInstanceById(id);
+			addActionMessage(getText("operate.success"));
+		}
 		return SUCCESS;
 	}
 
