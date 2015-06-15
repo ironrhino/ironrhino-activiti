@@ -57,6 +57,9 @@ public class FormRenderer {
 	@Autowired(required = false)
 	private List<org.ironrhino.activiti.form.EnumFormType<?>> enumFormTypeList;
 
+	@Autowired
+	private CheckboxFormType checkboxFormType;
+
 	public Map<String, FormElement> render(StartFormData startFormData) {
 		return render(startFormData.getFormProperties());
 	}
@@ -132,6 +135,25 @@ public class FormRenderer {
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
+			} else if (type instanceof CheckboxFormType) {
+				try {
+					if (fe.getValue() != null)
+						fe.setArrayValues((String[]) ((CheckboxFormType) type)
+								.convertFormValueToModelValue(fe.getValue()));
+					DictionaryControl dc = applicationContext
+							.getBean(DictionaryControl.class);
+					fe.setType("checkbox");
+					Map<String, String> map = dc.getItemsAsMap(fp.getId());
+					for (Map.Entry<String, String> entry : map.entrySet()) {
+						if (StringUtils.isBlank(entry.getValue())) {
+							String value = I18N.getText(entry.getKey());
+							entry.setValue(value);
+						}
+					}
+					fe.setValues(map);
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
 			} else if (type instanceof BigDecimalFormType) {
 				fe.setInputType("number");
 				if (fp.getId().toLowerCase().endsWith("rate")) {
@@ -186,6 +208,25 @@ public class FormRenderer {
 						String v = temp.get(value);
 						if (StringUtils.isNotBlank(v))
 							value = v;
+					}
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			} else if ("checkbox".equalsIgnoreCase(type)) {
+				try {
+					DictionaryControl dc = applicationContext
+							.getBean(DictionaryControl.class);
+					Map<String, String> temp = dc.getItemsAsMap(fp.getId());
+					if (temp != null) {
+						String[] arr = (String[]) checkboxFormType
+								.convertFormValueToModelValue(value);
+						for (int i = 0; i < arr.length; i++) {
+							String v = temp.get(arr[i]);
+							if (StringUtils.isNotBlank(v))
+								arr[i] = v;
+						}
+						value = StringUtils.join(arr,
+								CheckboxFormType.DELIMITER_FOR_DISPLAY);
 					}
 				} catch (Throwable e) {
 					e.printStackTrace();

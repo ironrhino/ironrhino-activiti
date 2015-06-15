@@ -1,7 +1,6 @@
 package org.ironrhino.activiti.action;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
@@ -25,11 +25,11 @@ import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.User;
+import org.activiti.engine.impl.persistence.entity.CommentEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
-import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
@@ -43,17 +43,15 @@ import org.ironrhino.activiti.form.FormRenderer;
 import org.ironrhino.activiti.form.FormRendererHandler;
 import org.ironrhino.activiti.model.Row;
 import org.ironrhino.activiti.model.TaskQueryCriteria;
+import org.ironrhino.activiti.service.FormSubmitService;
 import org.ironrhino.activiti.service.ProcessHelper;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
 import org.ironrhino.core.model.ResultPage;
 import org.ironrhino.core.security.role.UserRole;
-import org.ironrhino.core.sequence.CyclicSequence;
 import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
-import org.ironrhino.core.util.RequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
 
@@ -70,10 +68,6 @@ public class TaskAction extends BaseAction {
 
 	@Autowired(required = false)
 	private List<FormRendererHandler> formRendererHandlers;
-
-	@Autowired(required = false)
-	@Qualifier("businessKeySequence")
-	private CyclicSequence businessKeySequence;
 
 	@Autowired
 	private RepositoryService repositoryService;
@@ -95,6 +89,9 @@ public class TaskAction extends BaseAction {
 
 	@Autowired
 	private FormRenderer formRenderer;
+
+	@Autowired
+	private FormSubmitService formSubmitService;
 
 	@Autowired
 	private ProcessHelper processHelper;
@@ -448,20 +445,15 @@ public class TaskAction extends BaseAction {
 					.list();
 			attachments = taskService.getProcessInstanceAttachments(task
 					.getProcessInstanceId());
-			comments = taskService.getProcessInstanceComments(task
-					.getProcessInstanceId());
+			comments = taskService.getProcessInstanceComments(
+					task.getProcessInstanceId(), CommentEntity.TYPE_COMMENT);
 		}
 		return "form";
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public String submit() throws IOException {
+		HttpServletRequest request = ServletActionContext.getRequest();
 		String taskId = getUid();
-		Map properties = RequestUtils.getParametersMap(ServletActionContext
-				.getRequest());
-		properties.remove("processDefinitionId");
-		properties.remove("attachmentDescription");
-		String comment = (String) properties.remove("_comment_");
 		try {
 			if (taskId == null) {
 				if (processDefinitionId == null) {
@@ -494,50 +486,21 @@ public class TaskAction extends BaseAction {
 					return ACCESSDENIED;
 				if (!canStartProcess(processDefinitionId))
 					return ACCESSDENIED;
-				String businessKey = businessKeySequence != null ? businessKeySequence
-						.nextStringValue() : String.valueOf(System
-						.currentTimeMillis());
-				ProcessInstance processInstance = formService
-						.submitStartFormData(processDefinitionId, businessKey,
-								properties);
-				addActionMessage("启动流程: " + processInstance.getId());
-				if (fileFileName != null) {
-					for (int i = 0; i < file.length; i++) {
-						String description = attachmentDescription.length > i ? attachmentDescription[i]
-								: null;
-						taskService.createAttachment(null, null,
-								processInstance.getId(), fileFileName[i],
-								description, new FileInputStream(file[i]));
-					}
-				}
-				if (StringUtils.isNotBlank(comment))
-					taskService.addComment(null, processInstance.getId(),
-							comment);
+				ProcessInstance processInstance = formSubmitService
+						.submitStartForm(processDefinitionId,
+								request.getParameterMap(), fileFileName,
+								attachmentDescription, file);
+				addActionMessage("启动流程" + processInstance.getId() + " ,业务键值"
+						+ processInstance.getBusinessKey());
 			} else {
 				task = taskService.createTaskQuery().taskId(taskId)
 						.singleResult();
 				if (task == null
 						|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 					return ACCESSDENIED;
-
-				if (fileFileName != null) {
-					for (int i = 0; i < file.length; i++) {
-						String description = attachmentDescription.length > i ? attachmentDescription[i]
-								: null;
-						taskService.createAttachment(null, task.getId(),
-								task.getProcessInstanceId(), fileFileName[i],
-								description, new FileInputStream(file[i]));
-					}
-				}
-				if (StringUtils.isNotBlank(comment))
-					taskService.addComment(task.getId(),
-							task.getProcessInstanceId(), comment);
-				DelegationState delegationState = task.getDelegationState();
-				if (DelegationState.PENDING == delegationState) {
-					taskService.resolveTask(taskId, properties);
-				} else {
-					formService.submitTaskFormData(taskId, properties);
-				}
+				formSubmitService.submitTaskForm(taskId,
+						request.getParameterMap(), fileFileName,
+						attachmentDescription, file);
 				addActionMessage(getText("operate.success"));
 			}
 		} catch (ActivitiException e) {

@@ -18,6 +18,8 @@ public class FormElement implements Serializable {
 
 	private String value;
 
+	private String[] arrayValues;
+
 	private String type = "input"; // input textarea select radio
 
 	private String inputType = "text";
@@ -56,6 +58,14 @@ public class FormElement implements Serializable {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public String[] getArrayValues() {
+		return arrayValues;
+	}
+
+	public void setArrayValues(String[] arrayValues) {
+		this.arrayValues = arrayValues;
 	}
 
 	public String getType() {

@@ -39,6 +39,10 @@
 	<#list fe.values.entrySet() as en>
 	<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${name}" value="${en.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if><#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
 	</#list>
+	<#elseif fe.type=='checkbox'>
+	<#list fe.values.entrySet() as en>
+	<label for="${id}_${en.key}" class="checkbox inline"><input id="${id}_${en.key}" type="checkbox" name="${name}" value="${en.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if><#if fe.arrayValues??&&fe.arrayValues?seq_contains(en.key)> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
+	</#list>
 	<#else>
 	<input id="${id}" type="${fe.inputType}" name="${name}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>
 	</#if>
