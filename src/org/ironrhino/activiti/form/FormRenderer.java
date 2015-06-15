@@ -99,7 +99,8 @@ public class FormRenderer {
 			} else if (type instanceof DateFormType) {
 				DateFormType dft = (DateFormType) type;
 				String datePattern = (String) dft.getInformation("datePattern");
-				fe.addCssClass("date");
+				fe.addCssClass(datePattern.startsWith("HH") ? "time"
+						: (datePattern.contains("HH") ? "datetime" : "date"));
 				fe.setDynamicAttribute("data-format", datePattern);
 			} else if (type instanceof BooleanFormType) {
 				fe.setType("radio");
