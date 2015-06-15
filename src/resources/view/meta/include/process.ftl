@@ -20,14 +20,16 @@
 	<#if fe.type=='textarea'>
 	<textarea id="${id}" name="${name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>${fe.value!}</textarea>
 	<#elseif fe.type=='select'>
-	<select id="${id}" name="${name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>
+	<#if fe.readonly><input id="${id}" type="hidden" name="${name}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/></#if>
+	<select id="${id}" name="${name}"<#if fe.readonly||fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>
 	<option></option>
 	<#list fe.values.entrySet() as en>
 	<option value="${en.key}"<#if fe.value??&&fe.value==en.key> selected</#if>>${en.value}</option>
 	</#list>
 	</select>
 	<#elseif fe.type=='enum'>
-	<select id="${id}" name="${name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if>>
+	<#if fe.readonly><input id="${id}" type="hidden" name="${name}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/></#if>
+	<select id="${id}" name="${name}"<#if fe.readonly||fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if>>
 	<option></option>
 	<#list statics[fe.dynamicAttributes['enumType']].values() as en>
 	<option value="${en.name()}"<#if fe.value??&&fe.value==en.name()> selected</#if>>${en}</option>
@@ -35,7 +37,7 @@
 	</select>
 	<#elseif fe.type=='radio'>
 	<#list fe.values.entrySet() as en>
-	<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${name}" value="${en.key}"<#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
+	<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${name}" value="${en.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if><#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
 	</#list>
 	<#else>
 	<input id="${id}" type="${fe.inputType}" name="${name}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>
