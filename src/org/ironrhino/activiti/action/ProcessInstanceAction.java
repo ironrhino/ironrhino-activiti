@@ -21,6 +21,7 @@ import org.activiti.engine.task.IdentityLink;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
+import org.ironrhino.activiti.model.ProcessInstanceQueryCriteria;
 import org.ironrhino.activiti.model.Row;
 import org.ironrhino.activiti.service.ProcessTraceService;
 import org.ironrhino.core.metadata.Authorize;
@@ -54,6 +55,8 @@ public class ProcessInstanceAction extends BaseAction {
 
 	private ProcessInstance processInstance;
 
+	private ProcessInstanceQueryCriteria criteria;
+
 	private List<Map<String, Object>> activities;
 
 	public ResultPage<Row> getResultPage() {
@@ -66,6 +69,14 @@ public class ProcessInstanceAction extends BaseAction {
 
 	public ProcessInstance getProcessInstance() {
 		return processInstance;
+	}
+
+	public ProcessInstanceQueryCriteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(ProcessInstanceQueryCriteria criteria) {
+		this.criteria = criteria;
 	}
 
 	public List<Map<String, Object>> getActivities() {
@@ -82,7 +93,11 @@ public class ProcessInstanceAction extends BaseAction {
 			resultPage = new ResultPage<Row>();
 		ProcessInstanceQuery query = runtimeService
 				.createProcessInstanceQuery();
-		if (!AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null))
+		boolean admin = AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR,
+				null);
+		if (criteria != null)
+			criteria.filter(query, admin);
+		if (!admin)
 			query.involvedUser(AuthzUtils.getUsername());
 		String processDefinitionId = getUid();
 		if (StringUtils.isNotBlank(processDefinitionId))

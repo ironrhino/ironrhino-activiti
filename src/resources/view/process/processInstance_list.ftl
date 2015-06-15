@@ -21,9 +21,74 @@
 <button type="button" class="btn confirm" data-action="activate" data-shown="selected" data-filterselector="[data-suspended=\'true\']">${action.getText("activate")}</button>
 <button type="button" class="btn confirm" data-action="suspend" data-shown="selected" data-filterselector=":not([data-suspended=\'true\'])">${action.getText("suspend")}</button>
 '+r'</@authorize>'
-+r'<@btn class="reload"/>'>
++r'<@btn class="reload"/> <@btn class="filter"/>'>
 <#assign actionColumnButtons=r'<@btn view="view" '+'windowoptions="{\'width\':\'80%\',\'height\':650}"/>'>
 
 <@richtable entityName="processInstance" columns=columns rowDynamicAttributes=r'{"data-deletable":"${entity.processInstance.suspended?string}"}' actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false rowDynamicAttributes="<#if entity.processInstance.suspended>{'data-suspended':'true'}</#if>"/>
+<form method="post" class="ajax view criteria form-horizontal" style="display:none;">
+<div class="row">
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_processDefinitionId">${action.getText('processDefinitionId')}</label>
+			<div class="controls">
+				<input id="criteria_processDefinitionId" type="text" name="criteria.processDefinitionId"/>
+			</div>
+		</div>
+	</div>
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_processDefinitionKey">${action.getText('processDefinitionKey')}</label>
+			<div class="controls">
+				<input id="criteria_processDefinitionKey" type="text" name="criteria.processDefinitionKey"/>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_processDefinitionName">${action.getText('processDefinitionName')}</label>
+			<div class="controls">
+				<input id="criteria_processDefinitionName" type="text" name="criteria.processDefinitionName"/>
+			</div>
+		</div>
+	</div>
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_processInstanceId">${action.getText('processInstanceId')}</label>
+			<div class="controls">
+				<input id="criteria_processInstanceId" type="text" name="criteria.processInstanceId"/>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_processInstanceBusinessKey">${action.getText('processInstanceBusinessKey')}</label>
+			<div class="controls">
+				<input id="criteria_processInstanceBusinessKey" type="text" name="criteria.processInstanceBusinessKey"/>
+			</div>
+		</div>
+	</div>
+<@authorize ifAnyGranted="ROLE_ADMINISTRATOR">
+	<div class="span6">
+		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
+		<@s.hidden id="criteria_involvedUser" name="criteria.involvedUser" class="listpick-id"/>
+		<label class="control-label" for="criteria_involvedUser-control">${action.getText('involvedUser')}</label>
+		<div class="controls">
+		<span class="listpick-name"></span>
+		</div>
+		</div>
+	</div>
+</@authorize>
+</div>
+
+<div class="row">
+	<div class="span12" style="text-align:center;">
+		<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>
+	</div>
+</div>
+</form>
 </body>
 </html></#escape>
