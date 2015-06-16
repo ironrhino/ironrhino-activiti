@@ -14,25 +14,23 @@
 "task.createTime":{"alias":"任务创建时间","width":"130px"}}>
 <#assign actionColumnButtons=r'
 <a class="btn" rel="richtable" href="<@url value="/process/historicProcessInstance/view/${entity.task.processInstanceId}"/>">${action.getText("view")}</a>
-<#if !entity.task.suspended>
-<#if !entity.task.assignee??>
-<@btn action="claim"/>
-<#else>
 '+'
+<#if entity.task.assignee??>
 <@btn view="form" label="办理" windowoptions="{\'width\':\'80%\'}"/>
 '+r'
 <#if !entity.task.delegationState??>
 <@btn view="delegate"/>
-<@btn action="unclaim"/>
-</#if>
 </#if>
 </#if>
 '>
 <#assign bottomButtons='
+<button type="button" class="btn confirm" data-action="claim" data-shown="selected" data-filterselector=":not([data-assigned=\'true\'])">${action.getText("claim")}</button>
+<button type="button" class="btn confirm" data-action="unclaim" data-shown="selected" data-filterselector="[data-assigned=\'true\']">${action.getText("unclaim")}</button>
+'+r'
 <@btn class="reload"/>
 <@btn class="filter"/>
 '>
-<@richtable entityName="task" action="${actionBaseUrl}/todolist" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
+<@richtable entityName="task" action="${actionBaseUrl}/todolist" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false rowDynamicAttributes=r"<#if entity.task.assignee??>{'data-assigned':'true'}</#if>"/>
 
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;">
 <div class="row">

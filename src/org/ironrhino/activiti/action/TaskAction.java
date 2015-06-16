@@ -630,67 +630,85 @@ public class TaskAction extends BaseAction {
 	}
 
 	public String claim() {
-		String taskId = getUid();
-		List<IdentityLink> identityLinks = taskService
-				.getIdentityLinksForTask(taskId);
-		boolean authorized = identityLinks.isEmpty();
-		for (IdentityLink identityLink : identityLinks) {
-			if (identityLink.getType().equals(IdentityLinkType.CANDIDATE)) {
-				String userId = identityLink.getUserId();
-				String groupId = identityLink.getGroupId();
-				if (userId != null && AuthzUtils.getUsername().equals(userId)) {
-					authorized = true;
-					break;
-				}
-				if (groupId != null
-						&& AuthzUtils.getRoleNames().contains(groupId)) {
-					authorized = true;
-					break;
-				}
-			}
-		}
-		if (!authorized || processPermissionChecker != null
-				&& !processPermissionChecker.canClaim(taskId))
-			return ACCESSDENIED;
-		try {
-			taskService.claim(taskId, AuthzUtils.getUsername());
-		} catch (ActivitiTaskAlreadyClaimedException e) {
-			addActionError("任务已经被别人签收了");
-		}
-		return todolist();
-	}
-
-	public String unclaim() {
-		String taskId = getUid();
-		task = taskService.createTaskQuery().taskId(taskId).singleResult();
-		if (task.getDelegationState() != null)
-			return ACCESSDENIED;
-		List<IdentityLink> identityLinks = taskService
-				.getIdentityLinksForTask(taskId);
-		if (identityLinks.size() == 1) {
-			IdentityLink identityLink = identityLinks.get(0);
-			if (identityLink.getType().equals(IdentityLinkType.ASSIGNEE)
-					&& AuthzUtils.getUsername()
-							.equals(identityLink.getUserId())) {
-				addActionError("不能撤销非签收的任务");
-				return ERROR;
-			}
-		} else if (identityLinks.size() > 1) {
-			boolean authorized = false;
+		String[] ids = getId();
+		for (String taskId : ids) {
+			List<IdentityLink> identityLinks = taskService
+					.getIdentityLinksForTask(taskId);
+			boolean authorized = identityLinks.isEmpty();
 			for (IdentityLink identityLink : identityLinks) {
-				if (identityLink.getType().equals(IdentityLinkType.ASSIGNEE)) {
+				if (identityLink.getType().equals(IdentityLinkType.CANDIDATE)) {
 					String userId = identityLink.getUserId();
+					String groupId = identityLink.getGroupId();
 					if (userId != null
 							&& AuthzUtils.getUsername().equals(userId)) {
 						authorized = true;
 						break;
 					}
+					if (groupId != null
+							&& AuthzUtils.getRoleNames().contains(groupId)) {
+						authorized = true;
+						break;
+					}
 				}
 			}
-			if (!authorized)
+			if (!authorized || processPermissionChecker != null
+					&& !processPermissionChecker.canClaim(taskId)) {
+				if (ids.length > 1)
+					continue;
 				return ACCESSDENIED;
+			}
+			try {
+				taskService.claim(taskId, AuthzUtils.getUsername());
+			} catch (ActivitiTaskAlreadyClaimedException e) {
+				if (ids.length == 1)
+					addActionError("任务已经被别人签收了");
+			}
 		}
-		taskService.unclaim(taskId);
+		return todolist();
+	}
+
+	public String unclaim() {
+		String[] ids = getId();
+		for (String taskId : ids) {
+			task = taskService.createTaskQuery().taskId(taskId).singleResult();
+			if (task.getDelegationState() != null) {
+				if (ids.length > 1)
+					continue;
+				return ACCESSDENIED;
+			}
+			List<IdentityLink> identityLinks = taskService
+					.getIdentityLinksForTask(taskId);
+			if (identityLinks.size() == 1) {
+				IdentityLink identityLink = identityLinks.get(0);
+				if (identityLink.getType().equals(IdentityLinkType.ASSIGNEE)
+						&& AuthzUtils.getUsername().equals(
+								identityLink.getUserId())) {
+					if (ids.length > 1)
+						continue;
+					addActionError("不能撤销直接指派的任务");
+					return ERROR;
+				}
+			} else if (identityLinks.size() > 1) {
+				boolean authorized = false;
+				for (IdentityLink identityLink : identityLinks) {
+					if (identityLink.getType()
+							.equals(IdentityLinkType.ASSIGNEE)) {
+						String userId = identityLink.getUserId();
+						if (userId != null
+								&& AuthzUtils.getUsername().equals(userId)) {
+							authorized = true;
+							break;
+						}
+					}
+				}
+				if (!authorized) {
+					if (ids.length > 1)
+						continue;
+					return ACCESSDENIED;
+				}
+			}
+			taskService.unclaim(taskId);
+		}
 		return todolist();
 	}
 
