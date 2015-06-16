@@ -490,8 +490,8 @@ public class TaskAction extends BaseAction {
 						.submitStartForm(processDefinitionId,
 								request.getParameterMap(), fileFileName,
 								attachmentDescription, file);
-				addActionMessage("启动流程" + processInstance.getId() + " ,业务KEY"
-						+ processInstance.getBusinessKey());
+				addActionMessage("启动流程 (ID=" + processInstance.getId()
+						+ " , KEY=" + processInstance.getBusinessKey() + ")");
 			} else {
 				task = taskService.createTaskQuery().taskId(taskId)
 						.singleResult();

@@ -45,7 +45,8 @@ public class ProcessHelper {
 
 	public List<Task> findAssignedTasks(String userId,
 			TaskQueryCriteria criteria) {
-		TaskQuery query = taskService.createTaskQuery().taskAssignee(userId);
+		TaskQuery query = taskService.createTaskQuery().active()
+				.taskAssignee(userId);
 		if (criteria != null)
 			criteria.filter(query, true);
 		return query.orderByTaskPriority().desc().orderByTaskCreateTime()
@@ -57,7 +58,8 @@ public class ProcessHelper {
 	}
 
 	public long countAssignedTasks(String userId, TaskQueryCriteria criteria) {
-		TaskQuery query = taskService.createTaskQuery().taskAssignee(userId);
+		TaskQuery query = taskService.createTaskQuery().active()
+				.taskAssignee(userId);
 		if (criteria != null)
 			criteria.filter(query, true);
 		return query.count();
@@ -69,8 +71,8 @@ public class ProcessHelper {
 
 	public List<Task> findCandidateTasks(String userId,
 			TaskQueryCriteria criteria) {
-		TaskQuery query = taskService.createTaskQuery().taskCandidateUser(
-				userId);
+		TaskQuery query = taskService.createTaskQuery().active()
+				.taskCandidateUser(userId);
 		if (criteria != null)
 			criteria.filter(query, true);
 		List<Task> taskCandidates = query.orderByTaskPriority().desc()
@@ -92,8 +94,8 @@ public class ProcessHelper {
 
 	public long countCandidateTasks(String userId, TaskQueryCriteria criteria) {
 		if (processPermissionChecker == null) {
-			TaskQuery query = taskService.createTaskQuery().taskCandidateUser(
-					userId);
+			TaskQuery query = taskService.createTaskQuery().active()
+					.taskCandidateUser(userId);
 			if (criteria != null)
 				criteria.filter(query, true);
 			return query.count();

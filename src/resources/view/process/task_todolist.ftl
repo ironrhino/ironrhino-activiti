@@ -11,8 +11,7 @@
 "historicProcessInstance.startUserId":{"alias","startUser","width":"80px","template":r'<#if value?has_content><span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userDetailsService").loadUserByUsername(value,true)!}</span></#if>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},
 "task.name":{"alias":"任务名","width":"100px"},
-"task.createTime":{"alias":"任务创建时间","width":"130px"},
-"task.suspended":{"width":"60px"}}>
+"task.createTime":{"alias":"任务创建时间","width":"130px"}}>
 <#assign actionColumnButtons=r'
 <a class="btn" rel="richtable" href="<@url value="/process/historicProcessInstance/view/${entity.task.processInstanceId}"/>">${action.getText("view")}</a>
 <#if !entity.task.suspended>
