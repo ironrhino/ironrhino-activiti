@@ -43,7 +43,7 @@ import org.ironrhino.activiti.form.FormRenderer;
 import org.ironrhino.activiti.form.FormRendererHandler;
 import org.ironrhino.activiti.model.Row;
 import org.ironrhino.activiti.model.TaskQueryCriteria;
-import org.ironrhino.activiti.service.FormSubmitService;
+import org.ironrhino.activiti.service.FormSubmissionService;
 import org.ironrhino.activiti.service.ProcessHelper;
 import org.ironrhino.core.metadata.Authorize;
 import org.ironrhino.core.metadata.AutoConfig;
@@ -91,7 +91,7 @@ public class TaskAction extends BaseAction {
 	private FormRenderer formRenderer;
 
 	@Autowired
-	private FormSubmitService formSubmitService;
+	private FormSubmissionService formSubmissionService;
 
 	@Autowired
 	private ProcessHelper processHelper;
@@ -486,7 +486,7 @@ public class TaskAction extends BaseAction {
 					return ACCESSDENIED;
 				if (!canStartProcess(processDefinitionId))
 					return ACCESSDENIED;
-				ProcessInstance processInstance = formSubmitService
+				ProcessInstance processInstance = formSubmissionService
 						.submitStartForm(processDefinitionId,
 								request.getParameterMap(), fileFileName,
 								attachmentDescription, file);
@@ -498,7 +498,7 @@ public class TaskAction extends BaseAction {
 				if (task == null
 						|| !AuthzUtils.getUsername().equals(task.getAssignee()))
 					return ACCESSDENIED;
-				formSubmitService.submitTaskForm(taskId,
+				formSubmissionService.submitTaskForm(taskId,
 						request.getParameterMap(), fileFileName,
 						attachmentDescription, file);
 				addActionMessage(getText("operate.success"));

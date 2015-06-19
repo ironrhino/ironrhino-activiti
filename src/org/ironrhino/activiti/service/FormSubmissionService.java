@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class FormSubmitService {
+public class FormSubmissionService {
 
 	public static final String PARAMETER_NAME_COMMENT = "_comment_";
 
