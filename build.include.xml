@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 
+	<property name="dist.jar.name" value="ironrhino-activiti-${version}.jar" />
+	<property name="dist.jar-sources.name" value="ironrhino-activiti-${version}-sources.jar" />
+	<property name="dist.jar.includes" value="org/ironrhino/activiti/**,META-INF/resources/**,resources/spring/applicationContext-activiti.xml,resources/view/meta/**,resources/view/process/**,resources/i18n/activiti/**" />
+
 	<target name="pre-jar">
-		<delete file="${target.dir}/ironrhino-activiti-1.0.jar" />
+		<delete file="${target.dir}/${dist.jar.name}" />
 	</target>
 
 	<target name="post-jar">
 		<mkdir dir="${classes.dir}/META-INF/resources/assets/scripts" />
 		<copy todir="${classes.dir}/META-INF/resources/assets/scripts" file="${webapp.dir}/assets/scripts/ironrhino.process.js" />
-		<jar jarfile="${target.dir}/ironrhino-activiti-1.0.jar" basedir="${classes.dir}" includes="org/ironrhino/activiti/**,META-INF/resources/**,resources/spring/applicationContext-activiti.xml,resources/view/meta/**,resources/view/process/**,resources/i18n/activiti/**" />
+		<jar jarfile="${target.dir}/${dist.jar.name}" basedir="${classes.dir}" includes="${dist.jar.includes}" />
+		<jar jarfile="${target.dir}/${dist.jar-sources.name}" basedir="${src.dir}" includes="${dist.jar.includes}" />
 		<delete dir="${classes.dir}/META-INF" />
 	</target>
 
