@@ -36,9 +36,27 @@
 <div class="row">
 	<div class="span6">
 		<div class="control-group">
+			<label class="control-label" for="criteria_processInstanceId">${action.getText('processInstanceId')}</label>
+			<div class="controls">
+				<input id="criteria_processInstanceId" type="text" name="criteria.processInstanceId"/>
+			</div>
+		</div>
+	</div>
+	<div class="span6">
+		<div class="control-group">
 			<label class="control-label" for="criteria_processDefinitionName">${action.getText('processDefinitionName')}</label>
 			<div class="controls">
 				<input id="criteria_processDefinitionName" type="text" name="criteria.processDefinitionName"/>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<div class="control-group">
+			<label class="control-label" for="criteria_processInstanceBusinessKey">${action.getText('processInstanceBusinessKey')}</label>
+			<div class="controls">
+				<input id="criteria_processInstanceBusinessKey" type="text" name="criteria.processInstanceBusinessKey"/>
 			</div>
 		</div>
 	</div>
@@ -51,7 +69,6 @@
 		</div>
 	</div>
 </div>
-
 <div class="row">
 	<div class="span6">
 		<div class="control-group">
