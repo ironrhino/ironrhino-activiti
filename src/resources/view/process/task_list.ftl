@@ -8,10 +8,10 @@
 "historicProcessInstance.id":{"alias":"流程ID","width":"100px"},
 "processDefinition.name":{"alias":"流程名"},
 "historicProcessInstance.businessKey":{"alias":"流程业务KEY","width":"100px"},
-"historicProcessInstance.startUserId":{"alias","startUser","width":"80px","template":r'<#if value?has_content><span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userDetailsService").loadUserByUsername(value,true)!}</span></#if>'},
+"historicProcessInstance.startUserId":{"alias","startUser","width":"80px","template":r'<#if value?has_content><span class="user" data-username="${value}">${beans["userDetailsService"].loadUserByUsername(value,true)!}</span></#if>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"},
 "task.name":{"alias":"任务名","width":"100px"},
-"task.assignee":{"width":"80px","template":r'<#if value?has_content><span class="user" data-username="${value}">${statics["org.ironrhino.core.util.ApplicationContextUtils"].getBean("userDetailsService").loadUserByUsername(value,true)!}</span></#if>'},
+"task.assignee":{"width":"80px","template":r'<#if value?has_content><span class="user" data-username="${value}">${beans["userDetailsService"].loadUserByUsername(value,true)!}</span></#if>'},
 "task.createTime":{"alias":"任务创建时间","width":"130px"},
 "task.dueDate":{"width":"80px"},
 "task.suspended":{"width":"60px"}}>
