@@ -6,6 +6,7 @@ import org.activiti.engine.impl.variable.ValueFields;
 import org.activiti.engine.impl.variable.VariableType;
 import org.ironrhino.core.model.Persistable;
 import org.ironrhino.core.service.EntityManager;
+import org.ironrhino.core.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,7 @@ public class PersistableVariableType implements VariableType {
 		Serializable id = null;
 		if (valueFields.getLongValue() != null) {
 			Long value = valueFields.getLongValue();
-			if (value != null
-					&& (idType == Integer.class || idType == Integer.TYPE))
+			if (value != null && (idType == Integer.class || idType == Integer.TYPE))
 				id = value.intValue();
 			else
 				id = value;
@@ -66,7 +66,7 @@ public class PersistableVariableType implements VariableType {
 			valueFields.setTextValue(null);
 			valueFields.setTextValue2(null);
 		} else {
-			valueFields.setTextValue2(value.getClass().getName());
+			valueFields.setTextValue2(ReflectionUtils.getActualClass(value).getName());
 			Persistable<?> entity = (Persistable<?>) value;
 			Serializable id = entity.getId();
 			if (id != null) {
@@ -81,7 +81,6 @@ public class PersistableVariableType implements VariableType {
 
 	@Override
 	public boolean isAbleToStore(Object value) {
-		return value != null
-				&& Persistable.class.isAssignableFrom(value.getClass());
+		return value != null && Persistable.class.isAssignableFrom(value.getClass());
 	}
 }
