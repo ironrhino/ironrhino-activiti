@@ -32,110 +32,38 @@
 <#assign formid=((Parameters.finished=='true')?string('finished','unfinished'))+'_'+formid/>
 </#if>
 <@richtable formid=formid entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
-<form method="post" class="ajax view criteria form-horizontal" style="display:none;">
+<form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
 <#if !request.requestURI?ends_with('/involved')>
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_processDefinitionId">${action.getText('processDefinitionId')}</label>
-			<div class="controls">
-				<input id="criteria_processDefinitionId" type="text" name="criteria.processDefinitionId"/>
-			</div>
-		</div>
+	<@s.textfield label="%{getText('processDefinitionKey')}" name="criteria.processDefinitionKey"/>
+	<@s.textfield label="%{getText('processDefinitionName')}" name="criteria.processDefinitionName"/>
+	<@s.textfield label="%{getText('processInstanceId')}" name="criteria.processInstanceId"/>
+	<@s.textfield label="%{getText('processInstanceBusinessKey')}" name="criteria.processInstanceBusinessKey"/>
+	<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
+	<@s.hidden id="criteria_involvedUser" name="criteria.involvedUser" class="listpick-id"/>
+	<label class="control-label" for="criteria_involvedUser-control">${action.getText('involvedUser')}</label>
+	<div class="controls">
+	<span class="listpick-name"></span>
 	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_processDefinitionKey">${action.getText('processDefinitionKey')}</label>
-			<div class="controls">
-				<input id="criteria_processDefinitionKey" type="text" name="criteria.processDefinitionKey"/>
-			</div>
-		</div>
 	</div>
-</div>
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_processInstanceId">${action.getText('processInstanceId')}</label>
-			<div class="controls">
-				<input id="criteria_processInstanceId" type="text" name="criteria.processInstanceId"/>
-			</div>
-		</div>
+	<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
+	<@s.hidden id="criteria_startedBy" name="criteria.startedBy" class="listpick-id"/>
+	<label class="control-label" for="criteria_startedBy-control">${action.getText('startedBy')}</label>
+	<div class="controls">
+	<span class="listpick-name"></span>
 	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_processInstanceBusinessKey">${action.getText('processInstanceBusinessKey')}</label>
-			<div class="controls">
-				<input id="criteria_processInstanceBusinessKey" type="text" name="criteria.processInstanceBusinessKey"/>
-			</div>
-		</div>
 	</div>
-</div>
-<div class="row">
-	<div class="span6">
-		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
-		<@s.hidden id="criteria_involvedUser" name="criteria.involvedUser" class="listpick-id"/>
-		<label class="control-label" for="criteria_involvedUser-control">${action.getText('involvedUser')}</label>
-		<div class="controls">
-		<span class="listpick-name"></span>
-		</div>
-		</div>
-	</div>
-	<div class="span6">
-		<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
-		<@s.hidden id="criteria_startedBy" name="criteria.startedBy" class="listpick-id"/>
-		<label class="control-label" for="criteria_startedBy-control">${action.getText('startedBy')}</label>
-		<div class="controls">
-		<span class="listpick-name"></span>
-		</div>
-		</div>
-	</div>
-</div>
 </#if>
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_startedBefore">${action.getText('startedBefore')}</label>
-			<div class="controls">
-				<input id="criteria_startedBefore" type="text" name="criteria.startedBefore" class="date"/>
-			</div>
-		</div>
-	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_startedAfter">${action.getText('startedAfter')}</label>
-			<div class="controls">
-				<input id="criteria_startedAfter" type="text" name="criteria.startedAfter" class="date"/>
-			</div>
-		</div>
-	</div>
-</div>
+	<@s.textfield label="%{getText('startedBefore')}" name="criteria.startedBefore" class="date"/>
+	<@s.textfield label="%{getText('startedAfter')}" name="criteria.startedAfter" class="date"/>
 <#if !Parameters.finished?? || Parameters.finished == 'true'>
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_finishedBefore">${action.getText('finishedBefore')}</label>
-			<div class="controls">
-				<input id="criteria_finishedBefore" type="text" name="criteria.finishedBefore" class="date"/>
-			</div>
-		</div>
-	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_finishedAfter">${action.getText('finishedAfter')}</label>
-			<div class="controls">
-				<input id="criteria_finishedAfter" type="text" name="criteria.finishedAfter" class="date"/>
-			</div>
-		</div>
-	</div>
-</div>
+	<@s.textfield label="%{getText('finishedBefore')}" name="criteria.finishedBefore" class="date"/>
+	<@s.textfield label="%{getText('finishedAfter')}" name="criteria.finishedAfter" class="date"/>
 </#if>
-<div class="row">
-	<div class="span12" style="text-align:center;">
-		<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>
+	<div class="row">
+		<div class="span12" style="text-align:center;">
+			<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>
+		</div>
 	</div>
-</div>
 </form>
-
-
 </body>
 </html></#escape>

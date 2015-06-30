@@ -31,104 +31,20 @@
 <@btn class="filter"/>
 '>
 <@richtable entityName="task" action="${actionBaseUrl}/todolist" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false rowDynamicAttributes=r"<#if entity.task.assignee??>{'data-assigned':'true'}</#if>"/>
-
-<form method="post" class="ajax view criteria form-horizontal" style="display:none;">
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_processInstanceId">${action.getText('processInstanceId')}</label>
-			<div class="controls">
-				<input id="criteria_processInstanceId" type="text" name="criteria.processInstanceId"/>
-			</div>
+<form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
+	<@s.textfield label="%{getText('processInstanceId')}" name="criteria.processInstanceId"/>
+	<@s.textfield label="%{getText('processDefinitionName')}" name="criteria.processDefinitionName"/>
+	<@s.textfield label="%{getText('processInstanceBusinessKey')}" name="criteria.processInstanceBusinessKey"/>
+	<@s.textfield label="%{getText('taskName')}" name="criteria.taskName"/>
+	<@s.textfield label="%{getText('createdBefore')}" name="criteria.taskCreatedBefore" class="date"/>
+	<@s.textfield label="%{getText('createdAfter')}" name="criteria.taskCreatedAfter" class="date"/>
+	<@s.textfield label="%{getText('taskDueBefore')}" name="criteria.taskDueBefore" class="date"/>
+	<@s.textfield label="%{getText('taskDueAfter')}" name="criteria.taskDueAfter" class="date"/>
+	<div class="row">
+		<div class="span12" style="text-align:center;">
+			<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>
 		</div>
 	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_processDefinitionName">${action.getText('processDefinitionName')}</label>
-			<div class="controls">
-				<input id="criteria_processDefinitionName" type="text" name="criteria.processDefinitionName"/>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_processInstanceBusinessKey">${action.getText('processInstanceBusinessKey')}</label>
-			<div class="controls">
-				<input id="criteria_processInstanceBusinessKey" type="text" name="criteria.processInstanceBusinessKey"/>
-			</div>
-		</div>
-	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_taskName">${action.getText('taskName')}</label>
-			<div class="controls">
-				<input id="criteria_taskName" type="text" name="criteria.taskName"/>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_taskCreatedBefore">${action.getText('createdBefore')}</label>
-			<div class="controls">
-				<input id="criteria_taskCreatedBefore" type="text" name="criteria.taskCreatedBefore" class="date"/>
-			</div>
-		</div>
-	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_taskCreatedAfter">${action.getText('createdAfter')}</label>
-			<div class="controls">
-				<input id="criteria_taskCreatedAfter" type="text" name="criteria.taskCreatedAfter" class="date"/>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_taskDueBefore">${action.getText('taskDueBefore')}</label>
-			<div class="controls">
-				<input id="criteria_taskDueBefore" type="text" name="criteria.taskDueBefore" class="date"/>
-			</div>
-		</div>
-	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_taskDueAfter">${action.getText('taskDueAfter')}</label>
-			<div class="controls">
-				<input id="criteria_taskDueAfter" type="text" name="criteria.taskDueAfter" class="date"/>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_active">${action.getText('active')}</label>
-			<div class="controls">
-				<input id="criteria_active" type="checkbox" name="criteria.active" value="true" class="custom"/>
-			</div>
-		</div>
-	</div>
-	<div class="span6">
-		<div class="control-group">
-			<label class="control-label" for="criteria_suspended">${action.getText('suspended')}</label>
-			<div class="controls">
-				<input id="criteria_suspended" type="checkbox" name="criteria.suspended" value="true" class="custom"/>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="span12" style="text-align:center;">
-		<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>
-	</div>
-</div>
 </form>
-
 </body>
 </html></#escape>
