@@ -7,10 +7,10 @@
 
 <#assign dataurl=actionBaseUrl/>
 <#if Parameters.involved??>
-<#assign dataurl=dataurl+'/involved'/>
+<#assign dataurl+='/involved'/>
 </#if>
 <#if request.queryString??>
-<#assign dataurl=dataurl+'?'+request.queryString>
+<#assign dataurl+='?'+request.queryString>
 </#if>
 <ul class="nav nav-tabs">
 	<li class="active"><a href="#all_historicProcessInstances" data-toggle="tab">${action.getText('all')}</a></li>
@@ -20,9 +20,9 @@
 <div class="tab-content">
 	<div id="all_historicProcessInstances" class="tab-pane ajaxpanel active" data-url="${dataurl}">
 	</div>
-	<div id="unfinished_historicProcessInstances" class="tab-pane ajaxpanel manual" data-url="${dataurl+dataurl?contains('?')?string('&','?')}&finished=false">
+	<div id="unfinished_historicProcessInstances" class="tab-pane ajaxpanel manual" data-url="${dataurl+dataurl?contains('?')?then('&','?')}&finished=false">
 	</div>
-	<div id="finished_historicProcessInstances" class="tab-pane ajaxpanel manual" data-url="${dataurl+dataurl?contains('?')?string('&','?')}&finished=true">
+	<div id="finished_historicProcessInstances" class="tab-pane ajaxpanel manual" data-url="${dataurl+dataurl?contains('?')?then('&','?')}&finished=true">
 	</div>
 </div>
 </body>

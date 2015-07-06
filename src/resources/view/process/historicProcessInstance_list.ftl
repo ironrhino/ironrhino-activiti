@@ -11,12 +11,12 @@
 "historicProcessInstance.startUserId":{"alias","startUser","width":"100px","template":r'<#if value?has_content><span class="user" data-username="${value}">${beans["userDetailsService"].loadUserByUsername(value,true)!}</span></#if>'},
 "historicProcessInstance.startTime":{"alias":"发起时间","width":"130px"}}>
 <#if !Parameters.finished?? || Parameters.finished != 'true'>
-<#assign columns=columns+{
+<#assign columns+={
 "activityName":{"alias":"当前活动","width":"100px","template",r'${(entity.historicActivityInstance.activityName)!}'},
 "assignee":{"alias":"当前处理人","width":"100px","template":r'<#if entity.historicActivityInstance??&&entity.historicActivityInstance.assignee?has_content><span class="user" data-username="${entity.historicActivityInstance.assignee}">${beans["userDetailsService"].loadUserByUsername(entity.historicActivityInstance.assignee,true)!}</span></#if>'}}>
 </#if>
 <#if !Parameters.finished?? || Parameters.finished == 'true'>
-<#assign columns=columns+{"historicProcessInstance.endTime":{"width":"130px"}}>
+<#assign columns+={"historicProcessInstance.endTime":{"width":"130px"}}>
 </#if>
 <#assign bottomButtons='<@btn class="reload"/> <@btn class="filter"/>'>
 <#assign actionColumnButtons=r'
@@ -29,7 +29,7 @@
 '>
 <#assign formid='historicProcessInstance_form'>
 <#if Parameters.finished??>
-<#assign formid=((Parameters.finished=='true')?string('finished','unfinished'))+'_'+formid/>
+<#assign formid=((Parameters.finished=='true')?then('finished','unfinished'))+'_'+formid/>
 </#if>
 <@richtable formid=formid entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">

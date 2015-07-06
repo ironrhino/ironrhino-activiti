@@ -15,7 +15,7 @@
 	</thead>
 	<tbody>
 	<#list activityDetails as ad>
-	<tr class="<#if !historicProcessInstance.endTime??&&!ad_has_next>info<#else>success</#if>">
+	<tr class="<#if !historicProcessInstance.endTime??&&!ad?has_next>info<#else>success</#if>">
 		<td>${action.getText(ad.name)}</td>
 		<td><#if ad.assignee?has_content><span class="user" data-username="${ad.assignee}">${(beans['userDetailsService'].loadUserByUsername(ad.assignee,true))!}</span></#if></td>
 		<td>${ad.startTime?datetime}</td>
