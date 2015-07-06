@@ -3,10 +3,11 @@
 
 	<property name="dist.jar.name" value="ironrhino-activiti-${version}.jar" />
 	<property name="dist.jar-sources.name" value="ironrhino-activiti-${version}-sources.jar" />
-	<property name="dist.jar.includes" value="org/ironrhino/activiti/**,META-INF/resources/**,resources/spring/applicationContext-activiti.xml,resources/view/meta/**,resources/view/process/**,resources/i18n/activiti/**" />
+	<property name="dist.jar.includes" value="org/ironrhino/activiti/**,META-INF/resources/**,resources/spring/applicationContext-activiti.xml,resources/view/meta/**,resources/view/process/*.ftl,resources/i18n/activiti/**" />
 
 	<target name="pre-jar">
 		<delete file="${target.dir}/${dist.jar.name}" />
+		<delete file="${target.dir}/${dist.jar-sources.name}" />
 	</target>
 
 	<target name="post-jar">
