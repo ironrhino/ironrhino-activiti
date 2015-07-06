@@ -34,7 +34,9 @@
 	<#else>
 		<#if formElements??>
 		<#list formElements.entrySet() as entry>
+		<#if !submitFormPropertyName?has_content||submitFormPropertyName!=entry.key>
 		<@processFormElement name=entry.key />
+		</#if>
 		</#list>
 		</#if>
 	</#if>
