@@ -16,7 +16,7 @@
         <li><a href="<@url value="/process/historicProcessInstance/tabs?involved&startedBy=true"/>" class="ajax view">发起的流程</a></li>
     </ul>
   </li>
-  <li><a href="<@url value="/process/task/todolist"/>" class="ajax view">我的任务</a></li>
+  <li><a href="<@url value="/process/task/todotabs"/>" class="ajax view">我的任务</a></li>
   <#assign startableProcessMap=beans['processHelper'].findStartableProcessMap(authentication('principal').username)>
   <#if !startableProcessMap.empty>
   <li class="dropdown">

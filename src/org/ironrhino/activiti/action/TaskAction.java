@@ -116,6 +116,8 @@ public class TaskAction extends BaseAction {
 
 	private String processDefinitionKey;
 
+	private String formKey;
+
 	private Task task;
 
 	private ProcessDefinition processDefinition;
@@ -182,6 +184,14 @@ public class TaskAction extends BaseAction {
 
 	public void setProcessDefinitionKey(String processDefinitionKey) {
 		this.processDefinitionKey = processDefinitionKey;
+	}
+
+	public String getFormKey() {
+		return formKey;
+	}
+
+	public void setFormKey(String formKey) {
+		this.formKey = formKey;
 	}
 
 	public String getAssignee() {
@@ -374,10 +384,11 @@ public class TaskAction extends BaseAction {
 			if (formRendererHandlers != null)
 				for (FormRendererHandler formRendererHandler : formRendererHandlers)
 					formRendererHandler.handle(formElements, processDefinition.getKey(), null);
+			processDefinitionKey = processDefinition.getKey();
+			formKey = formService.getStartFormKey(processDefinitionId);
 			StringBuilder sb = new StringBuilder();
 			sb.append("resources/view/process/form/");
-			sb.append(processDefinition.getKey());
-			String formKey = formService.getStartFormKey(processDefinitionId);
+			sb.append(processDefinitionKey);
 			if (StringUtils.isNotBlank(formKey))
 				sb.append("_").append(formKey);
 			sb.append(".ftl");
@@ -405,12 +416,15 @@ public class TaskAction extends BaseAction {
 			if (formRendererHandlers != null)
 				for (FormRendererHandler formRendererHandler : formRendererHandlers)
 					formRendererHandler.handle(formElements, processDefinition.getKey(), task.getTaskDefinitionKey());
+			processDefinitionKey = processDefinition.getKey();
+			formKey = formService.getTaskFormKey(processDefinition.getId(), task.getTaskDefinitionKey());
+			if (StringUtils.isBlank(formKey))
+				formKey = task.getTaskDefinitionKey();
 			StringBuilder sb = new StringBuilder();
 			sb.append("resources/view/process/form/");
-			sb.append(processDefinition.getKey());
+			sb.append(processDefinitionKey);
 			sb.append("_");
-			String formKey = formService.getTaskFormKey(processDefinition.getId(), task.getTaskDefinitionKey());
-			sb.append(StringUtils.isNotBlank(formKey) ? formKey : task.getTaskDefinitionKey());
+			sb.append(formKey);
 			sb.append(".ftl");
 			ClassPathResource cpr = new ClassPathResource(sb.toString());
 			if (cpr.exists() && cpr.isReadable()) {

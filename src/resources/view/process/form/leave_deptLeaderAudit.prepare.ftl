@@ -1,0 +1,1 @@
+<#assign inputGridColumns=3>
