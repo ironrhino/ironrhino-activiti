@@ -1,52 +1,63 @@
 <#macro processFormElement name>
-<#assign fe=formElements[name]/>
-<#assign id=fe.id!/>
+<#assign element=formElements[name]/>
+<#assign templateName="/resources/view/process/form/"+processDefinitionKey/>
+<#if formKey?has_content>
+	<#assign templateName+="_"+formKey/>
+</#if>
+<#assign templateName+="_"+name/>
+<#assign templateName+=".element.ftl"/>
+<@resourcePresentConditional value=templateName>
+<#include templateName>
+</@resourcePresentConditional>
+<@resourcePresentConditional value=templateName negated=true>
+<#assign id=element.id!/>
 <#if !id?has_content>
 <#assign id='form_'+name/>
 </#if>
-<#assign hidden=fe.disabled&&!fe.value?has_content/>
-<#if fe.type=='listpick'>
-	<div<#if hidden> style="display:none;"</#if> class="control-group <#if fe.readonly||fe.disabled>_</#if>listpick" data-options="{'url':'<@url value=fe.dynamicAttributes['pickUrl']/>'}">
-		<@s.hidden id=id name=name value=fe.value! disabled=fe.disabled class="listpick-id "+fe.cssClass/>
-		<label class="control-label">${action.getText(fe.label)}</label>
-		<div class="controls<#if fe.readonly||fe.disabled> text</#if>">
+<#assign hidden=element.disabled&&!element.value?has_content/>
+<#if element.type=='listpick'>
+	<div<#if hidden> style="display:none;"</#if> class="control-group <#if element.readonly||element.disabled>_</#if>listpick" data-options="{'url':'<@url value=element.dynamicAttributes['pickUrl']/>'}">
+		<@s.hidden id=id name=name value=element.value! disabled=element.disabled class="listpick-id "+element.cssClass/>
+		<label class="control-label">${action.getText(element.label)}</label>
+		<div class="controls<#if element.readonly||element.disabled> text</#if>">
 		<span class="listpick-name"><#if taskVariables?? && taskVariables[name]??><#if taskVariables[name].fullname??>${taskVariables[name].fullname!}<#else>${taskVariables[name]!}</#if></#if></span>
 		</div>
 	</div>
 <#else>
 <div<#if hidden> style="display:none;"</#if> class="control-group">
-	<label class="control-label" for="${id}">${action.getText(fe.label)}</label>
+	<label class="control-label" for="${id}">${action.getText(element.label)}</label>
 	<div class="controls">
-	<#if fe.type=='textarea'>
-	<textarea id="${id}" name="${name}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>${fe.value!}</textarea>
-	<#elseif fe.type=='select'>
-	<#if fe.readonly><input id="${id}" type="hidden" name="${name}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/></#if>
-	<select id="${id}" name="${name}"<#if fe.readonly||fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>
+	<#if element.type=='textarea'>
+	<textarea id="${id}" name="${name}"<#if element.readonly> readonly</#if><#if element.disabled> disabled</#if> <#if element.cssClass?has_content> class="${element.cssClass}"</#if><#list element.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>${element.value!}</textarea>
+	<#elseif element.type=='select'>
+	<#if element.readonly><input id="${id}" type="hidden" name="${name}"<#if element.value?has_content> value="${element.value}"</#if><#if element.cssClass?has_content> class="${element.cssClass}"</#if><#list element.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/></#if>
+	<select id="${id}" name="${name}"<#if element.readonly||element.disabled> disabled</#if> <#if element.cssClass?has_content> class="${element.cssClass}"</#if><#list element.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>
 	<option></option>
-	<#list fe.values.entrySet() as en>
-	<option value="${en.key}"<#if fe.value??&&fe.value==en.key> selected</#if>>${en.value}</option>
+	<#list element.values.entrySet() as en>
+	<option value="${en.key}"<#if element.value??&&element.value==en.key> selected</#if>>${en.value}</option>
 	</#list>
 	</select>
-	<#elseif fe.type=='enum'>
-	<#if fe.readonly><input id="${id}" type="hidden" name="${name}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/></#if>
-	<select id="${id}" name="${name}"<#if fe.readonly||fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if>>
+	<#elseif element.type=='enum'>
+	<#if element.readonly><input id="${id}" type="hidden" name="${name}"<#if element.value?has_content> value="${element.value}"</#if><#if element.cssClass?has_content> class="${element.cssClass}"</#if><#list element.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/></#if>
+	<select id="${id}" name="${name}"<#if element.readonly||element.disabled> disabled</#if> <#if element.cssClass?has_content> class="${element.cssClass}"</#if>>
 	<option></option>
-	<#list statics[fe.dynamicAttributes['enumType']].values() as en>
-	<option value="${en.name()}"<#if fe.value??&&fe.value==en.name()> selected</#if>>${en}</option>
+	<#list statics[element.dynamicAttributes['enumType']].values() as en>
+	<option value="${en.name()}"<#if element.value??&&element.value==en.name()> selected</#if>>${en}</option>
 	</#list>
 	</select>
-	<#elseif fe.type=='radio'>
-	<#list fe.values.entrySet() as en>
-	<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${name}" value="${en.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if><#if fe.value??&&fe.value==en.key> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
+	<#elseif element.type=='radio'>
+	<#list element.values.entrySet() as en>
+	<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${name}" value="${en.key}"<#if element.readonly> readonly</#if><#if element.disabled> disabled</#if><#if element.value??&&element.value==en.key> checked</#if> class="custom <#if element.cssClass?has_content> ${element.cssClass}</#if>"> ${action.getText(en.value)}</label>
 	</#list>
-	<#elseif fe.type=='checkbox'>
-	<#list fe.values.entrySet() as en>
-	<label for="${id}_${en.key}" class="checkbox inline"><input id="${id}_${en.key}" type="checkbox" name="${name}" value="${en.key}"<#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if><#if fe.arrayValues??&&fe.arrayValues?seq_contains(en.key)> checked</#if> class="custom <#if fe.cssClass?has_content> ${fe.cssClass}</#if>"> ${action.getText(en.value)}</label>
+	<#elseif element.type=='checkbox'>
+	<#list element.values.entrySet() as en>
+	<label for="${id}_${en.key}" class="checkbox inline"><input id="${id}_${en.key}" type="checkbox" name="${name}" value="${en.key}"<#if element.readonly> readonly</#if><#if element.disabled> disabled</#if><#if element.arrayValues??&&element.arrayValues?seq_contains(en.key)> checked</#if> class="custom <#if element.cssClass?has_content> ${element.cssClass}</#if>"> ${action.getText(en.value)}</label>
 	</#list>
 	<#else>
-	<input id="${id}" type="${fe.inputType}" name="${name}"<#if fe.value?has_content> value="${fe.value}"</#if><#if fe.readonly> readonly</#if><#if fe.disabled> disabled</#if> <#if fe.cssClass?has_content> class="${fe.cssClass}"</#if><#list fe.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>
+	<input id="${id}" type="${element.inputType}" name="${name}"<#if element.value?has_content> value="${element.value}"</#if><#if element.readonly> readonly</#if><#if element.disabled> disabled</#if> <#if element.cssClass?has_content> class="${element.cssClass}"</#if><#list element.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>
 	</#if>
 	</div>
 </div>
 </#if>
+</@resourcePresentConditional>
 </#macro>
