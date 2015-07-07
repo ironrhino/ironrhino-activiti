@@ -31,7 +31,7 @@
 	<#else>
 	<button type="submit" class="btn btn-primary">${action.getText((historicProcessInstance??)?then('submit','start'))}</button>	
 	</#if>
-	<span style="margin-left:100px;">
+	<span class="pull-right" style="margin-right:200px;">
 	<button type="button" class="btn toggle-control-group" data-groupclass="comment">备注</button>
 	<button type="button" class="btn toggle-control-group" data-groupclass="attachment">附件</button>
 	</span>
