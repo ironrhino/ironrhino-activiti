@@ -44,25 +44,20 @@ public class FormSubmissionService {
 	private CheckboxFormType checkboxFormType;
 
 	@Transactional
-	public ProcessInstance submitStartForm(String processDefinitionId,
-			Map<String, String[]> parametersMap, String[] fileFileName,
-			String[] attachmentDescription, File[] file) throws IOException {
-		Map<String, String> properties = getFormProperties(formService
-				.getStartFormData(processDefinitionId).getFormProperties(),
-				parametersMap);
-		String businessKey = businessKeySequence != null ? businessKeySequence
-				.nextStringValue() : String.valueOf(System.currentTimeMillis());
-		ProcessInstance processInstance = formService.submitStartFormData(
-				processDefinitionId, businessKey, properties);
+	public ProcessInstance submitStartForm(String processDefinitionId, Map<String, String[]> parametersMap,
+			String[] fileFileName, String[] attachmentDescription, File[] file) throws IOException {
+		Map<String, String> properties = getFormProperties(formService.getStartFormData(processDefinitionId)
+				.getFormProperties(), parametersMap);
+		String businessKey = businessKeySequence != null ? businessKeySequence.nextStringValue() : String
+				.valueOf(System.currentTimeMillis());
+		ProcessInstance processInstance = formService.submitStartFormData(processDefinitionId, businessKey, properties);
 		String comment = parametersMap.get(PARAMETER_NAME_COMMENT)[0];
 		if (StringUtils.isNotBlank(comment))
 			taskService.addComment(null, processInstance.getId(), comment);
 		if (fileFileName != null) {
 			for (int i = 0; i < file.length; i++) {
-				String description = attachmentDescription.length > i ? attachmentDescription[i]
-						: null;
-				taskService.createAttachment(null, null,
-						processInstance.getId(), fileFileName[i], description,
+				String description = attachmentDescription.length > i ? attachmentDescription[i] : null;
+				taskService.createAttachment(null, null, processInstance.getId(), fileFileName[i], description,
 						new FileInputStream(file[i]));
 			}
 		}
@@ -71,22 +66,17 @@ public class FormSubmissionService {
 
 	@Transactional
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void submitTaskForm(String taskId,
-			Map<String, String[]> parametersMap, String[] fileFileName,
+	public void submitTaskForm(String taskId, Map<String, String[]> parametersMap, String[] fileFileName,
 			String[] attachmentDescription, File[] file) throws IOException {
-		Map properties = getFormProperties(formService.getTaskFormData(taskId)
-				.getFormProperties(), parametersMap);
+		Map properties = getFormProperties(formService.getTaskFormData(taskId).getFormProperties(), parametersMap);
 		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 		String comment = parametersMap.get(PARAMETER_NAME_COMMENT)[0];
 		if (StringUtils.isNotBlank(comment))
-			taskService.addComment(task.getId(), task.getProcessInstanceId(),
-					comment);
+			taskService.addComment(task.getId(), task.getProcessInstanceId(), comment);
 		if (fileFileName != null) {
 			for (int i = 0; i < file.length; i++) {
-				String description = attachmentDescription.length > i ? attachmentDescription[i]
-						: null;
-				taskService.createAttachment(null, task.getId(),
-						task.getProcessInstanceId(), fileFileName[i],
+				String description = attachmentDescription.length > i ? attachmentDescription[i] : null;
+				taskService.createAttachment(null, task.getId(), task.getProcessInstanceId(), fileFileName[i],
 						description, new FileInputStream(file[i]));
 			}
 		}
@@ -98,19 +88,18 @@ public class FormSubmissionService {
 		}
 	}
 
-	private Map<String, String> getFormProperties(
-			List<FormProperty> formProperties,
-			Map<String, String[]> parametersMap) {
+	private Map<String, String> getFormProperties(List<FormProperty> formProperties, Map<String, String[]> parametersMap) {
 		Map<String, String> properties = new HashMap<>();
 		for (FormProperty fp : formProperties) {
 			if (!fp.isWritable())
 				continue;
+			String[] values = parametersMap.get(fp.getId());
+			if (values == null)
+				continue;
 			if (fp.getType() instanceof CheckboxFormType) {
-				properties.put(fp.getId(), checkboxFormType
-						.convertModelValueToFormValue(parametersMap.get(fp
-								.getId())));
+				properties.put(fp.getId(), checkboxFormType.convertModelValueToFormValue(values));
 			} else {
-				properties.put(fp.getId(), parametersMap.get(fp.getId())[0]);
+				properties.put(fp.getId(), values[0]);
 			}
 		}
 		return properties;
