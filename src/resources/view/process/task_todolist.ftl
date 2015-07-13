@@ -21,6 +21,8 @@
 <#if !entity.task.delegationState??>
 <@btn view="delegate"/>
 </#if>
+<#else>
+<@btn action="claim"/>
 </#if>
 '>
 <#assign bottomButtons='
