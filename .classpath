@@ -41,9 +41,9 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-1.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-config-1.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-sitemesh-config-1.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-annotations-2.5.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-core-2.5.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-databind-2.5.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-annotations-2.6.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-core-2.6.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-databind-2.6.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javamail-1.4.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javassist-3.20.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jboss-logging-3.3.0.jar"/>
@@ -81,7 +81,7 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/struts2-spring-plugin-2.3.24.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/xmemcached-2.0.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/xwork-core-2.3.24.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/mybatis-3.2.7.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/mybatis-3.2.8.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/joda-time-2.3.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-email-1.2.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-common-dictionary-1.0.jar"/>
