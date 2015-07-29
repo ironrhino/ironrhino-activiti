@@ -22,6 +22,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.form.StartFormData;
 import org.activiti.engine.form.TaskFormData;
+import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.User;
@@ -506,23 +507,12 @@ public class TaskAction extends BaseAction {
 		if (attachment == null)
 			return NOTFOUND;
 		processInstanceId = attachment.getProcessInstanceId();
-		String taskId = attachment.getTaskId();
-		HistoricProcessInstance processInstance = null;
-		if (processInstanceId == null && taskId != null) {
-			task = taskService.createTaskQuery().taskId(taskId).singleResult();
-			if (task != null)
-				processInstanceId = task.getProcessInstanceId();
-		}
-		if (processInstanceId != null)
-			processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId)
-					.singleResult();
-		if (processInstance == null)
-			return NOTFOUND;
 		if (!AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null)) {
 			String userId = AuthzUtils.getUsername();
 			boolean auth = false;
-			List<IdentityLink> identityLinks = runtimeService.getIdentityLinksForProcessInstance(processInstanceId);
-			for (IdentityLink identityLink : identityLinks) {
+			List<HistoricIdentityLink> historicIdentityLinks = historyService
+					.getHistoricIdentityLinksForProcessInstance(processInstanceId);
+			for (HistoricIdentityLink identityLink : historicIdentityLinks) {
 				if (userId.equals(identityLink.getUserId())) {
 					auth = true;
 					break;
@@ -531,6 +521,23 @@ public class TaskAction extends BaseAction {
 				if (AuthzUtils.authorize(null, groupId, null)) {
 					auth = true;
 					break;
+				}
+			}
+			if (!auth) {
+				String taskId = attachment.getTaskId();
+				if (taskId != null) {
+					Task task = taskService.createTaskQuery().taskId(taskId).taskCandidateOrAssigned(userId)
+							.singleResult();
+					if (task != null) {
+						auth = true;
+					}
+				} else {
+					List<Task> tasks = taskService.createTaskQuery()
+							.processInstanceId(attachment.getProcessInstanceId()).taskCandidateOrAssigned(userId)
+							.list();
+					if (tasks.size() > 0) {
+						auth = true;
+					}
 				}
 			}
 			if (!auth)
