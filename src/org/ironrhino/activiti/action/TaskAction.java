@@ -522,11 +522,17 @@ public class TaskAction extends BaseAction {
 			String userId = AuthzUtils.getUsername();
 			boolean auth = false;
 			List<IdentityLink> identityLinks = runtimeService.getIdentityLinksForProcessInstance(processInstanceId);
-			for (IdentityLink identityLink : identityLinks)
+			for (IdentityLink identityLink : identityLinks) {
 				if (userId.equals(identityLink.getUserId())) {
 					auth = true;
 					break;
 				}
+				String groupId = identityLink.getGroupId();
+				if (AuthzUtils.authorize(null, groupId, null)) {
+					auth = true;
+					break;
+				}
+			}
 			if (!auth)
 				return ACCESSDENIED;
 		}

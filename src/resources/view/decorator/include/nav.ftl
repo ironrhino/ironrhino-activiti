@@ -7,6 +7,7 @@
   <li><a href="<@url value="/process/task"/>" class="ajax view">所有任务</a></li>
   <li><a href="<@url value="/process/processInstance"/>" class="ajax view">运行中的流程</a></li>
   </@authorize>
+  <@authorize ifNotGranted="ROLE_ADMINISTRATOR">
   <li class="dropdown">
  	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
       	我的流程
@@ -32,5 +33,6 @@
   </#if>
   <@authorize ifAnyGranted="user">
   <li><a href="<@url value="/leave"/>" class="ajax view">我的请假</a></li>
+  </@authorize>
   </@authorize>
 </ul>
