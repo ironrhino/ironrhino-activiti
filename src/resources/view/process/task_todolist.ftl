@@ -32,7 +32,7 @@
 <@btn class="reload"/>
 <@btn class="filter"/>
 '>
-<@richtable entityName="task" action="${actionBaseUrl}/todolist" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false rowDynamicAttributes=r"<#if entity.task.assignee??>{'data-assigned':'true'}</#if>"/>
+<@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false rowDynamicAttributes=r"<#if entity.task.assignee??>{'data-assigned':'true'}</#if>"/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
 	<@s.textfield label="%{getText('processInstanceId')}" name="criteria.processInstanceId"/>
 	<@s.textfield label="%{getText('processDefinitionName')}" name="criteria.processDefinitionName"/>

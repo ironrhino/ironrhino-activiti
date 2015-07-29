@@ -31,7 +31,7 @@
 <#if Parameters.finished??>
 <#assign formid=((Parameters.finished=='true')?then('finished','unfinished'))+'_'+formid/>
 </#if>
-<@richtable formid=formid entityName="historicProcessInstance" action="${getUrl(request.requestURI)}" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
+<@richtable formid=formid entityName="historicProcessInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
 <#if !request.requestURI?ends_with('/involved')>
 	<@s.textfield label="%{getText('processDefinitionKey')}" name="criteria.processDefinitionKey"/>
