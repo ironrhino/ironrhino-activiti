@@ -74,9 +74,11 @@ Observation.process = function(container) {
 									}
 									div.attr('title', title.join('\n'));
 									if (v.current) {
+										var radius = v['border-radius'] || '12';
 										div.css({
 													'border' : '2px solid red',
-													'border-radius' : '12px'
+													'border-radius' : radius
+															+ 'px'
 												});
 									}
 								});

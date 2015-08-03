@@ -73,29 +73,23 @@ public class ProcessTraceService {
 	@Autowired
 	protected UserDetailsService userDetailsService;
 
-	public List<ActivityDetail> traceHistoricProcessInstance(
-			String processInstanceId) {
+	public List<ActivityDetail> traceHistoricProcessInstance(String processInstanceId) {
 		List<ActivityDetail> details = new ArrayList<ActivityDetail>();
-		List<HistoricActivityInstance> activities = historyService
-				.createHistoricActivityInstanceQuery()
-				.processInstanceId(processInstanceId)
-				.orderByHistoricActivityInstanceStartTime().asc().list();
+		List<HistoricActivityInstance> activities = historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstanceId).orderByHistoricActivityInstanceStartTime().asc().list();
 		for (HistoricActivityInstance activity : activities) {
-			if (!"userTask".equals(activity.getActivityType())
-					&& !"startEvent".equals(activity.getActivityType()))
+			if (!"userTask".equals(activity.getActivityType()) && !"startEvent".equals(activity.getActivityType()))
 				continue;
 			ActivityDetail detail = new ActivityDetail();
 			detail.setStartTime(activity.getStartTime());
 			detail.setEndTime(activity.getEndTime());
 			details.add(detail);
 			if ("startEvent".equals(activity.getActivityType())) {
-				HistoricProcessInstance hpi = historyService
-						.createHistoricProcessInstanceQuery()
+				HistoricProcessInstance hpi = historyService.createHistoricProcessInstanceQuery()
 						.processInstanceId(processInstanceId).singleResult();
 				detail.setName("startProcessInstance");
 				detail.setAssignee(hpi.getStartUserId());
-				List<Attachment> attachments = taskService
-						.getProcessInstanceAttachments(hpi.getId());
+				List<Attachment> attachments = taskService.getProcessInstanceAttachments(hpi.getId());
 				Iterator<Attachment> it = attachments.iterator();
 				while (it.hasNext()) {
 					Attachment attachment = it.next();
@@ -104,8 +98,7 @@ public class ProcessTraceService {
 				}
 				detail.setAttachments(attachments);
 
-				List<Comment> comments = taskService
-						.getProcessInstanceComments(hpi.getId());
+				List<Comment> comments = taskService.getProcessInstanceComments(hpi.getId());
 				Iterator<Comment> itc = comments.iterator();
 				while (itc.hasNext()) {
 					Comment comment = itc.next();
@@ -116,12 +109,9 @@ public class ProcessTraceService {
 			} else {
 				detail.setName(activity.getActivityName());
 				detail.setAssignee(activity.getAssignee());
-				HistoricTaskInstance task = historyService
-						.createHistoricTaskInstanceQuery()
-						.processInstanceId(processInstanceId)
-						.taskId(activity.getTaskId()).singleResult();
-				List<Attachment> attachments = taskService
-						.getTaskAttachments(task.getId());
+				HistoricTaskInstance task = historyService.createHistoricTaskInstanceQuery()
+						.processInstanceId(processInstanceId).taskId(activity.getTaskId()).singleResult();
+				List<Attachment> attachments = taskService.getTaskAttachments(task.getId());
 				Iterator<Attachment> it = attachments.iterator();
 				while (it.hasNext()) {
 					Attachment attachment = it.next();
@@ -129,8 +119,7 @@ public class ProcessTraceService {
 						it.remove();
 				}
 				detail.setAttachments(attachments);
-				List<Comment> comments = taskService.getTaskComments(task
-						.getId());
+				List<Comment> comments = taskService.getTaskComments(task.getId());
 				Iterator<Comment> itc = comments.iterator();
 				while (itc.hasNext()) {
 					Comment comment = itc.next();
@@ -139,49 +128,40 @@ public class ProcessTraceService {
 				}
 				detail.setComments(comments);
 			}
-			List<HistoricDetail> list = historyService
-					.createHistoricDetailQuery()
-					.activityInstanceId(activity.getId()).list();
+			List<HistoricDetail> list = historyService.createHistoricDetailQuery().activityInstanceId(activity.getId())
+					.list();
 			for (HistoricDetail hd : list) {
 				if (hd instanceof HistoricFormProperty) {
 					HistoricFormProperty hfp = (HistoricFormProperty) hd;
 					if (hfp.getPropertyValue() != null)
-						detail.getData().put(hfp.getPropertyId(),
-								hfp.getPropertyValue());
+						detail.getData().put(hfp.getPropertyId(), hfp.getPropertyValue());
 				}
 			}
-			detail.setData(formRenderer.display(
-					activity.getProcessDefinitionId(),
-					activity.getActivityId(), detail.getData()));
+			detail.setData(formRenderer.display(activity.getProcessDefinitionId(), activity.getActivityId(),
+					detail.getData()));
 
 		}
 		return details;
 	}
 
-	public List<Map<String, Object>> traceProcessDefinition(
-			String processDefinitionId) throws Exception {
+	public List<Map<String, Object>> traceProcessDefinition(String processDefinitionId) throws Exception {
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processDefinitionId);
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (ActivityImpl activity : activitiList) {
-			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
-					activity, null, false);
+			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(activity, null, processDefinition, false);
 			activities.add(activityImageInfo);
 		}
 		return activities;
 	}
 
-	public List<Map<String, Object>> traceProcessInstance(
-			String processInstanceId) throws Exception {
-		HistoricProcessInstance processInstance = historyService
-				.createHistoricProcessInstanceQuery()
+	public List<Map<String, Object>> traceProcessInstance(String processInstanceId) throws Exception {
+		HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery()
 				.processInstanceId(processInstanceId).singleResult();
-		Execution execution = runtimeService.createExecutionQuery()
-				.executionId(processInstanceId).singleResult();
+		Execution execution = runtimeService.createExecutionQuery().executionId(processInstanceId).singleResult();
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-				.getDeployedProcessDefinition(processInstance
-						.getProcessDefinitionId());
+				.getDeployedProcessDefinition(processInstance.getProcessDefinitionId());
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (ActivityImpl activity : activitiList) {
@@ -189,39 +169,39 @@ public class ProcessTraceService {
 			String id = activity.getId();
 			if (execution != null && id.equals(execution.getActivityId()))
 				current = true;
-			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(
-					activity, processInstanceId, current);
+			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(activity, processInstanceId,
+					processDefinition, current);
 			activities.add(activityImageInfo);
 		}
 		return activities;
 	}
 
-	private Map<String, Object> packageSingleActivitiInfo(
-			ActivityImpl activity, String processInstanceId, boolean current)
-			throws Exception {
+	private Map<String, Object> packageSingleActivitiInfo(ActivityImpl activity, String processInstanceId,
+			ProcessDefinitionEntity processDefinition, boolean current) throws Exception {
 		Map<String, Object> activityInfo = new HashMap<String, Object>();
-		activityInfo.put("current", current);
+		if (current) {
+			activityInfo.put("current", current);
+			String key = processDefinition.getKey();
+			String diagramResourceName = processDefinition.getDiagramResourceName();
+			if (diagramResourceName.equals(key + "." + key + ".png"))
+				activityInfo.put("border-radius", 5);
+		}
 		setPosition(activity, activityInfo);
 		setWidthAndHeight(activity, activityInfo);
 		Map<String, Object> vars = new LinkedHashMap<String, Object>();
 		if (processInstanceId != null) {
 			List<HistoricActivityInstance> historicActivityInstances = historyService
-					.createHistoricActivityInstanceQuery()
-					.executionId(processInstanceId)
-					.activityId(activity.getId())
+					.createHistoricActivityInstanceQuery().executionId(processInstanceId).activityId(activity.getId())
 					.orderByHistoricActivityInstanceStartTime().desc().list();
 			if (!historicActivityInstances.isEmpty()) {
 				HistoricActivityInstance hai = historicActivityInstances.get(0);
 				if (hai.getAssignee() != null) {
-					User assigneeUser = identityService.createUserQuery()
-							.userId(hai.getAssignee()).singleResult();
+					User assigneeUser = identityService.createUserQuery().userId(hai.getAssignee()).singleResult();
 					try {
-						UserDetails userDetails = userDetailsService
-								.loadUserByUsername(assigneeUser.getId());
+						UserDetails userDetails = userDetailsService.loadUserByUsername(assigneeUser.getId());
 						vars.put(translate("assignee"), userDetails.toString());
 					} catch (UsernameNotFoundException e) {
-						vars.put(translate("assignee"),
-								assigneeUser.getFirstName());
+						vars.put(translate("assignee"), assigneeUser.getFirstName());
 					}
 				}
 				if (hai.getStartTime() != null)
@@ -243,8 +223,7 @@ public class ProcessTraceService {
 					setCurrentTaskAssignee(vars, currentTask);
 			}
 			UserTaskActivityBehavior userTaskActivityBehavior = (UserTaskActivityBehavior) activityBehavior;
-			TaskDefinition taskDefinition = userTaskActivityBehavior
-					.getTaskDefinition();
+			TaskDefinition taskDefinition = userTaskActivityBehavior.getTaskDefinition();
 			setTaskGroup(vars, taskDefinition);
 
 		}
@@ -255,10 +234,8 @@ public class ProcessTraceService {
 		return activityInfo;
 	}
 
-	private void setTaskGroup(Map<String, Object> vars,
-			TaskDefinition taskDefinition) {
-		Set<Expression> candidateGroupIdExpressions = taskDefinition
-				.getCandidateGroupIdExpressions();
+	private void setTaskGroup(Map<String, Object> vars, TaskDefinition taskDefinition) {
+		Set<Expression> candidateGroupIdExpressions = taskDefinition.getCandidateGroupIdExpressions();
 		StringBuilder roles = new StringBuilder();
 		for (Expression expression : candidateGroupIdExpressions) {
 			String expressionText = expression.getExpressionText();
@@ -280,8 +257,7 @@ public class ProcessTraceService {
 	}
 
 	private void appendRole(StringBuilder roles, String role) {
-		Group g = identityService.createGroupQuery().groupId(role)
-				.singleResult();
+		Group g = identityService.createGroupQuery().groupId(role).singleResult();
 		if (g != null) {
 			String roleName = g.getName();
 			if (roleName == null) {
@@ -292,15 +268,12 @@ public class ProcessTraceService {
 		}
 	}
 
-	private void setCurrentTaskAssignee(Map<String, Object> vars,
-			Task currentTask) {
+	private void setCurrentTaskAssignee(Map<String, Object> vars, Task currentTask) {
 		String assignee = currentTask.getAssignee();
 		if (assignee != null) {
-			User assigneeUser = identityService.createUserQuery()
-					.userId(assignee).singleResult();
+			User assigneeUser = identityService.createUserQuery().userId(assignee).singleResult();
 			try {
-				UserDetails userDetails = userDetailsService
-						.loadUserByUsername(assigneeUser.getId());
+				UserDetails userDetails = userDetailsService.loadUserByUsername(assigneeUser.getId());
 				vars.put(translate("assignee"), userDetails.toString());
 			} catch (UsernameNotFoundException e) {
 				vars.put(translate("assignee"), assigneeUser.getFirstName());
@@ -309,27 +282,23 @@ public class ProcessTraceService {
 	}
 
 	private Task getCurrentTaskInfo(String processInstanceId) {
-		ProcessInstance processInstance = runtimeService
-				.createProcessInstanceQuery()
+		ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
 				.processInstanceId(processInstanceId).singleResult();
 		if (processInstance != null) {
 			String activitiId = processInstance.getActivityId();
-			return taskService.createTaskQuery()
-					.processInstanceId(processInstance.getId())
+			return taskService.createTaskQuery().processInstanceId(processInstance.getId())
 					.taskDefinitionKey(activitiId).singleResult();
 		} else {
 			return null;
 		}
 	}
 
-	private void setWidthAndHeight(ActivityImpl activity,
-			Map<String, Object> activityInfo) {
+	private void setWidthAndHeight(ActivityImpl activity, Map<String, Object> activityInfo) {
 		activityInfo.put("width", activity.getWidth());
 		activityInfo.put("height", activity.getHeight());
 	}
 
-	private void setPosition(ActivityImpl activity,
-			Map<String, Object> activityInfo) {
+	private void setPosition(ActivityImpl activity, Map<String, Object> activityInfo) {
 		activityInfo.put("x", activity.getX());
 		activityInfo.put("y", activity.getY());
 	}
