@@ -5,15 +5,14 @@ import org.activiti.engine.identity.Group;
 import org.ironrhino.core.event.EntityOperationEvent;
 import org.ironrhino.core.model.Persistable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IdentitySynchronizer implements
-		ApplicationListener<EntityOperationEvent<?>> {
+public class IdentitySynchronizer {
 
 	@Autowired
 	private IdentityService identityService;
@@ -21,8 +20,8 @@ public class IdentitySynchronizer implements
 	@Autowired
 	private UserDetailsService userDetailsService;
 
-	@Override
-	public void onApplicationEvent(EntityOperationEvent<?> event) {
+	@EventListener
+	public void onApplicationEvent(EntityOperationEvent<? extends UserDetails> event) {
 		if (!event.isLocal())
 			return;
 		Persistable<?> entity = event.getEntity();
