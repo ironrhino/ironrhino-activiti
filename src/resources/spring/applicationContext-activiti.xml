@@ -19,7 +19,7 @@
 		<property name="mailServerUseSSL" value="${mail.use.ssl:true}" />
 		<property name="activityFontName" value="${processEngineConfiguration.activityFontName:宋体}"/>
 		<property name="labelFontName" value="${processEngineConfiguration.labelFontName:宋体}"/>
-		<property name="deploymentResources" value="${processEngineConfiguration.deploymentResources:classpath*:/resources/bpmn/*.zip}" />
+		<property name="deploymentResources" value="${processEngineConfiguration.deploymentResources:classpath*:/resources/bpmn/*.bpmn}" />
 	</bean>
 	
 	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean" destroy-method="destroy">
