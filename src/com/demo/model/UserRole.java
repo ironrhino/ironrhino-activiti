@@ -2,9 +2,8 @@ package com.demo.model;
 
 public interface UserRole extends org.ironrhino.core.security.role.UserRole {
 
-	String admin = "admin";
-	String user = "user";
-	String deptLeader = "deptLeader";
+	String employee = "employee";
+	String leader = "leader";
 	String hr = "hr";
 
 }

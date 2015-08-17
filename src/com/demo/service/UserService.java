@@ -16,14 +16,14 @@ public class UserService {
 	@Autowired
 	private UserManager userManager;
 
-	public String findDeptLeader(String username) {
-		List<String> leaders = findDeptLeaders(username);
+	public String findLeader(String username) {
+		List<String> leaders = findLeaders(username);
 		return leaders.isEmpty() ? null : leaders.get(0);
 	}
 
-	public List<String> findDeptLeaders(String username) {
+	public List<String> findLeaders(String username) {
 		List<User> users = userManager.findListByCriteria(userManager
-				.detachedCriteria(UserRole.deptLeader));
+				.detachedCriteria(UserRole.leader));
 		List<String> leaders = new ArrayList<String>(users.size());
 		for (User u : users)
 			leaders.add(u.getUsername());

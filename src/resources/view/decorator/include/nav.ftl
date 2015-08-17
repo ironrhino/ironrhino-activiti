@@ -31,7 +31,7 @@
     </ul>
   </li>
   </#if>
-  <@authorize ifAnyGranted="user">
+  <@authorize ifAnyGranted="employee">
   <li><a href="<@url value="/leave"/>" class="ajax view">我的请假</a></li>
   </@authorize>
   </@authorize>

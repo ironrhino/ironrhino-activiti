@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <process id="leave" name="请假流程" isExecutable="true" activiti:candidateStarterGroups="user">
+  <process id="leave" name="请假流程" isExecutable="true" activiti:candidateStarterGroups="employee">
     <documentation>请填写准确的信息</documentation>
     <extensionElements>
       <activiti:executionListener event="start" delegateExpression="${startLeaveProcessor}"></activiti:executionListener>
@@ -13,15 +13,15 @@
         <activiti:formProperty id="reason" type="textarea" required="true"></activiti:formProperty>
       </extensionElements>
     </startEvent>
-    <userTask id="deptLeaderAudit" name="部门领导审批" activiti:assignee="${userService.findDeptLeader(applyUserId)}" activiti:candidateGroups="deptLeader">
+    <userTask id="leaderAudit" name="领导审批" activiti:assignee="${userService.findLeader(applyUserId)}" activiti:candidateGroups="leader">
       <extensionElements>
         <activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" writable="false"></activiti:formProperty>
         <activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" writable="false"></activiti:formProperty>
         <activiti:formProperty id="leaveType" type="dictionary" writable="false"></activiti:formProperty>
         <activiti:formProperty id="reason" type="textarea" writable="false"></activiti:formProperty>
         <activiti:formProperty id="hrMemo" name="人事意见" type="textarea" writable="false"></activiti:formProperty>
-        <activiti:formProperty id="deptLeaderMemo" name="领导意见" type="textarea"></activiti:formProperty>
-        <activiti:formProperty id="deptLeaderPass" name="审批通过" type="boolean" required="true"></activiti:formProperty>
+        <activiti:formProperty id="leaderMemo" name="领导意见" type="textarea"></activiti:formProperty>
+        <activiti:formProperty id="leaderPass" name="审批通过" type="boolean" required="true"></activiti:formProperty>
       </extensionElements>
     </userTask>
     <userTask id="hrAudit" name="人事审批" activiti:candidateGroups="hr">
@@ -30,7 +30,7 @@
         <activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" writable="false"></activiti:formProperty>
         <activiti:formProperty id="leaveType" type="dictionary" writable="false"></activiti:formProperty>
         <activiti:formProperty id="reason" type="textarea" writable="false"></activiti:formProperty>
-        <activiti:formProperty id="deptLeaderMemo" name="领导意见" type="textarea" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="leaderMemo" name="领导意见" type="textarea" writable="false"></activiti:formProperty>
         <activiti:formProperty id="hrMemo" name="人事意见" type="textarea"></activiti:formProperty>
         <activiti:formProperty id="hrPass" name="审批通过" type="boolean" required="true"></activiti:formProperty>
       </extensionElements>
@@ -45,7 +45,7 @@
     </userTask>
     <userTask id="modifyApply" name="调整申请" activiti:assignee="${applyUserId}">
       <extensionElements>
-        <activiti:formProperty id="deptLeaderMemo" name="领导意见" type="textarea" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="leaderMemo" name="领导意见" type="textarea" writable="false"></activiti:formProperty>
         <activiti:formProperty id="hrMemo" name="人事意见" type="textarea" writable="false"></activiti:formProperty>
         <activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" required="true"></activiti:formProperty>
         <activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" required="true"></activiti:formProperty>
@@ -76,13 +76,13 @@
         </activiti:field>
       </extensionElements>
     </serviceTask>
-    <sequenceFlow id="flow1" sourceRef="startevent" targetRef="deptLeaderAudit"></sequenceFlow>
-    <sequenceFlow id="flow3" sourceRef="deptLeaderAudit" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow1" sourceRef="startevent" targetRef="leaderAudit"></sequenceFlow>
+    <sequenceFlow id="flow3" sourceRef="leaderAudit" targetRef="exclusivegateway1"></sequenceFlow>
     <sequenceFlow id="flow4" name="同意" sourceRef="exclusivegateway1" targetRef="hrAudit">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${deptLeaderPass}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${leaderPass}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow5" name="不同意" sourceRef="exclusivegateway1" targetRef="modifyApply">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!deptLeaderPass}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!leaderPass}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow6" sourceRef="hrAudit" targetRef="exclusivegateway2"></sequenceFlow>
     <sequenceFlow id="flow7" name="同意" sourceRef="exclusivegateway2" targetRef="reportBack">
@@ -103,7 +103,7 @@
     <sequenceFlow id="flow14" name="结束流程" sourceRef="exclusivegateway3" targetRef="exclusivegateway4">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!reApply}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow15" name="重新申请" sourceRef="exclusivegateway3" targetRef="deptLeaderAudit">
+    <sequenceFlow id="flow15" name="重新申请" sourceRef="exclusivegateway3" targetRef="leaderAudit">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reApply}]]></conditionExpression>
     </sequenceFlow>
   </process>
@@ -112,7 +112,7 @@
       <bpmndi:BPMNShape bpmnElement="startevent" id="BPMNShape_startevent">
         <omgdc:Bounds height="35.0" width="35.0" x="170.0" y="196.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="deptLeaderAudit" id="BPMNShape_deptLeaderAudit">
+      <bpmndi:BPMNShape bpmnElement="leaderAudit" id="BPMNShape_leaderAudit">
         <omgdc:Bounds height="55.0" width="105.0" x="310.0" y="212.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="hrAudit" id="BPMNShape_hrAudit">
