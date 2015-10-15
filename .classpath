@@ -41,9 +41,9 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-2.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-config-2.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-sitemesh-config-2.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-annotations-2.6.2.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-core-2.6.2.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-databind-2.6.2.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-annotations-2.6.3.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-core-2.6.3.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-databind-2.6.3.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javamail-1.5.4.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javassist-3.20.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jboss-logging-3.3.0.jar"/>
@@ -51,10 +51,10 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jpa-api-2.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jsoup-1.8.3.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jta-1.1.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-api-2.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-core-2.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-jcl-2.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-slf4j-impl-2.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-api-2.4.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-core-2.4.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-jcl-2.4.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-slf4j-impl-2.4.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/mvel2-2.2.6.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/mysql-connector-java-5.1.36.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ognl-3.0.12.jar"/>
