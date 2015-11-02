@@ -2,6 +2,7 @@ package org.ironrhino.activiti.component;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.Group;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.ironrhino.core.event.EntityOperationEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -40,7 +41,16 @@ public class IdentitySynchronizer {
 				Group g = identityService.createGroupQuery().groupId(ga.getAuthority()).singleResult();
 				if (g == null) {
 					g = identityService.newGroup(ga.getAuthority());
-					identityService.saveGroup(g);
+					try {
+						identityService.saveGroup(g);
+					} catch (PersistenceException e) {
+						// retry for concurrent insertion
+						g = identityService.createGroupQuery().groupId(ga.getAuthority()).singleResult();
+						if (g == null) {
+							g = identityService.newGroup(ga.getAuthority());
+							identityService.saveGroup(g);
+						}
+					}
 				}
 				identityService.createMembership(u.getId(), g.getId());
 			}
