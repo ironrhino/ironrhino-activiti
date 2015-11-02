@@ -1,3 +1,3 @@
 @AutoConfig(namespace = "/")
-package com.demo;
+package com.ironrhino.activiti;
 import org.ironrhino.core.metadata.AutoConfig;

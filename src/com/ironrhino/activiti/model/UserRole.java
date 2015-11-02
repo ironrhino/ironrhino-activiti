@@ -1,4 +1,4 @@
-package com.demo.model;
+package com.ironrhino.activiti.model;
 
 public interface UserRole extends org.ironrhino.core.security.role.UserRole {
 

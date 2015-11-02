@@ -1,4 +1,4 @@
-package com.demo.service;
+package com.ironrhino.activiti.service;
 
 import java.util.Date;
 
@@ -9,12 +9,12 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.demo.model.Leave;
+import com.ironrhino.activiti.model.Leave;
 
 @Component
-public class ReportBackEndProcessor implements TaskListener {
+public class AfterModifyApplyContentProcessor implements TaskListener {
 
-	private static final long serialVersionUID = 3124655854713421538L;
+	private static final long serialVersionUID = -523387540206288280L;
 
 	@Autowired
 	private LeaveManager leaveManager;
@@ -24,13 +24,13 @@ public class ReportBackEndProcessor implements TaskListener {
 
 	@Override
 	public void notify(DelegateTask delegateTask) {
-		String processInstanceId = delegateTask.getProcessInstanceId();
 		ProcessInstance processInstance = runtimeService
 				.createProcessInstanceQuery()
-				.processInstanceId(processInstanceId).singleResult();
+				.processInstanceId(delegateTask.getProcessInstanceId())
+				.singleResult();
 		Leave leave = leaveManager.findOne(processInstance.getBusinessKey());
-		leave.setRealityStartTime((Date) delegateTask.getVariable("realityStartTime"));
-		leave.setRealityEndTime((Date)  delegateTask.getVariable("realityEndTime"));
+		leave.setStartTime((Date) delegateTask.getVariable("startTime"));
+		leave.setEndTime((Date) delegateTask.getVariable("endTime"));
 		leaveManager.save(leave);
 	}
 

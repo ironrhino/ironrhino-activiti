@@ -1,4 +1,4 @@
-package com.demo.model;
+package com.ironrhino.activiti.model;
 
 import java.util.Date;
 

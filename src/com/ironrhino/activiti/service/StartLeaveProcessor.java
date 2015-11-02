@@ -1,4 +1,4 @@
-package com.demo.service;
+package com.ironrhino.activiti.service;
 
 import java.util.Date;
 
@@ -10,7 +10,7 @@ import org.ironrhino.security.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.demo.model.Leave;
+import com.ironrhino.activiti.model.Leave;
 
 @Component
 public class StartLeaveProcessor implements ExecutionListener {

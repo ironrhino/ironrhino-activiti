@@ -1,4 +1,4 @@
-package com.demo.service;
+package com.ironrhino.activiti.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.ironrhino.security.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.demo.model.UserRole;
+import com.ironrhino.activiti.model.UserRole;
 
 @Component
 public class UserService {
