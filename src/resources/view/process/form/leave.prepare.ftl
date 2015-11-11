@@ -1,1 +1,1 @@
-<#assign inputGridColumns=2>
+<#assign inputGridColumns=3>
