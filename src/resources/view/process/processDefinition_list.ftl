@@ -18,7 +18,7 @@
 <@btn class="reload"/>
 '>
 <#assign actionColumnButtons='
-<@btn view="view" windowoptions="{\'width\':\'80%\',\'height\':650}"/>'+r'
+<@btn view="view" windowoptions="{\'width\':\'90%\',\'height\':650}"/>'+r'
 <#if entity.processDefinition.suspended>
 <@btn action="activate" confirm=true/>
 <#else>

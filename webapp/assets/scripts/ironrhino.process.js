@@ -51,9 +51,9 @@ Observation.process = function(container) {
 		var img = $('img', t)[0];
 		img.onload = function() {
 			$(img).closest('.ui-dialog-content').css({
-						'height' : 'auto',
-						'min-height' : img.width + 'px'
+						'height' : 'auto'
 					});
+			t.height(img.height + 50);
 			var ratio = img.width / img.naturalWidth;
 			$.getJSON(CONTEXT_PATH + '/process/' + entity + '/trace/' + pid,
 					function(data) {

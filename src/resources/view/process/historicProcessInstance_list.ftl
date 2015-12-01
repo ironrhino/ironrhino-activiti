@@ -23,7 +23,7 @@
 <@btn view="view"/>
 <#if !entity.historicProcessInstance.endTime??>
 '+'
-<@btn view="trace" windowoptions="{\'width\':\'80%\',\'height\':650}"/>
+<@btn view="trace" windowoptions="{\'width\':\'90%\',\'height\':650}"/>
 '+r'
 </#if>
 '>
