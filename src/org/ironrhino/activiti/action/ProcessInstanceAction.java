@@ -91,10 +91,8 @@ public class ProcessInstanceAction extends BaseAction {
 	public String list() {
 		if (resultPage == null)
 			resultPage = new ResultPage<Row>();
-		ProcessInstanceQuery query = runtimeService
-				.createProcessInstanceQuery();
-		boolean admin = AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR,
-				null);
+		ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery();
+		boolean admin = AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null);
 		if (criteria != null)
 			criteria.filter(query, admin);
 		if (!admin)
@@ -105,32 +103,28 @@ public class ProcessInstanceAction extends BaseAction {
 		long count = query.count();
 		resultPage.setTotalResults(count);
 		if (count > 0) {
-			List<ProcessInstance> processInstances = query
-					.orderByProcessInstanceId().desc()
+			List<ProcessInstance> processInstances = query.orderByProcessInstanceId().desc()
 					.listPage(resultPage.getStart(), resultPage.getPageSize());
 			List<Row> list = new ArrayList<Row>(processInstances.size());
 			for (ProcessInstance pi : processInstances) {
 				Row row = new Row();
 				row.setId(pi.getId());
 				row.setProcessInstance(pi);
-				row.setHistoricProcessInstance(historyService
-						.createHistoricProcessInstanceQuery()
-						.processInstanceId(pi.getProcessInstanceId())
-						.singleResult());
-				row.setProcessDefinition(repositoryService
-						.createProcessDefinitionQuery()
-						.processDefinitionId(pi.getProcessDefinitionId())
-						.singleResult());
-				String activityId = pi.getActivityId();
-				if (activityId != null) {
-					List<HistoricActivityInstance> historicActivityInstances = historyService
-							.createHistoricActivityInstanceQuery()
-							.executionId(pi.getId()).activityId(activityId)
-							.orderByHistoricActivityInstanceStartTime().desc()
-							.list();
-					if (!historicActivityInstances.isEmpty())
-						row.setHistoricActivityInstance(historicActivityInstances
-								.get(0));
+				row.setHistoricProcessInstance(historyService.createHistoricProcessInstanceQuery()
+						.processInstanceId(pi.getProcessInstanceId()).singleResult());
+				row.setProcessDefinition(repositoryService.createProcessDefinitionQuery()
+						.processDefinitionId(pi.getProcessDefinitionId()).singleResult());
+				List<HistoricActivityInstance> historicActivityInstances = historyService
+						.createHistoricActivityInstanceQuery().processInstanceId(pi.getId())
+						.orderByHistoricActivityInstanceStartTime().desc().list();
+				if (!historicActivityInstances.isEmpty()) {
+					for (HistoricActivityInstance historicActivityInstance : historicActivityInstances) {
+						if (historicActivityInstance.getActivityId() != null
+								&& historicActivityInstance.getEndTime() == null) {
+							row.setHistoricActivityInstance(historicActivityInstance);
+							break;
+						}
+					}
 				}
 				list.add(row);
 			}
@@ -141,11 +135,10 @@ public class ProcessInstanceAction extends BaseAction {
 
 	@Override
 	public String view() {
-		processInstance = runtimeService.createProcessInstanceQuery()
-				.processInstanceId(getUid()).singleResult();
+		processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(getUid()).singleResult();
 		if (processInstance == null)
-			processInstance = runtimeService.createProcessInstanceQuery()
-					.processInstanceBusinessKey(getUid()).singleResult();
+			processInstance = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(getUid())
+					.singleResult();
 		if (processInstance == null)
 			return NOTFOUND;
 		if (!canView(processInstance.getId()))
@@ -157,23 +150,17 @@ public class ProcessInstanceAction extends BaseAction {
 		if (!canView(getUid()))
 			return NOTFOUND;
 		InputStream resourceAsStream = null;
-		HistoricProcessInstance processInstance = historyService
-				.createHistoricProcessInstanceQuery()
+		HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery()
 				.processInstanceId(getUid()).singleResult();
 		if (processInstance == null)
-			processInstance = historyService
-					.createHistoricProcessInstanceQuery()
-					.processInstanceBusinessKey(getUid()).singleResult();
-		ProcessDefinition processDefinition = repositoryService
-				.createProcessDefinitionQuery()
-				.processDefinitionId(processInstance.getProcessDefinitionId())
-				.singleResult();
+			processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(getUid())
+					.singleResult();
+		ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+				.processDefinitionId(processInstance.getProcessDefinitionId()).singleResult();
 		String resourceName = processDefinition.getDiagramResourceName();
-		resourceAsStream = repositoryService.getResourceAsStream(
-				processDefinition.getDeploymentId(), resourceName);
+		resourceAsStream = repositoryService.getResourceAsStream(processDefinition.getDeploymentId(), resourceName);
 		byte[] byteArray = IOUtils.toByteArray(resourceAsStream);
-		ServletOutputStream servletOutputStream = ServletActionContext
-				.getResponse().getOutputStream();
+		ServletOutputStream servletOutputStream = ServletActionContext.getResponse().getOutputStream();
 		servletOutputStream.write(byteArray, 0, byteArray.length);
 		servletOutputStream.flush();
 		servletOutputStream.close();
@@ -196,9 +183,7 @@ public class ProcessInstanceAction extends BaseAction {
 			for (String id : getId()) {
 				ids.add(id);
 			}
-			List<ProcessInstance> list = runtimeService
-					.createProcessInstanceQuery().processInstanceIds(ids)
-					.list();
+			List<ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceIds(ids).list();
 			for (ProcessInstance pi : list) {
 				if (!(pi.isSuspended() || pi.isEnded())) {
 					addActionError("流程" + pi.getId() + "必须先挂起才能删除");
@@ -206,8 +191,7 @@ public class ProcessInstanceAction extends BaseAction {
 				}
 			}
 			for (ProcessInstance pi : list)
-				runtimeService.deleteProcessInstance(pi.getId(),
-						"delete by administrator");
+				runtimeService.deleteProcessInstance(pi.getId(), "delete by administrator");
 			addActionMessage(getText("delete.success"));
 		}
 		return SUCCESS;
@@ -237,8 +221,7 @@ public class ProcessInstanceAction extends BaseAction {
 		if (AuthzUtils.authorize(null, UserRole.ROLE_ADMINISTRATOR, null))
 			return true;
 		String userId = AuthzUtils.getUsername();
-		List<IdentityLink> identityLinks = runtimeService
-				.getIdentityLinksForProcessInstance(processInstanceId);
+		List<IdentityLink> identityLinks = runtimeService.getIdentityLinksForProcessInstance(processInstanceId);
 		for (IdentityLink identityLink : identityLinks)
 			if (userId.equals(identityLink.getUserId()))
 				return true;

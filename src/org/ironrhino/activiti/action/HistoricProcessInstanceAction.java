@@ -7,14 +7,12 @@ import java.util.List;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
 import org.activiti.engine.identity.Group;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -38,9 +36,6 @@ public class HistoricProcessInstanceAction extends BaseAction {
 
 	@Autowired
 	private RepositoryService repositoryService;
-
-	@Autowired
-	private RuntimeService runtimeService;
 
 	@Autowired
 	private HistoryService historyService;
@@ -126,8 +121,7 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	public String list() {
 		if (resultPage == null)
 			resultPage = new ResultPage<Row>();
-		HistoricProcessInstanceQuery query = historyService
-				.createHistoricProcessInstanceQuery();
+		HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery();
 		if (StringUtils.isNoneBlank(processDefinitionId))
 			query.processDefinitionId(processDefinitionId);
 		if (finished != null)
@@ -144,8 +138,8 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		if (resultPage == null)
 			resultPage = new ResultPage<Row>();
 		String username = AuthzUtils.getUsername();
-		HistoricProcessInstanceQuery query = historyService
-				.createHistoricProcessInstanceQuery().excludeSubprocesses(true);
+		HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery()
+				.excludeSubprocesses(true);
 		if (startedBy != null && startedBy)
 			query.startedBy(username);
 		else
@@ -165,34 +159,28 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		long count = query.count();
 		resultPage.setTotalResults(count);
 		if (count > 0) {
-			List<HistoricProcessInstance> historicProcessInstances = query
-					.orderByProcessInstanceStartTime().desc()
+			List<HistoricProcessInstance> historicProcessInstances = query.orderByProcessInstanceStartTime().desc()
 					.listPage(resultPage.getStart(), resultPage.getPageSize());
 			List<Row> list = new ArrayList<Row>(historicProcessInstances.size());
 			for (HistoricProcessInstance pi : historicProcessInstances) {
 				Row row = new Row();
 				row.setId(pi.getId());
 				row.setHistoricProcessInstance(pi);
-				row.setProcessDefinition(repositoryService
-						.createProcessDefinitionQuery()
-						.processDefinitionId(pi.getProcessDefinitionId())
-						.singleResult());
+				row.setProcessDefinition(repositoryService.createProcessDefinitionQuery()
+						.processDefinitionId(pi.getProcessDefinitionId()).singleResult());
 				if (pi.getEndTime() == null) {
-					ProcessInstance instance = runtimeService
-							.createProcessInstanceQuery()
-							.processInstanceId(pi.getId()).singleResult();
-					String activityId = instance.getActivityId();
-					if (activityId != null) {
-						List<HistoricActivityInstance> historicActivityInstances = historyService
-								.createHistoricActivityInstanceQuery()
-								.executionId(pi.getId()).activityId(activityId)
-								.orderByHistoricActivityInstanceStartTime()
-								.desc().list();
-						if (!historicActivityInstances.isEmpty())
-							row.setHistoricActivityInstance(historicActivityInstances
-									.get(0));
+					List<HistoricActivityInstance> historicActivityInstances = historyService
+							.createHistoricActivityInstanceQuery().processInstanceId(pi.getId())
+							.orderByHistoricActivityInstanceStartTime().desc().list();
+					if (!historicActivityInstances.isEmpty()) {
+						for (HistoricActivityInstance historicActivityInstance : historicActivityInstances) {
+							if (historicActivityInstance.getActivityId() != null
+									&& historicActivityInstance.getEndTime() == null) {
+								row.setHistoricActivityInstance(historicActivityInstance);
+								break;
+							}
+						}
 					}
-
 				}
 				list.add(row);
 			}
@@ -205,35 +193,29 @@ public class HistoricProcessInstanceAction extends BaseAction {
 
 	@Override
 	public String view() {
-		historicProcessInstance = historyService
-				.createHistoricProcessInstanceQuery()
-				.processInstanceId(getUid()).singleResult();
+		historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(getUid())
+				.singleResult();
 		if (historicProcessInstance == null)
-			historicProcessInstance = historyService
-					.createHistoricProcessInstanceQuery()
+			historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
 					.processInstanceBusinessKey(getUid()).singleResult();
 		if (historicProcessInstance == null)
 			return NOTFOUND;
 
 		if (!canView(historicProcessInstance.getId()))
 			return ACCESSDENIED;
-		activityDetails = processTraceService
-				.traceHistoricProcessInstance(historicProcessInstance.getId());
+		activityDetails = processTraceService.traceHistoricProcessInstance(historicProcessInstance.getId());
 		return VIEW;
 	}
 
 	public String trace() {
-		historicProcessInstance = historyService
-				.createHistoricProcessInstanceQuery()
-				.processInstanceId(getUid()).singleResult();
+		historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(getUid())
+				.singleResult();
 		if (historicProcessInstance == null)
-			historicProcessInstance = historyService
-					.createHistoricProcessInstanceQuery()
+			historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
 					.processInstanceBusinessKey(getUid()).singleResult();
 		if (historicProcessInstance == null)
 			return NOTFOUND;
-		return canView(historicProcessInstance.getId()) ? "trace"
-				: ACCESSDENIED;
+		return canView(historicProcessInstance.getId()) ? "trace" : ACCESSDENIED;
 	}
 
 	private boolean canView(String processInstanceId) {
@@ -246,21 +228,18 @@ public class HistoricProcessInstanceAction extends BaseAction {
 			if (userId.equals(historicIdentityLink.getUserId()))
 				return true;
 
-		List<Task> tasks = taskService.createTaskQuery().active()
-				.processInstanceId(processInstanceId).list();
+		List<Task> tasks = taskService.createTaskQuery().active().processInstanceId(processInstanceId).list();
 		for (Task task : tasks) {
 			if (task.getAssignee() != null)
 				continue;
-			List<IdentityLink> identityLinks = taskService
-					.getIdentityLinksForTask(task.getId());
+			List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
 			for (IdentityLink identityLink : identityLinks) {
 				if (identityLink.getType().equals("candidate")) {
 					if (userId.equals(identityLink.getUserId()))
 						return true;
 					String groupId = identityLink.getGroupId();
 					if (groupId != null) {
-						Group group = identityService.createGroupQuery()
-								.groupId(groupId).groupMember(userId)
+						Group group = identityService.createGroupQuery().groupId(groupId).groupMember(userId)
 								.singleResult();
 						if (group != null)
 							return true;

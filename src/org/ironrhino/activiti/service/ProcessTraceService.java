@@ -159,16 +159,16 @@ public class ProcessTraceService {
 	public List<Map<String, Object>> traceProcessInstance(String processInstanceId) throws Exception {
 		HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery()
 				.processInstanceId(processInstanceId).singleResult();
-		Execution execution = runtimeService.createExecutionQuery().executionId(processInstanceId).singleResult();
+		List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(processInstanceId).list();
+		List<String> activityIds = new ArrayList<>(executions.size());
+		for (Execution execution : executions)
+			activityIds.add(execution.getActivityId());
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processInstance.getProcessDefinitionId());
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (ActivityImpl activity : activitiList) {
-			boolean current = false;
-			String id = activity.getId();
-			if (execution != null && id.equals(execution.getActivityId()))
-				current = true;
+			boolean current = activityIds.contains(activity.getId());
 			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(activity, processInstanceId,
 					processDefinition, current);
 			activities.add(activityImageInfo);
