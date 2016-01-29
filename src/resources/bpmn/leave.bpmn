@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <message id="withdraw" name="withdraw"></message>
+  <signal id="withdrawSignal" name="withdraw" activiti:scope="processInstance"></signal>
+  <signal id="closeWithdrawSignal" name="closeWithdraw" activiti:scope="processInstance"></signal>
   <process id="leave" name="请假流程" isExecutable="true" activiti:candidateStarterGroups="employee">
     <documentation>请填写准确的信息</documentation>
     <extensionElements>
@@ -73,14 +74,14 @@
         </activiti:field>
       </extensionElements>
     </serviceTask>
-    <sequenceFlow id="flow1" sourceRef="startevent" targetRef="leaderAudit"></sequenceFlow>
+    <sequenceFlow id="flow1" sourceRef="startevent" targetRef="parallelgateway1"></sequenceFlow>
     <sequenceFlow id="flow4" name="同意" sourceRef="leaderAudit" targetRef="hrAudit">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${leaderPass}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow5" name="不同意" sourceRef="leaderAudit" targetRef="modifyApply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!leaderPass}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow7" name="同意" sourceRef="hrAudit" targetRef="reportBack">
+    <sequenceFlow id="flow7" name="同意" sourceRef="hrAudit" targetRef="signalintermediatethrowevent1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hrPass}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow8" name="不同意" sourceRef="hrAudit" targetRef="modifyApply">
@@ -96,27 +97,64 @@
     <sequenceFlow id="flow14" name="结束流程" sourceRef="modifyApply" targetRef="endevent1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!reApply}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow15" name="重新申请" sourceRef="modifyApply" targetRef="leaderAudit">
+    <sequenceFlow id="flow15" name="重新申请" sourceRef="modifyApply" targetRef="parallelgateway2">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reApply}]]></conditionExpression>
     </sequenceFlow>
-    <boundaryEvent id="boundarymessage1" name="Message" attachedToRef="leaderAudit" cancelActivity="true">
-      <messageEventDefinition messageRef="withdraw"></messageEventDefinition>
+    <boundaryEvent id="catchWithdrawSignal" name="撤销" attachedToRef="leaderAudit" cancelActivity="true">
+      <signalEventDefinition signalRef="withdrawSignal"></signalEventDefinition>
     </boundaryEvent>
-    <sequenceFlow id="flow16" name="撤销" sourceRef="boundarymessage1" targetRef="modifyApply"></sequenceFlow>
+    <sequenceFlow id="flow16" name="撤回" sourceRef="catchWithdrawSignal" targetRef="modifyApply"></sequenceFlow>
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow17" sourceRef="parallelgateway1" targetRef="leaderAudit"></sequenceFlow>
+    <userTask id="withdrawDecision" name="撤回" activiti:assignee="${applyUserId}">
+      <documentation>人事审批通过之前可以撤回</documentation>
+      <extensionElements>
+        <activiti:formProperty id="startTime" type="date" datePattern="yyyy-MM-dd" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="endTime" type="date" datePattern="yyyy-MM-dd" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="leaveType" type="dictionary" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="reason" type="textarea" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="leaderMemo" name="领导意见" type="textarea" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="hrMemo" name="人事意见" type="textarea" writable="false"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow18" sourceRef="parallelgateway1" targetRef="withdrawDecision"></sequenceFlow>
+    <intermediateThrowEvent id="throwWithdrawSignal" name="SignalThrowEvent">
+      <signalEventDefinition signalRef="withdrawSignal"></signalEventDefinition>
+    </intermediateThrowEvent>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow19" sourceRef="withdrawDecision" targetRef="throwWithdrawSignal"></sequenceFlow>
+    <boundaryEvent id="catchWithdrawSignal2" name="Signal" attachedToRef="hrAudit" cancelActivity="true">
+      <signalEventDefinition signalRef="withdrawSignal"></signalEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="flow21" name="撤回" sourceRef="catchWithdrawSignal2" targetRef="modifyApply"></sequenceFlow>
+    <boundaryEvent id="boundarysignal1" name="Signal" attachedToRef="withdrawDecision" cancelActivity="true">
+      <signalEventDefinition signalRef="closeWithdrawSignal"></signalEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="flow22" name="不能撤回" sourceRef="boundarysignal1" targetRef="endevent2"></sequenceFlow>
+    <intermediateThrowEvent id="signalintermediatethrowevent1" name="关闭撤回">
+      <signalEventDefinition signalRef="closeWithdrawSignal"></signalEventDefinition>
+    </intermediateThrowEvent>
+    <sequenceFlow id="flow23" sourceRef="signalintermediatethrowevent1" targetRef="reportBack"></sequenceFlow>
+    <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow24" sourceRef="parallelgateway2" targetRef="withdrawDecision"></sequenceFlow>
+    <sequenceFlow id="flow25" sourceRef="parallelgateway2" targetRef="leaderAudit"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_leave">
     <bpmndi:BPMNPlane bpmnElement="leave" id="BPMNPlane_leave">
       <bpmndi:BPMNShape bpmnElement="startevent" id="BPMNShape_startevent">
-        <omgdc:Bounds height="35.0" width="35.0" x="170.0" y="155.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="150.0" y="158.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="leaderAudit" id="BPMNShape_leaderAudit">
         <omgdc:Bounds height="55.0" width="171.0" x="380.0" y="145.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="boundarymessage1" id="BPMNShape_boundarymessage1">
-        <omgdc:Bounds height="30.0" width="30.0" x="370.0" y="194.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="catchWithdrawSignal" id="BPMNShape_catchWithdrawSignal">
+        <omgdc:Bounds height="30.0" width="30.0" x="451.0" y="195.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="hrAudit" id="BPMNShape_hrAudit">
         <omgdc:Bounds height="55.0" width="105.0" x="680.0" y="145.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="catchWithdrawSignal2" id="BPMNShape_catchWithdrawSignal2">
+        <omgdc:Bounds height="30.0" width="30.0" x="740.0" y="195.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="reportBack" id="BPMNShape_reportBack">
         <omgdc:Bounds height="55.0" width="105.0" x="846.0" y="280.0"></omgdc:Bounds>
@@ -130,9 +168,30 @@
       <bpmndi:BPMNShape bpmnElement="mailMsg" id="BPMNShape_mailMsg">
         <omgdc:Bounds height="55.0" width="105.0" x="939.0" y="515.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="254.0" y="155.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="withdrawDecision" id="BPMNShape_withdrawDecision">
+        <omgdc:Bounds height="55.0" width="105.0" x="222.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarysignal1" id="BPMNShape_boundarysignal1">
+        <omgdc:Bounds height="30.0" width="30.0" x="280.0" y="305.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="throwWithdrawSignal" id="BPMNShape_throwWithdrawSignal">
+        <omgdc:Bounds height="35.0" width="35.0" x="210.0" y="410.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="293.0" y="410.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="signalintermediatethrowevent1" id="BPMNShape_signalintermediatethrowevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="830.0" y="208.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="368.0" y="257.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
-        <omgdi:waypoint x="205.0" y="172.0"></omgdi:waypoint>
-        <omgdi:waypoint x="380.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="185.0" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="254.0" y="175.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
         <omgdi:waypoint x="551.0" y="172.0"></omgdi:waypoint>
@@ -147,14 +206,14 @@
         <omgdi:waypoint x="573.0" y="305.0"></omgdi:waypoint>
         <omgdi:waypoint x="465.0" y="420.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="502.0" y="208.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="33.0" x="502.0" y="208.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
-        <omgdi:waypoint x="732.0" y="200.0"></omgdi:waypoint>
-        <omgdi:waypoint x="898.0" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="785.0" y="172.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="208.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="22.0" x="743.0" y="245.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="797.0" y="157.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
@@ -191,17 +250,56 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
         <omgdi:waypoint x="465.0" y="420.0"></omgdi:waypoint>
-        <omgdi:waypoint x="465.0" y="200.0"></omgdi:waypoint>
+        <omgdi:waypoint x="388.0" y="297.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="44.0" x="469.0" y="351.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="100.0" x="393.0" y="376.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
-        <omgdi:waypoint x="385.0" y="224.0"></omgdi:waypoint>
+        <omgdi:waypoint x="466.0" y="225.0"></omgdi:waypoint>
         <omgdi:waypoint x="465.0" y="420.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="365.0" y="232.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="100.0" x="471.0" y="269.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="294.0" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="172.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="274.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="274.0" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="274.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="227.0" y="410.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="755.0" y="225.0"></omgdi:waypoint>
+        <omgdi:waypoint x="657.0" y="340.0"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0" y="420.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="100.0" x="755.0" y="225.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="295.0" y="335.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="410.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="100.0" x="307.0" y="350.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="847.0" y="243.0"></omgdi:waypoint>
+        <omgdi:waypoint x="898.0" y="280.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
+        <omgdi:waypoint x="368.0" y="277.0"></omgdi:waypoint>
+        <omgdi:waypoint x="327.0" y="297.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
+        <omgdi:waypoint x="388.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0" y="200.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
