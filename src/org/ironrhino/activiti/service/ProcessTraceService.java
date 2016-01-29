@@ -24,6 +24,7 @@ import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -161,8 +162,10 @@ public class ProcessTraceService {
 				.processInstanceId(processInstanceId).singleResult();
 		List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(processInstanceId).list();
 		List<String> activityIds = new ArrayList<>(executions.size());
-		for (Execution execution : executions)
-			activityIds.add(execution.getActivityId());
+		for (Execution execution : executions) {
+			if ((execution instanceof ExecutionEntity) && ((ExecutionEntity) execution).isActive())
+				activityIds.add(execution.getActivityId());
+		}
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processInstance.getProcessDefinitionId());
 		List<ActivityImpl> activitiList = processDefinition.getActivities();
