@@ -6,6 +6,7 @@ import java.util.zip.ZipInputStream;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.form.AbstractFormType;
@@ -14,8 +15,7 @@ import org.activiti.engine.repository.DeploymentBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
-public class SpringProcessEngineConfiguration extends
-		org.activiti.spring.SpringProcessEngineConfiguration {
+public class SpringProcessEngineConfiguration extends org.activiti.spring.SpringProcessEngineConfiguration {
 
 	@Autowired(required = false)
 	private List<AbstractFormType> formTypeList;
@@ -25,6 +25,17 @@ public class SpringProcessEngineConfiguration extends
 
 	@Autowired(required = false)
 	private List<ActivitiEventListener> listeners;
+
+	public ProcessEngineConfiguration setAnnotationFontName(String annotationFontName) {
+		// hack
+		try {
+			ProcessEngineConfiguration.class.getDeclaredField("annotationFontName");
+			this.annotationFontName = annotationFontName;
+		} catch (NoSuchFieldException e) {
+
+		}
+		return this;
+	}
 
 	@Override
 	protected void initFormTypes() {
@@ -54,27 +65,21 @@ public class SpringProcessEngineConfiguration extends
 	protected void autoDeployResources(ProcessEngine processEngine) {
 		if (deploymentResources != null && deploymentResources.length > 0) {
 			for (Resource resource : deploymentResources) {
-				RepositoryService repositoryService = processEngine
-						.getRepositoryService();
+				RepositoryService repositoryService = processEngine.getRepositoryService();
 				String resourceName = resource.getFilename();
 				try {
-					DeploymentBuilder deploymentBuilder = repositoryService
-							.createDeployment().enableDuplicateFiltering()
-							.name(resourceName);
-					if (resourceName.endsWith(".bar")
-							|| resourceName.endsWith(".zip")
+					DeploymentBuilder deploymentBuilder = repositoryService.createDeployment()
+							.enableDuplicateFiltering().name(resourceName);
+					if (resourceName.endsWith(".bar") || resourceName.endsWith(".zip")
 							|| resourceName.endsWith(".jar")) {
-						deploymentBuilder.addZipInputStream(new ZipInputStream(
-								resource.getInputStream()));
+						deploymentBuilder.addZipInputStream(new ZipInputStream(resource.getInputStream()));
 					} else {
-						deploymentBuilder.addInputStream(resourceName,
-								resource.getInputStream());
+						deploymentBuilder.addInputStream(resourceName, resource.getInputStream());
 					}
 					deploymentBuilder.deploy();
 				} catch (IOException e) {
-					throw new ActivitiException(
-							"couldn't auto deploy resource '" + resource
-									+ "': " + e.getMessage(), e);
+					throw new ActivitiException("couldn't auto deploy resource '" + resource + "': " + e.getMessage(),
+							e);
 				}
 
 			}
