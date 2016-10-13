@@ -10,8 +10,8 @@
 <#assign dataurl+='?'+request.queryString>
 </#if>
 <ul class="nav nav-tabs">
-	<li class="active"><a href="#todolist_all" data-toggle="tab">${action.getText('all')}</a></li>
-	<li><a href="#todolist_assigned" data-toggle="tab">${action.getText('assigned')}</a></li>
+	<li class="active"><a href="#todolist_all" data-toggle="tab">${getText('all')}</a></li>
+	<li><a href="#todolist_assigned" data-toggle="tab">${getText('assigned')}</a></li>
 	<li><a href="#todolist_candidate" data-toggle="tab">待签收</a></li>
 </ul>
 <div class="tab-content">

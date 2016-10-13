@@ -13,9 +13,9 @@
 <#assign dataurl+='?'+request.queryString>
 </#if>
 <ul class="nav nav-tabs">
-	<li class="active"><a href="#all_historicProcessInstances" data-toggle="tab">${action.getText('all')}</a></li>
-	<li><a href="#unfinished_historicProcessInstances" data-toggle="tab">${action.getText('unfinished')}</a></li>
-	<li><a href="#finished_historicProcessInstances" data-toggle="tab">${action.getText('finished')}</a></li>
+	<li class="active"><a href="#all_historicProcessInstances" data-toggle="tab">${getText('all')}</a></li>
+	<li><a href="#unfinished_historicProcessInstances" data-toggle="tab">${getText('unfinished')}</a></li>
+	<li><a href="#finished_historicProcessInstances" data-toggle="tab">${getText('finished')}</a></li>
 </ul>
 <div class="tab-content">
 	<div id="all_historicProcessInstances" class="tab-pane ajaxpanel active" data-url="${dataurl}">

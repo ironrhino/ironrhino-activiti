@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <#escape x as x?html><html>
 <head>
-<title>${action.getText('index')}</title>
+<title>${getText('index')}</title>
 </head>
 <body>
 <div class="portal savable">

@@ -16,7 +16,7 @@
 		<#assign submitFormPropertyOptions=fe.values/>
 		<#elseif fe.type=='radio'>
 		<#list fe.values.entrySet() as en>
-			<#assign submitFormPropertyOptions+={en.key:((fe.label!action.getText(submitFormPropertyName))+action.getText(en.value))}/>
+			<#assign submitFormPropertyOptions+={en.key:((fe.label!getText(submitFormPropertyName))+getText(en.value))}/>
 		</#list>
 		<#elseif fe.type=='enum'>
 		<#list statics[fe.dynamicAttributes['enumType']].values() as en>
@@ -29,7 +29,7 @@
 	<button type="submit" class="btn<#if key?is_first> btn-primary</#if>" formaction="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>?${submitFormPropertyName}=${key?url}">${submitFormPropertyOptions[key]}</button>
 	</#list>
 	<#else>
-	<button type="submit" class="btn btn-primary">${action.getText((historicProcessInstance??)?then('submit','start'))}</button>	
+	<button type="submit" class="btn btn-primary">${getText((historicProcessInstance??)?then('submit','start'))}</button>	
 	</#if>
 	<span class="pull-right" style="margin-right:200px;">
 	<button type="button" class="btn toggle-control-group" data-groupclass="comment">备注</button>

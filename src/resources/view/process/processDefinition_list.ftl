@@ -13,8 +13,8 @@
 "processDefinition.diagramResourceName":{"alias":"流程图","width":"140px","template":r'<#if value?has_content><a href="${actionBaseUrl}/download?deploymentId=${entity.processDefinition.deploymentId}&resourceName=${value}" download="${value}">${value}</a></#if>'},
 "processDefinition.suspended":{"width":"60px"}}>
 <#assign bottomButtons=r'
-<button type="button" class="btn noajax deploy">${action.getText("deploy")}</button>
-<button type="button" class="btn confirm" data-action="delete" data-shown="selected">${action.getText("delete")}</button>
+<button type="button" class="btn noajax deploy">${getText("deploy")}</button>
+<button type="button" class="btn confirm" data-action="delete" data-shown="selected">${getText("delete")}</button>
 <@btn class="reload"/>
 '>
 <#assign actionColumnButtons='

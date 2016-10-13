@@ -9,12 +9,12 @@
 <@resourcePresentConditional value=templateName negated=true>
 <#if comments?? && !comments.empty>
 	<table class="table">
-			<caption style="background-color: #bebec5;"><h5>${action.getText('comment')}</h5></caption>
+			<caption style="background-color: #bebec5;"><h5>${getText('comment')}</h5></caption>
 			<thead>
 			<tr>
-				<th style="width:80px;">${action.getText('owner')}</th>
-				<th style="width:130px;">${action.getText('date')}</th>
-				<th>${action.getText('comment')}</th>
+				<th style="width:80px;">${getText('owner')}</th>
+				<th style="width:130px;">${getText('date')}</th>
+				<th>${getText('comment')}</th>
 				<th style="width:80px;"></th>
 			</tr>
 			</thead>
@@ -30,7 +30,7 @@
 				<td style="white-space:pre-wrap;word-break:break-all;">${comment.fullMessage!}</td>
 				<td>
 				<#if comment.userId?? && comment.userId==authentication("principal").username>
-				<a href="${actionBaseUrl}/deleteComment/${comment.id}" class="btn ajax deleteRow">${action.getText('delete')}</a>
+				<a href="${actionBaseUrl}/deleteComment/${comment.id}" class="btn ajax deleteRow">${getText('delete')}</a>
 				</#if>
 				</td>
 			</tr>

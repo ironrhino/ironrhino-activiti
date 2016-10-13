@@ -7,16 +7,16 @@
 <table class="table table-bordered">
 	<thead>
 	<tr>
-		<th style="width:150px;">${action.getText('taskName')}</th>
-		<th>${action.getText('assignee')}</th>
-		<th>${action.getText('startTime')}</th>
-		<th>${action.getText('endTime')}</th>
+		<th style="width:150px;">${getText('taskName')}</th>
+		<th>${getText('assignee')}</th>
+		<th>${getText('startTime')}</th>
+		<th>${getText('endTime')}</th>
 	</tr>
 	</thead>
 	<tbody>
 	<#list activityDetails as ad>
 	<tr class="<#if !historicProcessInstance.endTime??&&!ad?has_next>info<#else>success</#if>">
-		<td>${action.getText(ad.name)}</td>
+		<td>${getText(ad.name)}</td>
 		<td><#if ad.assignee?has_content><span class="user" data-username="${ad.assignee}">${(beans['userDetailsService'].loadUserByUsername(ad.assignee,true))!}</span></#if></td>
 		<td>${ad.startTime?datetime}</td>
 		<td>${(ad.endTime?datetime)!}</td>
@@ -27,14 +27,14 @@
 	</tr>
 	<#list ad.data.entrySet() as entry>
 	<tr>
-		<td>${action.getText(entry.key)}</td>
+		<td>${getText(entry.key)}</td>
 		<td colspan="3"><div style="white-space:pre-wrap;word-break:break-all;">${entry.value}</div></td>
 	</tr>
 	</#list>
 	</#if>
 	<#if ad.comments?? && !ad.comments.empty>
 	<tr>
-		<td colspan="4" style="text-align:center;font-weight:bold;">${action.getText('comment')}</td>
+		<td colspan="4" style="text-align:center;font-weight:bold;">${getText('comment')}</td>
 	</tr>
 	<#list ad.comments as comment>
 	<tr>
@@ -44,7 +44,7 @@
 	</#if>
 	<#if ad.attachments?? && !ad.attachments.empty>
 	<tr>
-		<td colspan="4" style="text-align:center;font-weight:bold;">${action.getText('attachment')}</td>
+		<td colspan="4" style="text-align:center;font-weight:bold;">${getText('attachment')}</td>
 	</tr>
 	<#list ad.attachments as attachment>
 	<tr>

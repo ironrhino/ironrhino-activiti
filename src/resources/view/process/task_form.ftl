@@ -41,19 +41,19 @@
 		</#if>
 	</#if>
 	<div class="control-group comment" style="display:none;">
-			<label class="control-label" for="_comment_">${action.getText('comment')}</label>
+			<label class="control-label" for="_comment_">${getText('comment')}</label>
 			<div class="controls">
 			<textarea id="_comment_" name="_comment_" class="input-xxlarge"></textarea>
 			</div>
 	</div>
 	<div class="control-group attachment" style="display:none;">
-			<label class="control-label">${action.getText('attachment')}</label>
+			<label class="control-label">${getText('attachment')}</label>
 			<div class="controls">
 			<table class="table datagrid">
 				<thead>
 				<tr>
-					<th style="width:300px;">${action.getText('file')}</th>
-					<th>${action.getText('description')}</th>
+					<th style="width:300px;">${getText('file')}</th>
+					<th>${getText('description')}</th>
 					<th class="manipulate"></th>
 				</tr>
 				</thead>

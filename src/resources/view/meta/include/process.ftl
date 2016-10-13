@@ -18,14 +18,14 @@
 <#if element.type=='listpick'>
 	<div<#if hidden> style="display:none;"</#if> class="control-group <#if element.readonly||element.disabled>_</#if>listpick" data-options="{'url':'<@url value=element.dynamicAttributes['pickUrl']/>'}">
 		<@s.hidden id=id name=name value=element.value! disabled=element.disabled class="listpick-id "+element.cssClass/>
-		<label class="control-label">${action.getText(element.label)}</label>
+		<label class="control-label">${getText(element.label)}</label>
 		<div class="controls<#if element.readonly||element.disabled> text</#if>">
 		<span class="listpick-name"><#if taskVariables?? && taskVariables[name]??><#if taskVariables[name].fullname??>${taskVariables[name].fullname!}<#else>${taskVariables[name]!}</#if></#if></span>
 		</div>
 	</div>
 <#else>
 <div<#if hidden> style="display:none;"</#if> class="control-group">
-	<label class="control-label" for="${id}">${action.getText(element.label)}</label>
+	<label class="control-label" for="${id}">${getText(element.label)}</label>
 	<div class="controls">
 	<#if element.type=='textarea'>
 	<textarea id="${id}" name="${name}"<#if element.readonly> readonly</#if><#if element.disabled> disabled</#if> <#if element.cssClass?has_content> class="${element.cssClass}"</#if><#list element.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>>${element.value!}</textarea>
@@ -47,11 +47,11 @@
 	</select>
 	<#elseif element.type=='radio'>
 	<#list element.values.entrySet() as en>
-	<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${name}" value="${en.key}"<#if element.readonly> readonly</#if><#if element.disabled> disabled</#if><#if element.value??&&element.value==en.key> checked</#if> class="custom <#if element.cssClass?has_content> ${element.cssClass}</#if>"> ${action.getText(en.value)}</label>
+	<label for="${id}_${en.key}" class="radio inline"><input id="${id}_${en.key}" type="radio" name="${name}" value="${en.key}"<#if element.readonly> readonly</#if><#if element.disabled> disabled</#if><#if element.value??&&element.value==en.key> checked</#if> class="custom <#if element.cssClass?has_content> ${element.cssClass}</#if>"> ${getText(en.value)}</label>
 	</#list>
 	<#elseif element.type=='checkbox'>
 	<#list element.values.entrySet() as en>
-	<label for="${id}_${en.key}" class="checkbox inline"><input id="${id}_${en.key}" type="checkbox" name="${name}" value="${en.key}"<#if element.readonly> readonly</#if><#if element.disabled> disabled</#if><#if element.arrayValues??&&element.arrayValues?seq_contains(en.key)> checked</#if> class="custom <#if element.cssClass?has_content> ${element.cssClass}</#if>"> ${action.getText(en.value)}</label>
+	<label for="${id}_${en.key}" class="checkbox inline"><input id="${id}_${en.key}" type="checkbox" name="${name}" value="${en.key}"<#if element.readonly> readonly</#if><#if element.disabled> disabled</#if><#if element.arrayValues??&&element.arrayValues?seq_contains(en.key)> checked</#if> class="custom <#if element.cssClass?has_content> ${element.cssClass}</#if>"> ${getText(en.value)}</label>
 	</#list>
 	<#else>
 	<input id="${id}" type="${element.inputType}" name="${name}"<#if element.value?has_content> value="${element.value}"</#if><#if element.readonly> readonly</#if><#if element.disabled> disabled</#if> <#if element.cssClass?has_content> class="${element.cssClass}"</#if><#list element.dynamicAttributes.entrySet() as en> ${en.key}="${en.value}"</#list>/>

@@ -13,7 +13,7 @@
 "task.name":{"alias":"任务名","width":"120px"},
 "task.createTime":{"alias":"任务创建时间","width":"130px"}}>
 <#assign actionColumnButtons=r'
-<a class="btn" rel="richtable" href="<@url value="/process/historicProcessInstance/view/${entity.task.processInstanceId}"/>">${action.getText("view")}</a>
+<a class="btn" rel="richtable" href="<@url value="/process/historicProcessInstance/view/${entity.task.processInstanceId}"/>">${getText("view")}</a>
 '+'
 <#if entity.task.assignee??>
 <@btn view="form" label="办理" windowoptions="{\'width\':\'80%\'}"/>
@@ -26,25 +26,25 @@
 </#if>
 '>
 <#assign bottomButtons='
-<button type="button" class="btn confirm" data-action="claim" data-shown="selected" data-filterselector=":not([data-assigned=\'true\'])">${action.getText("claim")}</button>
-<button type="button" class="btn confirm" data-action="unclaim" data-shown="selected" data-filterselector="[data-assigned=\'true\']">${action.getText("unclaim")}</button>
+<button type="button" class="btn confirm" data-action="claim" data-shown="selected" data-filterselector=":not([data-assigned=\'true\'])">${getText("claim")}</button>
+<button type="button" class="btn confirm" data-action="unclaim" data-shown="selected" data-filterselector="[data-assigned=\'true\']">${getText("unclaim")}</button>
 '+r'
 <@btn class="reload"/>
 <@btn class="filter"/>
 '>
 <@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false rowDynamicAttributes=r"<#if entity.task.assignee??>{'data-assigned':'true'}</#if>"/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
-	<@s.textfield label="%{getText('processInstanceId')}" name="criteria.processInstanceId"/>
-	<@s.textfield label="%{getText('processDefinitionName')}" name="criteria.processDefinitionName"/>
-	<@s.textfield label="%{getText('processInstanceBusinessKey')}" name="criteria.processInstanceBusinessKey"/>
-	<@s.textfield label="%{getText('taskName')}" name="criteria.taskName"/>
-	<@s.textfield label="%{getText('createdBefore')}" name="criteria.taskCreatedBefore" class="date"/>
-	<@s.textfield label="%{getText('createdAfter')}" name="criteria.taskCreatedAfter" class="date"/>
-	<@s.textfield label="%{getText('taskDueBefore')}" name="criteria.taskDueBefore" class="date"/>
-	<@s.textfield label="%{getText('taskDueAfter')}" name="criteria.taskDueAfter" class="date"/>
+	<@s.textfield label=getText('processInstanceId') name="criteria.processInstanceId"/>
+	<@s.textfield label=getText('processDefinitionName') name="criteria.processDefinitionName"/>
+	<@s.textfield label=getText('processInstanceBusinessKey') name="criteria.processInstanceBusinessKey"/>
+	<@s.textfield label=getText('taskName') name="criteria.taskName"/>
+	<@s.textfield label=getText('createdBefore') name="criteria.taskCreatedBefore" class="date"/>
+	<@s.textfield label=getText('createdAfter') name="criteria.taskCreatedAfter" class="date"/>
+	<@s.textfield label=getText('taskDueBefore') name="criteria.taskDueBefore" class="date"/>
+	<@s.textfield label=getText('taskDueAfter') name="criteria.taskDueAfter" class="date"/>
 	<div class="row">
 		<div class="span12" style="text-align:center;">
-			<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>
+			<button type="submit" class="btn btn-primary">${getText('search')}</button> <button type="button" class="btn restore">${getText('restore')}</button>
 		</div>
 	</div>
 </form>

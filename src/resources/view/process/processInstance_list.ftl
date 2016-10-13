@@ -16,31 +16,31 @@
 }>
 
 <#assign bottomButtons='
-<button type="button" class="btn confirm" data-action="delete" data-shown="selected" data-filterselector="[data-suspended=\'true\']:not([data-deletable=\'false\'])">${action.getText("delete")}</button>
+<button type="button" class="btn confirm" data-action="delete" data-shown="selected" data-filterselector="[data-suspended=\'true\']:not([data-deletable=\'false\'])">${getText("delete")}</button>
 '+r'<@authorize ifAnyGranted="ROLE_ADMINISTRATOR">'+'
-<button type="button" class="btn confirm" data-action="activate" data-shown="selected" data-filterselector="[data-suspended=\'true\']">${action.getText("activate")}</button>
-<button type="button" class="btn confirm" data-action="suspend" data-shown="selected" data-filterselector=":not([data-suspended=\'true\'])">${action.getText("suspend")}</button>
+<button type="button" class="btn confirm" data-action="activate" data-shown="selected" data-filterselector="[data-suspended=\'true\']">${getText("activate")}</button>
+<button type="button" class="btn confirm" data-action="suspend" data-shown="selected" data-filterselector=":not([data-suspended=\'true\'])">${getText("suspend")}</button>
 '+r'</@authorize>'
 +r'<@btn class="reload"/> <@btn class="filter"/>'>
 <#assign actionColumnButtons=r'<@btn view="view" '+'windowoptions="{\'width\':\'90%\',\'height\':650}"/>'>
 
 <@richtable entityName="processInstance" columns=columns rowDynamicAttributes=r'{"data-deletable":"${entity.processInstance.suspended?string}"}' actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false rowDynamicAttributes="<#if entity.processInstance.suspended>{'data-suspended':'true'}</#if>"/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
-	<@s.textfield label="%{getText('processDefinitionKey')}" name="criteria.processDefinitionKey"/>
-	<@s.textfield label="%{getText('processDefinitionName')}" name="criteria.processDefinitionName"/>
-	<@s.textfield label="%{getText('processInstanceId')}" name="criteria.processInstanceId"/>
-	<@s.textfield label="%{getText('processInstanceBusinessKey')}" name="criteria.processInstanceBusinessKey"/>
+	<@s.textfield label=getText('processDefinitionKey') name="criteria.processDefinitionKey"/>
+	<@s.textfield label=getText('processDefinitionName') name="criteria.processDefinitionName"/>
+	<@s.textfield label=getText('processInstanceId') name="criteria.processInstanceId"/>
+	<@s.textfield label=getText('processInstanceBusinessKey') name="criteria.processInstanceBusinessKey"/>
 <@authorize ifAnyGranted="ROLE_ADMINISTRATOR">
 	<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
 	<@s.hidden id="criteria_involvedUser" name="criteria.involvedUser" class="listpick-id"/>
-	<label class="control-label" for="criteria_involvedUser-control">${action.getText('involvedUser')}</label>
+	<label class="control-label" for="criteria_involvedUser-control">${getText('involvedUser')}</label>
 	<div class="controls">
 	<span class="listpick-name"></span>
 	</div>
 	</div>
 	<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
 	<@s.hidden id="criteria_startedBy" name="criteria.startedBy" class="listpick-id"/>
-	<label class="control-label" for="criteria_startedBy-control">${action.getText('startedBy')}</label>
+	<label class="control-label" for="criteria_startedBy-control">${getText('startedBy')}</label>
 	<div class="controls">
 	<span class="listpick-name"></span>
 	</div>
@@ -48,7 +48,7 @@
 </@authorize>
 <div class="row">
 	<div class="span12" style="text-align:center;">
-		<button type="submit" class="btn btn-primary">${action.getText('search')}</button> <button type="button" class="btn restore">${action.getText('restore')}</button>
+		<button type="submit" class="btn btn-primary">${getText('search')}</button> <button type="button" class="btn restore">${getText('restore')}</button>
 	</div>
 </div>
 </form>

@@ -9,12 +9,12 @@
 <@resourcePresentConditional value=templateName negated=true>
 <#if attachments?? && !attachments.empty>
 	<table class="table">
-			<caption style="background-color: #bebec5;"><h5>${action.getText('attachment')}</h5></caption>
+			<caption style="background-color: #bebec5;"><h5>${getText('attachment')}</h5></caption>
 			<thead>
 			<tr>
-				<th style="width:200px;">${action.getText('file')}</th>
-				<th style="width:100px;">${action.getText('owner')}</th>
-				<th>${action.getText('description')}</th>
+				<th style="width:200px;">${getText('file')}</th>
+				<th style="width:100px;">${getText('owner')}</th>
+				<th>${getText('description')}</th>
 				<th style="width:80px;"></th>
 			</tr>
 			</thead>
@@ -33,7 +33,7 @@
 				<td>${attachment.description!}</td>
 				<td>
 				<#if attachment.userId?? && attachment.userId==authentication("principal").username>
-				<a href="${actionBaseUrl}/deleteAttachment/${attachment.id}" class="btn ajax deleteRow">${action.getText('delete')}</a>
+				<a href="${actionBaseUrl}/deleteAttachment/${attachment.id}" class="btn ajax deleteRow">${getText('delete')}</a>
 				</#if>
 				</td>
 			</tr>
