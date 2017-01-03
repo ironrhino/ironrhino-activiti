@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="lib/jetty-all-9.3.9.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/spring-test-4.3.4.jar"/>
+	<classpathentry kind="lib" path="lib/spring-test-4.3.5.jar"/>
 	<classpathentry kind="lib" path="lib/websocket-api-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/yuicompressor.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/antlr-runtime-3.5.2.jar"/>
@@ -29,7 +29,6 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ehcache-core-2.6.11.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/freemarker-2.3.25.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/guava-18.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/hessian-4.0.38.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/hibernate-commons-annotations-5.0.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/hibernate-core-5.1.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/httpclient-4.5.1.jar"/>
@@ -48,9 +47,7 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javassist-3.20.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jboss-logging-3.3.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jericho-html-3.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jpa-api-2.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jsoup-1.8.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jta-1.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-api-2.7.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-core-2.7.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-jcl-2.7.jar"/>
@@ -61,20 +58,20 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/pinyin4j-2.5.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/sitemesh-2.4.3.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/slf4j-api-1.7.16.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-aop-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-beans-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-context-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-context-support-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-core-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-expression-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-jdbc-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-orm-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-config-4.2.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-core-4.2.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-web-4.2.0.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-tx-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-web-4.3.4.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-webmvc-4.3.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-aop-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-beans-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-context-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-context-support-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-core-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-expression-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-jdbc-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-orm-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-config-4.2.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-core-4.2.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-security-web-4.2.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-tx-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-web-4.3.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-webmvc-4.3.5.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/struts2-core-2.4.16.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/struts2-sitemesh-plugin-2.4.16.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/struts2-spring-plugin-2.4.16.jar"/>
@@ -98,5 +95,7 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/spring-retry-1.1.5.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/HikariCP-2.5.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/hibernate-validator-5.3.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/persistence-api-2.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/transaction-api-1.1.jar"/>
 	<classpathentry kind="output" path="webapp/WEB-INF/classes"/>
 </classpath>
