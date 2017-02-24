@@ -56,7 +56,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.interceptor.annotations.InputConfig;
+import com.opensymphony.xwork2.util.ValueStack;
 
 @AutoConfig(fileupload = "*/*")
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
@@ -441,6 +443,14 @@ public class TaskAction extends BaseAction {
 					.processInstanceId(task.getProcessInstanceId()).finished().list();
 			attachments = taskService.getProcessInstanceAttachments(task.getProcessInstanceId());
 			comments = taskService.getProcessInstanceComments(task.getProcessInstanceId(), CommentEntity.TYPE_COMMENT);
+			Map<String, Object> variables = taskService.getVariables(taskId);
+			if (variables != null) {
+				ValueStack vs = ActionContext.getContext().getValueStack();
+				for (Map.Entry<String, Object> entry : variables.entrySet()) {
+					if (entry.getValue() != null)
+						vs.set(entry.getKey(), entry.getValue());
+				}
+			}
 		}
 		return "form";
 	}
