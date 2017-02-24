@@ -39,6 +39,14 @@
 		</#if>
 		</#list>
 		</#if>
+		<#assign additionTemplateName="/resources/view/process/form/"+processDefinitionKey/>
+		<#if formKey?has_content>
+			<#assign additionTemplateName+="_"+formKey/>
+		</#if>
+		<#assign additionTemplateName+=".addition.ftl"/>
+		<@resourcePresentConditional value=additionTemplateName>
+		<#include additionTemplateName>
+		</@resourcePresentConditional>
 	</#if>
 	<div class="control-group comment" style="display:none;">
 			<label class="control-label" for="_comment_">${getText('comment')}</label>
