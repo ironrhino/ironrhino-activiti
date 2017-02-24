@@ -26,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class FormSubmissionService {
 
+	public static final String PARAMETER_NAME_PROCESS_DEFINITION_ID = "processDefinitionId";
 	public static final String PARAMETER_NAME_COMMENT = "_comment_";
+	public static final String PARAMETER_NAME_ATTACHMENT = "_attachment_";
+	public static final String PARAMETER_NAME_ATTACHMENT_DESCRIPTION = "_attachment_description_";
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -46,10 +49,10 @@ public class FormSubmissionService {
 	@Transactional
 	public ProcessInstance submitStartForm(String processDefinitionId, Map<String, String[]> parametersMap,
 			String[] fileFileName, String[] attachmentDescription, File[] file) throws IOException {
-		Map<String, String> properties = getFormProperties(formService.getStartFormData(processDefinitionId)
-				.getFormProperties(), parametersMap);
-		String businessKey = businessKeySequence != null ? businessKeySequence.nextStringValue() : String
-				.valueOf(System.currentTimeMillis());
+		Map<String, String> properties = getFormProperties(
+				formService.getStartFormData(processDefinitionId).getFormProperties(), parametersMap);
+		String businessKey = businessKeySequence != null ? businessKeySequence.nextStringValue()
+				: String.valueOf(System.currentTimeMillis());
 		ProcessInstance processInstance = formService.submitStartFormData(processDefinitionId, businessKey, properties);
 		String comment = parametersMap.get(PARAMETER_NAME_COMMENT)[0];
 		if (StringUtils.isNotBlank(comment))
@@ -88,7 +91,8 @@ public class FormSubmissionService {
 		}
 	}
 
-	private Map<String, String> getFormProperties(List<FormProperty> formProperties, Map<String, String[]> parametersMap) {
+	private Map<String, String> getFormProperties(List<FormProperty> formProperties,
+			Map<String, String[]> parametersMap) {
 		Map<String, String> properties = new HashMap<>();
 		for (FormProperty fp : formProperties) {
 			if (!fp.isWritable())
@@ -101,6 +105,13 @@ public class FormSubmissionService {
 			} else {
 				properties.put(fp.getId(), values[0]);
 			}
+		}
+		for (Map.Entry<String, String[]> entry : parametersMap.entrySet()) {
+			String name = entry.getKey();
+			if (!properties.containsKey(name) && !name.equals(PARAMETER_NAME_PROCESS_DEFINITION_ID)
+					&& !name.equals(PARAMETER_NAME_COMMENT) && !name.equals(PARAMETER_NAME_ATTACHMENT)
+					&& !name.equals(PARAMETER_NAME_ATTACHMENT_DESCRIPTION))
+				properties.put(name, entry.getValue()[0]);
 		}
 		return properties;
 	}

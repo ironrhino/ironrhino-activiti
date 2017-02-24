@@ -131,36 +131,36 @@ public class TaskAction extends BaseAction {
 
 	private List<Comment> comments;
 
-	private File[] file;
+	private File[] _attachment_;
 
-	private String[] fileFileName;
+	private String[] _attachment_FileName;
 
-	private String[] attachmentDescription;
+	private String[] _attachment_description_;
 
 	private Map<String, Object> taskVariables;
 
-	public File[] getFile() {
-		return file;
+	public File[] get_attachment_() {
+		return _attachment_;
 	}
 
-	public void setFile(File[] file) {
-		this.file = file;
+	public void set_attachment_(File[] _attachment_) {
+		this._attachment_ = _attachment_;
 	}
 
-	public String[] getFileFileName() {
-		return fileFileName;
+	public String[] get_attachment_FileName() {
+		return _attachment_FileName;
 	}
 
-	public void setFileFileName(String[] fileFileName) {
-		this.fileFileName = fileFileName;
+	public void set_attachment_FileName(String[] _attachment_FileName) {
+		this._attachment_FileName = _attachment_FileName;
 	}
 
-	public String[] getAttachmentDescription() {
-		return attachmentDescription;
+	public String[] get_attachment_description_() {
+		return _attachment_description_;
 	}
 
-	public void setAttachmentDescription(String[] attachmentDescription) {
-		this.attachmentDescription = attachmentDescription;
+	public void set_attachment_description_(String[] _attachment_description_) {
+		this._attachment_description_ = _attachment_description_;
 	}
 
 	public String getProcessDefinitionId() {
@@ -278,8 +278,8 @@ public class TaskAction extends BaseAction {
 		long count = query.count();
 		resultPage.setTotalResults(count);
 		if (count > 0) {
-			List<Task> tasks = query.orderByTaskCreateTime().desc()
-					.listPage(resultPage.getStart(), resultPage.getPageSize());
+			List<Task> tasks = query.orderByTaskCreateTime().desc().listPage(resultPage.getStart(),
+					resultPage.getPageSize());
 			List<Row> list = new ArrayList<Row>(tasks.size());
 			for (Task task : tasks) {
 				Row row = new Row();
@@ -475,15 +475,15 @@ public class TaskAction extends BaseAction {
 				if (!canStartProcess(processDefinitionId))
 					return ACCESSDENIED;
 				ProcessInstance processInstance = formSubmissionService.submitStartForm(processDefinitionId,
-						request.getParameterMap(), fileFileName, attachmentDescription, file);
-				addActionMessage("启动流程 (ID=" + processInstance.getId() + " , KEY=" + processInstance.getBusinessKey()
-						+ ")");
+						request.getParameterMap(), _attachment_FileName, _attachment_description_, _attachment_);
+				addActionMessage(
+						"启动流程 (ID=" + processInstance.getId() + " , KEY=" + processInstance.getBusinessKey() + ")");
 			} else {
 				task = taskService.createTaskQuery().taskId(taskId).singleResult();
 				if (task == null || !AuthzUtils.getUsername().equals(task.getAssignee()))
 					return ACCESSDENIED;
-				formSubmissionService.submitTaskForm(taskId, request.getParameterMap(), fileFileName,
-						attachmentDescription, file);
+				formSubmissionService.submitTaskForm(taskId, request.getParameterMap(), _attachment_FileName,
+						_attachment_description_, _attachment_);
 				addActionMessage(getText("operate.success"));
 			}
 		} catch (ActivitiException e) {

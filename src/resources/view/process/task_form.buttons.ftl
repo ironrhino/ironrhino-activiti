@@ -32,8 +32,8 @@
 	<button type="submit" class="btn btn-primary">${getText((historicProcessInstance??)?then('submit','start'))}</button>	
 	</#if>
 	<span class="pull-right" style="margin-right:200px;">
-	<button type="button" class="btn toggle-control-group" data-groupclass="comment">备注</button>
-	<button type="button" class="btn toggle-control-group" data-groupclass="attachment">附件</button>
+	<button type="button" class="btn toggle-control-group" data-groupclass="comment">${getText('comment')}</button>
+	<button type="button" class="btn toggle-control-group" data-groupclass="attachment">${getText('attachment')}</button>
 	</span>
 	</div>
 </@resourcePresentConditional>

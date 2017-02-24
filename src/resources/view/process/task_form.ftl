@@ -59,8 +59,8 @@
 				</thead>
 				<tbody>
 				<tr>
-					<td><input type="file" name="file" style="width:100%;"/></td>
-					<td><input type="text" name="attachmentDescription" style="width:100%;"/></td>
+					<td><input type="file" name="_attachment_"/></td>
+					<td><input type="text" name="_attachment_description_"/></td>
 					<td class="manipulate"></td>
 				</tr>
 				</tbody>
