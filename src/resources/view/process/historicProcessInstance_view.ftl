@@ -28,7 +28,7 @@
 	<#list ad.data.entrySet() as entry>
 	<tr>
 		<td>${getText(entry.key)}</td>
-		<td colspan="3"><div style="white-space:pre-wrap;word-break:break-all;">${entry.value}</div></td>
+		<td colspan="3" style="white-space:pre-wrap;word-break:break-all;">${entry.value}</td>
 	</tr>
 	</#list>
 	</#if>
@@ -38,7 +38,7 @@
 	</tr>
 	<#list ad.comments as comment>
 	<tr>
-		<td colspan="4"><div style="white-space:pre-wrap;word-break:break-all;">${comment.fullMessage!}</div></td>
+		<td colspan="4" style="white-space:pre-wrap;word-break:break-all;">${comment.fullMessage!}</td>
 	</tr>
 	</#list>
 	</#if>
