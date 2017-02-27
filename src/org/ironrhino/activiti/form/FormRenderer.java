@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.form.FormProperty;
@@ -28,16 +28,19 @@ import org.activiti.engine.impl.form.StringFormType;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
-import org.eaxy.Document;
-import org.eaxy.Element;
-import org.eaxy.Xml;
 import org.ironrhino.common.support.DictionaryControl;
 import org.ironrhino.core.struts.I18N;
+import org.ironrhino.core.util.AppInfo;
+import org.ironrhino.core.util.AppInfo.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.util.ValueStack;
@@ -173,7 +176,12 @@ public class FormRenderer {
 	}
 
 	public Map<String, String> display(String processDefinitionId, String activityId, Map<String, String> data) {
-		List<Property> formProperties = getFormProperties(processDefinitionId, activityId);
+		List<Property> formProperties;
+		try {
+			formProperties = getFormProperties(processDefinitionId, activityId);
+		} catch (Exception e1) {
+			throw new RuntimeException(e1);
+		}
 		if (formProperties == null || formProperties.isEmpty())
 			return data;
 		Map<String, String> map = new LinkedHashMap<String, String>();
@@ -260,10 +268,10 @@ public class FormRenderer {
 
 	Map<String, List<Property>> cache = new ConcurrentHashMap<>();
 
-	private List<Property> getFormProperties(String processDefinitionId, String activityId) {
+	private List<Property> getFormProperties(String processDefinitionId, String activityId) throws Exception {
 		String key = new StringBuilder(activityId).append("@").append(processDefinitionId).toString();
 		List<Property> list = cache.get(key);
-		if (list == null) {
+		if (list == null || AppInfo.getStage() == Stage.DEVELOPMENT) {
 			list = new ArrayList<Property>();
 			ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
 					.processDefinitionId(processDefinitionId).singleResult();
@@ -271,31 +279,38 @@ public class FormRenderer {
 
 				try (InputStream resourceAsStream = repositoryService.getResourceAsStream(pd.getDeploymentId(),
 						pd.getResourceName())) {
-					Document doc = Xml.read(new InputStreamReader(resourceAsStream, "UTF-8"));
-					Element el = doc.getRootElement();
+					DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+					docBuilderFactory.setNamespaceAware(true);
+					Document doc = docBuilderFactory.newDocumentBuilder()
+							.parse(new InputSource(new InputStreamReader(resourceAsStream, "UTF-8")));
+					Element processElement = (Element) doc.getDocumentElement().getElementsByTagName("process").item(0);
 					Element elut = null;
-					Iterator<Element> it = el.find("process", "startEvent").iterator();
-					while (it.hasNext()) {
-						Element ele = it.next();
-						if (activityId.equals(ele.attr("id"))) {
+					NodeList nl = processElement.getElementsByTagName("startEvent");
+					for (int i = 0; i < nl.getLength(); i++) {
+						Element ele = (Element) nl.item(i);
+						if (activityId.equals(ele.getAttribute("id"))) {
 							elut = ele;
 							break;
 						}
 					}
 					if (elut == null) {
-						it = el.find("process", "userTask").iterator();
-						while (it.hasNext()) {
-							Element ele = it.next();
-							if (activityId.equals(ele.attr("id"))) {
+						nl = processElement.getElementsByTagName("userTask");
+						for (int i = 0; i < nl.getLength(); i++) {
+							Element ele = (Element) nl.item(i);
+							if (activityId.equals(ele.getAttribute("id"))) {
 								elut = ele;
 								break;
 							}
 						}
 					}
 					if (elut != null) {
-						it = elut.find("extensionElements", "formProperty").iterator();
-						while (it.hasNext()) {
-							list.add(new Property(it.next()));
+						nl = elut.getElementsByTagName("extensionElements");
+						if (nl.getLength() > 0) {
+							Element extensionElements = (Element) nl.item(0);
+							nl = extensionElements.getElementsByTagNameNS("http://activiti.org/bpmn", "formProperty");
+							for (int i = 0; i < nl.getLength(); i++) {
+								list.add(new Property((Element) nl.item(i)));
+							}
 						}
 					}
 				} catch (IOException e) {
@@ -320,15 +335,15 @@ public class FormRenderer {
 		private Map<String, String> values;
 
 		public Property(Element element) {
-			this.id = element.attr("id");
-			this.name = element.attr("name");
-			this.type = element.attr("type");
+			this.id = element.getAttribute("id");
+			this.name = element.getAttribute("name");
+			this.type = element.getAttribute("type");
 			if ("enum".equals(this.type)) {
-				Iterator<Element> it = element.find("value").iterator();
+				NodeList nl = element.getElementsByTagName("value");
 				values = new LinkedHashMap<String, String>();
-				while (it.hasNext()) {
-					Element ele = it.next();
-					values.put(ele.attr("id"), ele.attr("name"));
+				for (int i = 0; i < nl.getLength(); i++) {
+					Element ele = (Element) nl.item(i);
+					values.put(ele.getAttribute("id"), ele.getAttribute("name"));
 				}
 			}
 		}
