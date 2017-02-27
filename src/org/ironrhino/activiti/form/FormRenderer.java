@@ -5,10 +5,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -97,13 +99,12 @@ public class FormRenderer {
 			FormType type = fp.getType();
 			if (type instanceof EnumFormType) {
 				fe.setType("select");
-				fe.setValues((Map<String, String>) type
-						.getInformation("values"));
+				fe.setValues((Map<String, String>) type.getInformation("values"));
 			} else if (type instanceof DateFormType) {
 				DateFormType dft = (DateFormType) type;
 				String datePattern = (String) dft.getInformation("datePattern");
-				fe.addCssClass(datePattern.startsWith("HH") ? "time"
-						: (datePattern.contains("HH") ? "datetime" : "date"));
+				fe.addCssClass(
+						datePattern.startsWith("HH") ? "time" : (datePattern.contains("HH") ? "datetime" : "date"));
 				fe.setDynamicAttribute("data-format", datePattern);
 			} else if (type instanceof BooleanFormType) {
 				fe.setType("radio");
@@ -111,8 +112,7 @@ public class FormRenderer {
 				values.put("true", "true");
 				values.put("false", "false");
 				fe.setValues(values);
-			} else if (type instanceof LongFormType
-					|| type instanceof IntegerFormType) {
+			} else if (type instanceof LongFormType || type instanceof IntegerFormType) {
 				fe.setInputType("number");
 				fe.addCssClass("integer");
 			} else if (type instanceof StringFormType) {
@@ -121,8 +121,7 @@ public class FormRenderer {
 				fe.addCssClass("input-xxlarge");
 			} else if (type instanceof DictionaryFormType) {
 				try {
-					DictionaryControl dc = applicationContext
-							.getBean(DictionaryControl.class);
+					DictionaryControl dc = applicationContext.getBean(DictionaryControl.class);
 					fe.setType("select");
 					Map<String, String> map = dc.getItemsAsMap(fp.getId());
 					for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -138,10 +137,9 @@ public class FormRenderer {
 			} else if (type instanceof CheckboxFormType) {
 				try {
 					if (fe.getValue() != null)
-						fe.setArrayValues((String[]) ((CheckboxFormType) type)
-								.convertFormValueToModelValue(fe.getValue()));
-					DictionaryControl dc = applicationContext
-							.getBean(DictionaryControl.class);
+						fe.setArrayValues(
+								(String[]) ((CheckboxFormType) type).convertFormValueToModelValue(fe.getValue()));
+					DictionaryControl dc = applicationContext.getBean(DictionaryControl.class);
 					fe.setType("checkbox");
 					Map<String, String> map = dc.getItemsAsMap(fp.getId());
 					for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -168,24 +166,23 @@ public class FormRenderer {
 			} else if (type instanceof org.ironrhino.activiti.form.EnumFormType) {
 				org.ironrhino.activiti.form.EnumFormType<?> eft = (org.ironrhino.activiti.form.EnumFormType<?>) type;
 				fe.setType("enum");
-				fe.getDynamicAttributes().put("enumType",
-						eft.getEnumType().getName());
+				fe.getDynamicAttributes().put("enumType", eft.getEnumType().getName());
 			}
 		}
 		return elements;
 	}
 
-	public Map<String, String> display(String processDefinitionId,
-			String activityId, Map<String, String> data) {
-		List<Property> formProperties = getFormProperties(processDefinitionId,
-				activityId);
+	public Map<String, String> display(String processDefinitionId, String activityId, Map<String, String> data) {
+		List<Property> formProperties = getFormProperties(processDefinitionId, activityId);
 		if (formProperties == null || formProperties.isEmpty())
 			return data;
 		Map<String, String> map = new LinkedHashMap<String, String>();
+		Set<String> set = new HashSet<>();
 		for (Property fp : formProperties) {
 			String value = data.get(fp.getId());
 			if (value == null)
 				continue;
+			set.add(fp.getId());
 			String name = fp.getName();
 			if (StringUtils.isBlank(name))
 				name = fp.getId();
@@ -201,8 +198,7 @@ public class FormRenderer {
 				}
 			} else if ("dictionary".equalsIgnoreCase(type)) {
 				try {
-					DictionaryControl dc = applicationContext
-							.getBean(DictionaryControl.class);
+					DictionaryControl dc = applicationContext.getBean(DictionaryControl.class);
 					Map<String, String> temp = dc.getItemsAsMap(fp.getId());
 					if (temp != null) {
 						String v = temp.get(value);
@@ -214,19 +210,16 @@ public class FormRenderer {
 				}
 			} else if ("checkbox".equalsIgnoreCase(type)) {
 				try {
-					DictionaryControl dc = applicationContext
-							.getBean(DictionaryControl.class);
+					DictionaryControl dc = applicationContext.getBean(DictionaryControl.class);
 					Map<String, String> temp = dc.getItemsAsMap(fp.getId());
 					if (temp != null) {
-						String[] arr = (String[]) checkboxFormType
-								.convertFormValueToModelValue(value);
+						String[] arr = (String[]) checkboxFormType.convertFormValueToModelValue(value);
 						for (int i = 0; i < arr.length; i++) {
 							String v = temp.get(arr[i]);
 							if (StringUtils.isNotBlank(v))
 								arr[i] = v;
 						}
-						value = StringUtils.join(arr,
-								CheckboxFormType.DELIMITER_FOR_DISPLAY);
+						value = StringUtils.join(arr, CheckboxFormType.DELIMITER_FOR_DISPLAY);
 					}
 				} catch (Throwable e) {
 					e.printStackTrace();
@@ -258,32 +251,30 @@ public class FormRenderer {
 			}
 			map.put(name, value);
 		}
+		for (Map.Entry<String, String> entry : data.entrySet()) {
+			if (!set.contains(entry.getKey()))
+				map.put(entry.getKey(), entry.getValue());
+		}
 		return map;
 	}
 
 	Map<String, List<Property>> cache = new ConcurrentHashMap<>();
 
-	private List<Property> getFormProperties(String processDefinitionId,
-			String activityId) {
-		String key = new StringBuilder(activityId).append("@")
-				.append(processDefinitionId).toString();
+	private List<Property> getFormProperties(String processDefinitionId, String activityId) {
+		String key = new StringBuilder(activityId).append("@").append(processDefinitionId).toString();
 		List<Property> list = cache.get(key);
 		if (list == null) {
 			list = new ArrayList<Property>();
-			ProcessDefinition pd = repositoryService
-					.createProcessDefinitionQuery()
+			ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
 					.processDefinitionId(processDefinitionId).singleResult();
 			if (pd != null) {
 
-				try (InputStream resourceAsStream = repositoryService
-						.getResourceAsStream(pd.getDeploymentId(),
-								pd.getResourceName())) {
-					Document doc = Xml.read(new InputStreamReader(
-							resourceAsStream, "UTF-8"));
+				try (InputStream resourceAsStream = repositoryService.getResourceAsStream(pd.getDeploymentId(),
+						pd.getResourceName())) {
+					Document doc = Xml.read(new InputStreamReader(resourceAsStream, "UTF-8"));
 					Element el = doc.getRootElement();
 					Element elut = null;
-					Iterator<Element> it = el.find("process", "startEvent")
-							.iterator();
+					Iterator<Element> it = el.find("process", "startEvent").iterator();
 					while (it.hasNext()) {
 						Element ele = it.next();
 						if (activityId.equals(ele.attr("id"))) {
@@ -302,8 +293,7 @@ public class FormRenderer {
 						}
 					}
 					if (elut != null) {
-						it = elut.find("extensionElements", "formProperty")
-								.iterator();
+						it = elut.find("extensionElements", "formProperty").iterator();
 						while (it.hasNext()) {
 							list.add(new Property(it.next()));
 						}
