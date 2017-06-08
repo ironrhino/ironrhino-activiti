@@ -6,15 +6,17 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.activiti.engine.FormService;
+import org.activiti.bpmn.model.Activity;
+import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.GraphicInfo;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricDetail;
 import org.activiti.engine.history.HistoricFormProperty;
@@ -23,17 +25,17 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.RepositoryServiceImpl;
-import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
+import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
-import org.activiti.engine.impl.pvm.process.ActivityImpl;
-import org.activiti.engine.impl.task.TaskDefinition;
+import org.activiti.engine.impl.util.ProcessDefinitionUtil;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.ironrhino.activiti.form.FormRenderer;
 import org.ironrhino.activiti.model.ActivityDetail;
 import org.ironrhino.core.struts.I18N;
@@ -51,28 +53,28 @@ public class ProcessTraceService {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	protected RuntimeService runtimeService;
+	private RuntimeService runtimeService;
 
 	@Autowired
-	protected HistoryService historyService;
+	private HistoryService historyService;
 
 	@Autowired
-	protected FormService formService;
+	private FormRenderer formRenderer;
 
 	@Autowired
-	protected FormRenderer formRenderer;
+	private TaskService taskService;
 
 	@Autowired
-	protected TaskService taskService;
+	private RepositoryService repositoryService;
 
 	@Autowired
-	protected RepositoryService repositoryService;
+	private IdentityService identityService;
 
 	@Autowired
-	protected IdentityService identityService;
+	private UserDetailsService userDetailsService;
 
 	@Autowired
-	protected UserDetailsService userDetailsService;
+	private ProcessEngineConfigurationImpl processEngineConfiguration;
 
 	public List<ActivityDetail> traceHistoricProcessInstance(String processInstanceId) {
 		List<ActivityDetail> details = new ArrayList<ActivityDetail>();
@@ -148,11 +150,16 @@ public class ProcessTraceService {
 	public List<Map<String, Object>> traceProcessDefinition(String processDefinitionId) throws Exception {
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processDefinitionId);
-		List<ActivityImpl> activitiList = processDefinition.getActivities();
+		Context.setProcessEngineConfiguration(processEngineConfiguration);
+		BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModel(processDefinitionId);
+		org.activiti.bpmn.model.Process process = ProcessDefinitionUtil.getProcess(processDefinitionId);
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
-		for (ActivityImpl activity : activitiList) {
-			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(activity, null, processDefinition, false);
-			activities.add(activityImageInfo);
+		for (FlowElement activity : process.getFlowElements()) {
+			if (activity instanceof Activity) {
+				Map<String, Object> activityImageInfo = packageSingleActivitiInfo(bpmnModel, (Activity) activity, null,
+						processDefinition, false);
+				activities.add(activityImageInfo);
+			}
 		}
 		return activities;
 	}
@@ -168,19 +175,24 @@ public class ProcessTraceService {
 		}
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
 				.getDeployedProcessDefinition(processInstance.getProcessDefinitionId());
-		List<ActivityImpl> activitiList = processDefinition.getActivities();
+		Context.setProcessEngineConfiguration(processEngineConfiguration);
+		BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModel(processInstance.getProcessDefinitionId());
+		org.activiti.bpmn.model.Process process = ProcessDefinitionUtil
+				.getProcess(processInstance.getProcessDefinitionId());
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
-		for (ActivityImpl activity : activitiList) {
-			boolean current = activityIds.contains(activity.getId());
-			Map<String, Object> activityImageInfo = packageSingleActivitiInfo(activity, processInstanceId,
-					processDefinition, current);
-			activities.add(activityImageInfo);
+		for (FlowElement activity : process.getFlowElements()) {
+			if (activity instanceof Activity) {
+				boolean current = activityIds.contains(activity.getId());
+				Map<String, Object> activityImageInfo = packageSingleActivitiInfo(bpmnModel, (Activity) activity,
+						processInstanceId, processDefinition, current);
+				activities.add(activityImageInfo);
+			}
 		}
 		return activities;
 	}
 
-	private Map<String, Object> packageSingleActivitiInfo(ActivityImpl activity, String processInstanceId,
-			ProcessDefinitionEntity processDefinition, boolean current) throws Exception {
+	private Map<String, Object> packageSingleActivitiInfo(BpmnModel bpmnModel, Activity activity,
+			String processInstanceId, ProcessDefinitionEntity processDefinition, boolean current) throws Exception {
 		Map<String, Object> activityInfo = new HashMap<String, Object>();
 		if (current) {
 			activityInfo.put("current", current);
@@ -189,8 +201,8 @@ public class ProcessTraceService {
 			if (diagramResourceName.equals(key + "." + key + ".png"))
 				activityInfo.put("border-radius", 5);
 		}
-		setPosition(activity, activityInfo);
-		setWidthAndHeight(activity, activityInfo);
+		setPosition(bpmnModel, activity, activityInfo);
+		setWidthAndHeight(bpmnModel, activity, activityInfo);
 		Map<String, Object> vars = new LinkedHashMap<String, Object>();
 		if (processInstanceId != null) {
 			List<HistoricActivityInstance> historicActivityInstances = historyService
@@ -213,37 +225,33 @@ public class ProcessTraceService {
 					vars.put(translate("endTime"), hai.getEndTime());
 			}
 		}
-
-		Map<String, Object> properties = activity.getProperties();
-		String type = (String) properties.get("type");
-		vars.put(translate("taskType"), translate(type));
-		ActivityBehavior activityBehavior = activity.getActivityBehavior();
-		if (activityBehavior instanceof UserTaskActivityBehavior) {
+		if (activity instanceof org.activiti.bpmn.model.Task) {
+			String type = StringUtils.uncapitalize(activity.getClass().getSimpleName());
+			vars.put(translate("taskType"), translate(type));
+		}
+		if (activity instanceof UserTask) {
 			Task currentTask = null;
 			if (current) {
 				currentTask = getCurrentTaskInfo(processInstanceId);
 				if (currentTask != null)
 					setCurrentTaskAssignee(vars, currentTask);
 			}
-			UserTaskActivityBehavior userTaskActivityBehavior = (UserTaskActivityBehavior) activityBehavior;
-			TaskDefinition taskDefinition = userTaskActivityBehavior.getTaskDefinition();
-			setTaskGroup(vars, taskDefinition);
+			setTaskGroup(vars, (UserTask) activity);
 
 		}
 
-		vars.put(translate("documentation"), properties.get("documentation"));
+		if (activity.getDocumentation() != null)
+			vars.put(translate("documentation"), activity.getDocumentation());
 
 		activityInfo.put("vars", vars);
 		return activityInfo;
 	}
 
-	private void setTaskGroup(Map<String, Object> vars, TaskDefinition taskDefinition) {
-		Set<Expression> candidateGroupIdExpressions = taskDefinition.getCandidateGroupIdExpressions();
+	private void setTaskGroup(Map<String, Object> vars, UserTask userTask) {
 		StringBuilder roles = new StringBuilder();
-		for (Expression expression : candidateGroupIdExpressions) {
-			String expressionText = expression.getExpressionText();
-			if (expressionText.indexOf("${") < 0) {
-				appendRoles(roles, expressionText);
+		for (String group : userTask.getCandidateGroups()) {
+			if (group.indexOf("${") < 0) {
+				appendRoles(roles, group);
 			}
 		}
 		if (roles.length() > 0) {
@@ -296,14 +304,20 @@ public class ProcessTraceService {
 		}
 	}
 
-	private void setWidthAndHeight(ActivityImpl activity, Map<String, Object> activityInfo) {
-		activityInfo.put("width", activity.getWidth());
-		activityInfo.put("height", activity.getHeight());
+	private void setWidthAndHeight(BpmnModel bpmnModel, Activity activity, Map<String, Object> activityInfo) {
+		GraphicInfo gi = bpmnModel.getGraphicInfo(activity.getId());
+		if (gi != null) {
+			activityInfo.put("width", gi.getWidth());
+			activityInfo.put("height", gi.getHeight());
+		}
 	}
 
-	private void setPosition(ActivityImpl activity, Map<String, Object> activityInfo) {
-		activityInfo.put("x", activity.getX());
-		activityInfo.put("y", activity.getY());
+	private void setPosition(BpmnModel bpmnModel, Activity activity, Map<String, Object> activityInfo) {
+		GraphicInfo gi = bpmnModel.getGraphicInfo(activity.getId());
+		if (gi != null) {
+			activityInfo.put("x", gi.getX());
+			activityInfo.put("y", gi.getY());
+		}
 	}
 
 	private String translate(String key) {

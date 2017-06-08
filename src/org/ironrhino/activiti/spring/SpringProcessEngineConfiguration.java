@@ -38,7 +38,7 @@ public class SpringProcessEngineConfiguration extends org.activiti.spring.Spring
 	}
 
 	@Override
-	protected void initFormTypes() {
+	public void initFormTypes() {
 		super.initFormTypes();
 		if (formTypeList != null)
 			for (AbstractFormType customFormType : formTypeList)
@@ -46,7 +46,7 @@ public class SpringProcessEngineConfiguration extends org.activiti.spring.Spring
 	}
 
 	@Override
-	protected void initVariableTypes() {
+	public void initVariableTypes() {
 		super.initVariableTypes();
 		if (variableTypeList != null)
 			for (VariableType customVariableType : variableTypeList)
@@ -54,7 +54,7 @@ public class SpringProcessEngineConfiguration extends org.activiti.spring.Spring
 	}
 
 	@Override
-	protected void initEventDispatcher() {
+	public void initEventDispatcher() {
 		super.initEventDispatcher();
 		if (listeners != null)
 			for (ActivitiEventListener listener : listeners)

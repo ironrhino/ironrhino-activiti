@@ -8,7 +8,7 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="databaseSchemaUpdate" value="${processEngineConfiguration.databaseSchemaUpdate:true}" />
-		<property name="jobExecutorActivate" value="${processEngineConfiguration.jobExecutorActivate:true}" />
+		<property name="asyncExecutorActivate" value="${processEngineConfiguration.asyncExecutorActivate:true}" />
 		<property name="enableSafeBpmnXml" value="${processEngineConfiguration.enableSafeBpmnXml:true}"/>
 		<property name="history" value="${processEngineConfiguration.history:audit}" />
 		<property name="mailServerHost" value="${mail.smtp.host:smtp.gmail.com}" />
