@@ -26,7 +26,7 @@
 	</#if>
 	<div class="form-actions">
 	<#list submitFormPropertyOptions?keys as key>
-	<button type="submit" class="btn<#if key?is_first> btn-primary</#if>" formaction="${actionBaseUrl}/submit<#if uid?has_content>/${uid}</#if>?${submitFormPropertyName}=${key?url}">${submitFormPropertyOptions[key]}</button>
+	<button type="submit" class="btn<#if key?is_first> btn-primary</#if>" name="${submitFormPropertyName}" value="${key?html}">${submitFormPropertyOptions[key]}</button>
 	</#list>
 	<#else>
 	<button type="submit" class="btn btn-primary">${getText((historicProcessInstance??)?then('submit','start'))}</button>	
