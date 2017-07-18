@@ -32,16 +32,16 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/httpclient-4.5.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/httpcore-4.4.3.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/httpmime-4.5.1.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-assets-2.0.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-common-dictionary-2.0.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-core-2.0.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-hibernate-config-2.0.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-2.0.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-config-2.0.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-sitemesh-config-2.0.3.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-annotations-2.8.7.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-core-2.8.7.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-databind-2.8.7.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-assets-2.0.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-common-dictionary-2.0.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-core-2.0.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-hibernate-config-2.0.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-2.0.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-security-config-2.0.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ironrhino-sitemesh-config-2.0.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-annotations-2.8.9.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-core-2.8.9.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jackson-databind-2.8.9.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javamail-1.5.4.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javassist-3.20.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jboss-logging-3.3.0.jar"/>
@@ -52,8 +52,8 @@
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-jcl-2.8.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-slf4j-impl-2.8.1.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/mvel2-2.2.7.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/mysql-connector-java-5.1.40.jar"/>
-	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ognl-3.1.12.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/mysql-connector-java-5.1.42.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ognl-3.1.14.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/pinyin4j-2.5.0.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/sitemesh-2.4.3.jar"/>
 	<classpathentry kind="lib" path="webapp/WEB-INF/lib/slf4j-api-1.7.16.jar"/>
