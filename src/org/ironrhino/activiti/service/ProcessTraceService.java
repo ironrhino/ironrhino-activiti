@@ -232,7 +232,7 @@ public class ProcessTraceService {
 		if (activity instanceof UserTask) {
 			Task currentTask = null;
 			if (current) {
-				currentTask = getCurrentTaskInfo(processInstanceId);
+				currentTask = getCurrentTaskInfo(processInstanceId, activity.getId());
 				if (currentTask != null)
 					setCurrentTaskAssignee(vars, currentTask);
 			}
@@ -292,13 +292,13 @@ public class ProcessTraceService {
 		}
 	}
 
-	private Task getCurrentTaskInfo(String processInstanceId) {
+	private Task getCurrentTaskInfo(String processInstanceId, String taskName) {
 		ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
 				.processInstanceId(processInstanceId).singleResult();
 		if (processInstance != null) {
 			String activitiId = processInstance.getActivityId();
 			return taskService.createTaskQuery().processInstanceId(processInstance.getId())
-					.taskDefinitionKey(activitiId).singleResult();
+					.taskDefinitionKey(activitiId).taskName(taskName).singleResult();
 		} else {
 			return null;
 		}
