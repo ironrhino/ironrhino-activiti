@@ -219,16 +219,14 @@ public class ProcessTraceService {
 		vars.put(translate("taskType"), translate(type));
 		ActivityBehavior activityBehavior = activity.getActivityBehavior();
 		if (activityBehavior instanceof UserTaskActivityBehavior) {
+			TaskDefinition taskDefinition = ((UserTaskActivityBehavior) activityBehavior).getTaskDefinition();
 			Task currentTask = null;
 			if (current) {
-				currentTask = getCurrentTaskInfo(processInstanceId);
+				currentTask = getCurrentTaskInfo(processInstanceId, taskDefinition.getKey());
 				if (currentTask != null)
 					setCurrentTaskAssignee(vars, currentTask);
 			}
-			UserTaskActivityBehavior userTaskActivityBehavior = (UserTaskActivityBehavior) activityBehavior;
-			TaskDefinition taskDefinition = userTaskActivityBehavior.getTaskDefinition();
 			setTaskGroup(vars, taskDefinition);
-
 		}
 
 		vars.put(translate("documentation"), properties.get("documentation"));
@@ -284,13 +282,13 @@ public class ProcessTraceService {
 		}
 	}
 
-	private Task getCurrentTaskInfo(String processInstanceId) {
+	private Task getCurrentTaskInfo(String processInstanceId, String taskName) {
 		ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
 				.processInstanceId(processInstanceId).singleResult();
 		if (processInstance != null) {
 			String activitiId = processInstance.getActivityId();
 			return taskService.createTaskQuery().processInstanceId(processInstance.getId())
-					.taskDefinitionKey(activitiId).singleResult();
+					.taskDefinitionKey(activitiId).taskName(taskName).singleResult();
 		} else {
 			return null;
 		}
