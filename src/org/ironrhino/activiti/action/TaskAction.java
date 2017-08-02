@@ -60,6 +60,9 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.interceptor.annotations.InputConfig;
 import com.opensymphony.xwork2.util.ValueStack;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @AutoConfig(fileupload = "*/*")
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 public class TaskAction extends BaseAction {
@@ -99,175 +102,79 @@ public class TaskAction extends BaseAction {
 	@Autowired
 	private ProcessHelper processHelper;
 
+	@Getter
+	@Setter
 	private String assignee;
 
+	@Getter
+	@Setter
 	private String title;
 
+	@Getter
 	private Map<String, FormElement> formElements;
 
+	@Getter
 	private String formTemplate;
 
+	@Getter
+	@Setter
 	private ResultPage<Row> resultPage;
 
+	@Getter
 	private List<Row> list;
 
+	@Getter
+	@Setter
 	private TaskQueryCriteria criteria;
 
+	@Getter
+	@Setter
 	private String processDefinitionId;
 
+	@Getter
+	@Setter
 	private String processInstanceId;
 
+	@Getter
+	@Setter
 	private String processDefinitionKey;
 
+	@Getter
+	@Setter
 	private String formKey;
 
+	@Getter
 	private Task task;
 
+	@Getter
 	private ProcessDefinition processDefinition;
 
+	@Getter
 	private HistoricProcessInstance historicProcessInstance;
 
+	@Getter
 	private List<HistoricTaskInstance> historicTaskInstances;
 
+	@Getter
 	private List<Attachment> attachments;
 
+	@Getter
 	private List<Comment> comments;
 
+	@Getter
+	@Setter
 	private File[] _attachment_;
 
+	@Getter
+	@Setter
 	private String[] _attachment_FileName;
 
+	@Getter
+	@Setter
 	private String[] _attachment_description_;
 
+	@Getter
 	private Map<String, Object> taskVariables;
-
-	public File[] get_attachment_() {
-		return _attachment_;
-	}
-
-	public void set_attachment_(File[] _attachment_) {
-		this._attachment_ = _attachment_;
-	}
-
-	public String[] get_attachment_FileName() {
-		return _attachment_FileName;
-	}
-
-	public void set_attachment_FileName(String[] _attachment_FileName) {
-		this._attachment_FileName = _attachment_FileName;
-	}
-
-	public String[] get_attachment_description_() {
-		return _attachment_description_;
-	}
-
-	public void set_attachment_description_(String[] _attachment_description_) {
-		this._attachment_description_ = _attachment_description_;
-	}
-
-	public String getProcessDefinitionId() {
-		return processDefinitionId;
-	}
-
-	public void setProcessDefinitionId(String processDefinitionId) {
-		this.processDefinitionId = processDefinitionId;
-	}
-
-	public String getProcessInstanceId() {
-		return processInstanceId;
-	}
-
-	public void setProcessInstanceId(String processInstanceId) {
-		this.processInstanceId = processInstanceId;
-	}
-
-	public String getProcessDefinitionKey() {
-		return processDefinitionKey;
-	}
-
-	public void setProcessDefinitionKey(String processDefinitionKey) {
-		this.processDefinitionKey = processDefinitionKey;
-	}
-
-	public String getFormKey() {
-		return formKey;
-	}
-
-	public void setFormKey(String formKey) {
-		this.formKey = formKey;
-	}
-
-	public String getAssignee() {
-		return assignee;
-	}
-
-	public void setAssignee(String assignee) {
-		this.assignee = assignee;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Map<String, FormElement> getFormElements() {
-		return formElements;
-	}
-
-	public String getFormTemplate() {
-		return formTemplate;
-	}
-
-	public ResultPage<Row> getResultPage() {
-		return resultPage;
-	}
-
-	public void setResultPage(ResultPage<Row> resultPage) {
-		this.resultPage = resultPage;
-	}
-
-	public List<Row> getList() {
-		return list;
-	}
-
-	public TaskQueryCriteria getCriteria() {
-		return criteria;
-	}
-
-	public void setCriteria(TaskQueryCriteria criteria) {
-		this.criteria = criteria;
-	}
-
-	public Task getTask() {
-		return task;
-	}
-
-	public ProcessDefinition getProcessDefinition() {
-		return processDefinition;
-	}
-
-	public HistoricProcessInstance getHistoricProcessInstance() {
-		return historicProcessInstance;
-	}
-
-	public List<HistoricTaskInstance> getHistoricTaskInstances() {
-		return historicTaskInstances;
-	}
-
-	public List<Attachment> getAttachments() {
-		return attachments;
-	}
-
-	public List<Comment> getComments() {
-		return comments;
-	}
-
-	public Map<String, Object> getTaskVariables() {
-		return taskVariables;
-	}
 
 	@Override
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)

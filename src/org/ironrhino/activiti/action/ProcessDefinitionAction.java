@@ -27,6 +27,9 @@ import org.ironrhino.core.security.role.UserRole;
 import org.ironrhino.core.struts.BaseAction;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @AutoConfig(fileupload = "text/xml,application/zip,application/octet-stream")
 @Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)
 public class ProcessDefinitionAction extends BaseAction {
@@ -42,84 +45,39 @@ public class ProcessDefinitionAction extends BaseAction {
 	@Autowired
 	private HistoryService historyService;
 
+	@Setter
 	private File file;
 
+	@Setter
 	private String fileFileName;
 
+	@Getter
+	@Setter
 	private ResultPage<Row> resultPage;
 
+	@Getter
+	@Setter
 	private String deploymentId;
 
+	@Getter
+	@Setter
 	private String resourceName;
 
+	@Getter
+	@Setter
 	private String key;
 
+	@Getter
 	private ProcessDefinition processDefinition;
 
+	@Getter
 	private List<Map<String, Object>> activities;
-
-	public File getFile() {
-		return file;
-	}
-
-	public void setFile(File file) {
-		this.file = file;
-	}
-
-	public String getFileFileName() {
-		return fileFileName;
-	}
-
-	public void setFileFileName(String fileFileName) {
-		this.fileFileName = fileFileName;
-	}
-
-	public ResultPage<Row> getResultPage() {
-		return resultPage;
-	}
-
-	public void setResultPage(ResultPage<Row> resultPage) {
-		this.resultPage = resultPage;
-	}
-
-	public String getDeploymentId() {
-		return deploymentId;
-	}
-
-	public void setDeploymentId(String deploymentId) {
-		this.deploymentId = deploymentId;
-	}
-
-	public String getResourceName() {
-		return resourceName;
-	}
-
-	public void setResourceName(String resourceName) {
-		this.resourceName = resourceName;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	public ProcessDefinition getProcessDefinition() {
-		return processDefinition;
-	}
-
-	public List<Map<String, Object>> getActivities() {
-		return activities;
-	}
 
 	@Override
 	public String execute() {
 		if (resultPage == null)
 			resultPage = new ResultPage<Row>();
-		ProcessDefinitionQuery query = repositoryService
-				.createProcessDefinitionQuery();
+		ProcessDefinitionQuery query = repositoryService.createProcessDefinitionQuery();
 		if (StringUtils.isNoneBlank(keyword))
 			query.processDefinitionNameLike(keyword);
 		if (StringUtils.isNotBlank(key))
@@ -127,18 +85,16 @@ public class ProcessDefinitionAction extends BaseAction {
 		long count = query.count();
 		resultPage.setTotalResults(count);
 		if (count > 0) {
-			List<ProcessDefinition> processDefinitions = query
-					.orderByProcessDefinitionKey().asc()
-					.orderByProcessDefinitionVersion().desc()
-					.listPage(resultPage.getStart(), resultPage.getPageSize());
+			List<ProcessDefinition> processDefinitions = query.orderByProcessDefinitionKey().asc()
+					.orderByProcessDefinitionVersion().desc().listPage(resultPage.getStart(), resultPage.getPageSize());
 
 			List<Row> list = new ArrayList<Row>(processDefinitions.size());
 			for (ProcessDefinition pd : processDefinitions) {
 				Row row = new Row();
 				row.setId(pd.getId());
 				row.setProcessDefinition(pd);
-				row.setDeployment(repositoryService.createDeploymentQuery()
-						.deploymentId(pd.getDeploymentId()).singleResult());
+				row.setDeployment(
+						repositoryService.createDeploymentQuery().deploymentId(pd.getDeploymentId()).singleResult());
 				list.add(row);
 			}
 			resultPage.setResult(list);
@@ -148,8 +104,8 @@ public class ProcessDefinitionAction extends BaseAction {
 
 	@Override
 	public String view() {
-		processDefinition = repositoryService.createProcessDefinitionQuery()
-				.processDefinitionId(getUid()).singleResult();
+		processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(getUid())
+				.singleResult();
 		if (processDefinition == null)
 			return NOTFOUND;
 		return VIEW;
@@ -161,8 +117,7 @@ public class ProcessDefinitionAction extends BaseAction {
 		if (id != null) {
 			boolean deletable = true;
 			for (String processDefinitionId : id) {
-				long count = historyService
-						.createHistoricProcessInstanceQuery()
+				long count = historyService.createHistoricProcessInstanceQuery()
 						.processDefinitionId(processDefinitionId).count();
 				if (count > 0) {
 					deletable = false;
@@ -174,8 +129,7 @@ public class ProcessDefinitionAction extends BaseAction {
 				return ERROR;
 			}
 			for (String processDefinitionId : id) {
-				deploymentId = repositoryService.createProcessDefinitionQuery()
-						.processDefinitionId(processDefinitionId)
+				deploymentId = repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionId)
 						.singleResult().getDeploymentId();
 				repositoryService.deleteDeployment(deploymentId, true);
 			}
@@ -190,28 +144,21 @@ public class ProcessDefinitionAction extends BaseAction {
 			return ERROR;
 		}
 		if (fileFileName.endsWith(".zip")) {
-			ZipInputStream zipInputStream = new ZipInputStream(
-					new FileInputStream(file));
-			repositoryService.createDeployment().enableDuplicateFiltering()
-					.name(fileFileName).addZipInputStream(zipInputStream)
-					.deploy();
-		} else if (fileFileName.endsWith(".xml")
-				|| fileFileName.endsWith(".bpmn")) {
-			repositoryService.createDeployment().enableDuplicateFiltering()
-					.name(fileFileName)
-					.addInputStream(fileFileName, new FileInputStream(file))
-					.deploy();
+			ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file));
+			repositoryService.createDeployment().enableDuplicateFiltering().name(fileFileName)
+					.addZipInputStream(zipInputStream).deploy();
+		} else if (fileFileName.endsWith(".xml") || fileFileName.endsWith(".bpmn")) {
+			repositoryService.createDeployment().enableDuplicateFiltering().name(fileFileName)
+					.addInputStream(fileFileName, new FileInputStream(file)).deploy();
 		}
 		addActionMessage("部署成功");
 		return SUCCESS;
 	}
 
 	public String download() throws Exception {
-		InputStream resourceAsStream = repositoryService.getResourceAsStream(
-				deploymentId, resourceName);
+		InputStream resourceAsStream = repositoryService.getResourceAsStream(deploymentId, resourceName);
 		byte[] byteArray = IOUtils.toByteArray(resourceAsStream);
-		ServletOutputStream servletOutputStream = ServletActionContext
-				.getResponse().getOutputStream();
+		ServletOutputStream servletOutputStream = ServletActionContext.getResponse().getOutputStream();
 		servletOutputStream.write(byteArray, 0, byteArray.length);
 		servletOutputStream.flush();
 		servletOutputStream.close();
@@ -220,15 +167,12 @@ public class ProcessDefinitionAction extends BaseAction {
 
 	public String diagram() throws Exception {
 		InputStream resourceAsStream = null;
-		ProcessDefinition processDefinition = repositoryService
-				.createProcessDefinitionQuery().processDefinitionId(getUid())
-				.singleResult();
+		ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+				.processDefinitionId(getUid()).singleResult();
 		String resourceName = processDefinition.getDiagramResourceName();
-		resourceAsStream = repositoryService.getResourceAsStream(
-				processDefinition.getDeploymentId(), resourceName);
+		resourceAsStream = repositoryService.getResourceAsStream(processDefinition.getDeploymentId(), resourceName);
 		byte[] byteArray = IOUtils.toByteArray(resourceAsStream);
-		ServletOutputStream servletOutputStream = ServletActionContext
-				.getResponse().getOutputStream();
+		ServletOutputStream servletOutputStream = ServletActionContext.getResponse().getOutputStream();
 		servletOutputStream.write(byteArray, 0, byteArray.length);
 		servletOutputStream.flush();
 		servletOutputStream.close();

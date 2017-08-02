@@ -45,6 +45,8 @@ import org.xml.sax.InputSource;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.util.ValueStack;
 
+import lombok.Getter;
+
 @Component
 public class FormRenderer {
 
@@ -326,12 +328,13 @@ public class FormRenderer {
 
 		private static final long serialVersionUID = 3962888136575115773L;
 
+		@Getter
 		private String id;
-
+		@Getter
 		private String name;
-
+		@Getter
 		private String type;
-
+		@Getter
 		private Map<String, String> values;
 
 		public Property(Element element) {
@@ -346,22 +349,6 @@ public class FormRenderer {
 					values.put(ele.getAttribute("id"), ele.getAttribute("name"));
 				}
 			}
-		}
-
-		public String getId() {
-			return id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public Map<String, String> getValues() {
-			return values;
 		}
 
 	}
