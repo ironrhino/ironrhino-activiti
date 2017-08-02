@@ -28,6 +28,9 @@ import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 public class HistoricProcessInstanceAction extends BaseAction {
@@ -49,67 +52,31 @@ public class HistoricProcessInstanceAction extends BaseAction {
 	@Autowired
 	private ProcessTraceService processTraceService;
 
+	@Getter
+	@Setter
 	private ResultPage<Row> resultPage;
 
+	@Getter
 	private HistoricProcessInstance historicProcessInstance;
 
+	@Getter
+	@Setter
 	private String processDefinitionId;
 
+	@Getter
+	@Setter
 	private Boolean startedBy;
 
+	@Getter
+	@Setter
 	private Boolean finished;
 
+	@Getter
 	private List<ActivityDetail> activityDetails;
 
+	@Getter
+	@Setter
 	private HistoricProcessInstanceQueryCriteria criteria;
-
-	public HistoricProcessInstanceQueryCriteria getCriteria() {
-		return criteria;
-	}
-
-	public void setCriteria(HistoricProcessInstanceQueryCriteria criteria) {
-		this.criteria = criteria;
-	}
-
-	public String getProcessDefinitionId() {
-		return processDefinitionId;
-	}
-
-	public void setProcessDefinitionId(String processDefinitionId) {
-		this.processDefinitionId = processDefinitionId;
-	}
-
-	public Boolean getStartedBy() {
-		return startedBy;
-	}
-
-	public void setStartedBy(Boolean startedBy) {
-		this.startedBy = startedBy;
-	}
-
-	public Boolean getFinished() {
-		return finished;
-	}
-
-	public void setFinished(Boolean finished) {
-		this.finished = finished;
-	}
-
-	public ResultPage<Row> getResultPage() {
-		return resultPage;
-	}
-
-	public void setResultPage(ResultPage<Row> resultPage) {
-		this.resultPage = resultPage;
-	}
-
-	public HistoricProcessInstance getHistoricProcessInstance() {
-		return historicProcessInstance;
-	}
-
-	public List<ActivityDetail> getActivityDetails() {
-		return activityDetails;
-	}
 
 	@Override
 	@Authorize(ifAnyGranted = UserRole.ROLE_ADMINISTRATOR)

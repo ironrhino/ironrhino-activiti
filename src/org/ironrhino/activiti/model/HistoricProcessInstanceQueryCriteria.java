@@ -6,6 +6,9 @@ import java.util.Date;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.Data;
+
+@Data
 public class HistoricProcessInstanceQueryCriteria implements Serializable {
 
 	private static final long serialVersionUID = -3473696529171033192L;
@@ -30,88 +33,7 @@ public class HistoricProcessInstanceQueryCriteria implements Serializable {
 
 	private Date finishedAfter;
 
-	public String getProcessDefinitionId() {
-		return processDefinitionId;
-	}
-
-	public void setProcessDefinitionId(String processDefinitionId) {
-		this.processDefinitionId = processDefinitionId;
-	}
-
-	public String getProcessDefinitionKey() {
-		return processDefinitionKey;
-	}
-
-	public void setProcessDefinitionKey(String processDefinitionKey) {
-		this.processDefinitionKey = processDefinitionKey;
-	}
-
-	public String getProcessInstanceId() {
-		return processInstanceId;
-	}
-
-	public void setProcessInstanceId(String processInstanceId) {
-		this.processInstanceId = processInstanceId;
-	}
-
-	public String getProcessInstanceBusinessKey() {
-		return processInstanceBusinessKey;
-	}
-
-	public void setProcessInstanceBusinessKey(String processInstanceBusinessKey) {
-		this.processInstanceBusinessKey = processInstanceBusinessKey;
-	}
-
-	public String getInvolvedUser() {
-		return involvedUser;
-	}
-
-	public void setInvolvedUser(String involvedUser) {
-		this.involvedUser = involvedUser;
-	}
-
-	public String getStartedBy() {
-		return startedBy;
-	}
-
-	public void setStartedBy(String startedBy) {
-		this.startedBy = startedBy;
-	}
-
-	public Date getStartedBefore() {
-		return startedBefore;
-	}
-
-	public void setStartedBefore(Date startedBefore) {
-		this.startedBefore = startedBefore;
-	}
-
-	public Date getStartedAfter() {
-		return startedAfter;
-	}
-
-	public void setStartedAfter(Date startedAfter) {
-		this.startedAfter = startedAfter;
-	}
-
-	public Date getFinishedBefore() {
-		return finishedBefore;
-	}
-
-	public void setFinishedBefore(Date finishedBefore) {
-		this.finishedBefore = finishedBefore;
-	}
-
-	public Date getFinishedAfter() {
-		return finishedAfter;
-	}
-
-	public void setFinishedAfter(Date finishedAfter) {
-		this.finishedAfter = finishedAfter;
-	}
-
-	public HistoricProcessInstanceQuery filter(
-			HistoricProcessInstanceQuery query, boolean admin) {
+	public HistoricProcessInstanceQuery filter(HistoricProcessInstanceQuery query, boolean admin) {
 		if (StringUtils.isNotBlank(processDefinitionId))
 			query.processDefinitionId(processDefinitionId);
 		if (StringUtils.isNotBlank(processDefinitionKey))

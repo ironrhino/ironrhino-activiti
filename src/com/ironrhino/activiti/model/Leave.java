@@ -21,12 +21,17 @@ import org.ironrhino.core.metadata.UiConfig;
 import org.ironrhino.core.model.BaseEntity;
 import org.ironrhino.security.model.User;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @Table(name = "`leave`")
 @AutoConfig
 @Owner(propertyName = "user")
 @Authorize(ifAnyGranted = UserRole.employee)
 @Richtable(readonly = @Readonly(true), bottomButtons = "<a class='btn noid' href='<@url value='/process/task/form?processDefinitionKey=leave'/>' rel='richtable'>请假</a> <button type='button' class='btn reload'>${action.getText('reload')}</button> <button type='button' class='btn filter'>${action.getText('filter')}</button>", order = "applyTime desc")
+@Getter
+@Setter
 public class Leave extends BaseEntity {
 
 	private static final long serialVersionUID = -3509600479976901201L;
@@ -65,77 +70,5 @@ public class Leave extends BaseEntity {
 	@UiConfig(displayOrder = 10, type = "textarea")
 	@Column(length = 4000)
 	private String reason;
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public String getNumber() {
-		return number;
-	}
-
-	public void setNumber(String number) {
-		this.number = number;
-	}
-
-	public Date getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
-	}
-
-	public Date getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
-	}
-
-	public Date getRealityStartTime() {
-		return realityStartTime;
-	}
-
-	public void setRealityStartTime(Date realityStartTime) {
-		this.realityStartTime = realityStartTime;
-	}
-
-	public Date getRealityEndTime() {
-		return realityEndTime;
-	}
-
-	public void setRealityEndTime(Date realityEndTime) {
-		this.realityEndTime = realityEndTime;
-	}
-
-	public Date getApplyTime() {
-		return applyTime;
-	}
-
-	public void setApplyTime(Date applyTime) {
-		this.applyTime = applyTime;
-	}
-
-	public String getLeaveType() {
-		return leaveType;
-	}
-
-	public void setLeaveType(String leaveType) {
-		this.leaveType = leaveType;
-	}
-
-	public String getReason() {
-		return reason;
-	}
-
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
 
 }

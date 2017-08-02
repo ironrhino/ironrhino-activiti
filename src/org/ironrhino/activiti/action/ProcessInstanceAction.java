@@ -33,6 +33,9 @@ import org.ironrhino.core.struts.BaseAction;
 import org.ironrhino.core.util.AuthzUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @AutoConfig
 @Authorize(ifAnyGranted = UserRole.ROLE_BUILTIN_USER)
 public class ProcessInstanceAction extends BaseAction {
@@ -51,37 +54,19 @@ public class ProcessInstanceAction extends BaseAction {
 	@Autowired
 	private ProcessTraceService processTraceService;
 
+	@Getter
+	@Setter
 	private ResultPage<Row> resultPage;
 
+	@Getter
 	private ProcessInstance processInstance;
 
+	@Getter
+	@Setter
 	private ProcessInstanceQueryCriteria criteria;
 
+	@Getter
 	private List<Map<String, Object>> activities;
-
-	public ResultPage<Row> getResultPage() {
-		return resultPage;
-	}
-
-	public void setResultPage(ResultPage<Row> resultPage) {
-		this.resultPage = resultPage;
-	}
-
-	public ProcessInstance getProcessInstance() {
-		return processInstance;
-	}
-
-	public ProcessInstanceQueryCriteria getCriteria() {
-		return criteria;
-	}
-
-	public void setCriteria(ProcessInstanceQueryCriteria criteria) {
-		this.criteria = criteria;
-	}
-
-	public List<Map<String, Object>> getActivities() {
-		return activities;
-	}
 
 	@Override
 	public String execute() {

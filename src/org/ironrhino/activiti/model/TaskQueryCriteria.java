@@ -7,6 +7,9 @@ import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.Data;
+
+@Data
 public class TaskQueryCriteria implements Serializable {
 
 	private static final long serialVersionUID = -3473696529171033192L;
@@ -46,150 +49,6 @@ public class TaskQueryCriteria implements Serializable {
 	private String taskAssignee;
 
 	private String taskInvolvedUser;
-
-	public String getProcessDefinitionId() {
-		return processDefinitionId;
-	}
-
-	public void setProcessDefinitionId(String processDefinitionId) {
-		this.processDefinitionId = processDefinitionId;
-	}
-
-	public String getProcessDefinitionKey() {
-		return processDefinitionKey;
-	}
-
-	public void setProcessDefinitionKey(String processDefinitionKey) {
-		this.processDefinitionKey = processDefinitionKey;
-	}
-
-	public String getProcessDefinitionName() {
-		return processDefinitionName;
-	}
-
-	public void setProcessDefinitionName(String processDefinitionName) {
-		this.processDefinitionName = processDefinitionName;
-	}
-
-	public String getProcessInstanceId() {
-		return processInstanceId;
-	}
-
-	public void setProcessInstanceId(String processInstanceId) {
-		this.processInstanceId = processInstanceId;
-	}
-
-	public String getProcessInstanceBusinessKey() {
-		return processInstanceBusinessKey;
-	}
-
-	public void setProcessInstanceBusinessKey(String processInstanceBusinessKey) {
-		this.processInstanceBusinessKey = processInstanceBusinessKey;
-	}
-
-	public String getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(String taskId) {
-		this.taskId = taskId;
-	}
-
-	public String getTaskName() {
-		return taskName;
-	}
-
-	public void setTaskName(String taskName) {
-		this.taskName = taskName;
-	}
-
-	public String getTaskDefinitionKey() {
-		return taskDefinitionKey;
-	}
-
-	public void setTaskDefinitionKey(String taskDefinitionKey) {
-		this.taskDefinitionKey = taskDefinitionKey;
-	}
-
-	public DelegationState getTaskDelegationState() {
-		return taskDelegationState;
-	}
-
-	public void setTaskDelegationState(DelegationState taskDelegationState) {
-		this.taskDelegationState = taskDelegationState;
-	}
-
-	public Boolean getActive() {
-		return active;
-	}
-
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
-	public Boolean getSuspended() {
-		return suspended;
-	}
-
-	public void setSuspended(Boolean suspended) {
-		this.suspended = suspended;
-	}
-
-	public Boolean getTaskUnassigned() {
-		return taskUnassigned;
-	}
-
-	public void setTaskUnassigned(Boolean taskUnassigned) {
-		this.taskUnassigned = taskUnassigned;
-	}
-
-	public Date getTaskCreatedBefore() {
-		return taskCreatedBefore;
-	}
-
-	public void setTaskCreatedBefore(Date taskCreatedBefore) {
-		this.taskCreatedBefore = taskCreatedBefore;
-	}
-
-	public Date getTaskCreatedAfter() {
-		return taskCreatedAfter;
-	}
-
-	public void setTaskCreatedAfter(Date taskCreatedAfter) {
-		this.taskCreatedAfter = taskCreatedAfter;
-	}
-
-	public Date getTaskDueBefore() {
-		return taskDueBefore;
-	}
-
-	public void setTaskDueBefore(Date taskDueBefore) {
-		this.taskDueBefore = taskDueBefore;
-	}
-
-	public Date getTaskDueAfter() {
-		return taskDueAfter;
-	}
-
-	public void setTaskDueAfter(Date taskDueAfter) {
-		this.taskDueAfter = taskDueAfter;
-	}
-
-	public String getTaskAssignee() {
-		return taskAssignee;
-	}
-
-	public void setTaskAssignee(String taskAssignee) {
-		this.taskAssignee = taskAssignee;
-	}
-
-	public String getTaskInvolvedUser() {
-		return taskInvolvedUser;
-	}
-
-	public void setTaskInvolvedUser(String taskInvolvedUser) {
-		this.taskInvolvedUser = taskInvolvedUser;
-	}
 
 	public TaskQuery filter(TaskQuery query, boolean admin) {
 		if (StringUtils.isNotBlank(processDefinitionId))
