@@ -63,6 +63,13 @@ public class SpringProcessEngineConfiguration extends org.activiti.spring.Spring
 						deploymentBuilder.addZipInputStream(new ZipInputStream(resource.getInputStream()));
 					} else {
 						deploymentBuilder.addInputStream(resourceName, resource.getInputStream());
+						if (resourceName.endsWith(".bpmn")) {
+							String imageName = resourceName.substring(0, resourceName.lastIndexOf('.')) + ".png";
+							Resource image = resource.createRelative(imageName);
+							if (image.exists()) {
+								deploymentBuilder.addInputStream(imageName, image.getInputStream());
+							}
+						}
 					}
 					deploymentBuilder.deploy();
 				} catch (IOException e) {
