@@ -6,7 +6,6 @@ import java.util.zip.ZipInputStream;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
 import org.activiti.engine.form.AbstractFormType;
@@ -25,17 +24,6 @@ public class SpringProcessEngineConfiguration extends org.activiti.spring.Spring
 
 	@Autowired(required = false)
 	private List<ActivitiEventListener> listeners;
-
-	public ProcessEngineConfiguration setAnnotationFontName(String annotationFontName) {
-		// hack
-		try {
-			ProcessEngineConfiguration.class.getDeclaredField("annotationFontName");
-			this.annotationFontName = annotationFontName;
-		} catch (NoSuchFieldException e) {
-
-		}
-		return this;
-	}
 
 	@Override
 	public void initFormTypes() {
@@ -81,7 +69,6 @@ public class SpringProcessEngineConfiguration extends org.activiti.spring.Spring
 					throw new ActivitiException("couldn't auto deploy resource '" + resource + "': " + e.getMessage(),
 							e);
 				}
-
 			}
 		}
 	}

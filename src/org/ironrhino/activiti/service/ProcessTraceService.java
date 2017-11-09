@@ -14,7 +14,6 @@ import org.activiti.bpmn.model.GraphicInfo;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
-import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
@@ -26,10 +25,8 @@ import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.activiti.engine.impl.util.ProcessDefinitionUtil;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Attachment;
@@ -65,7 +62,7 @@ public class ProcessTraceService {
 	private TaskService taskService;
 
 	@Autowired
-	private RepositoryService repositoryService;
+	private RepositoryServiceImpl repositoryService;
 
 	@Autowired
 	private IdentityService identityService;
@@ -148,11 +145,11 @@ public class ProcessTraceService {
 	}
 
 	public List<Map<String, Object>> traceProcessDefinition(String processDefinitionId) throws Exception {
-		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) repositoryService
 				.getDeployedProcessDefinition(processDefinitionId);
-		Context.setProcessEngineConfiguration(processEngineConfiguration);
-		BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModel(processDefinitionId);
-		org.activiti.bpmn.model.Process process = ProcessDefinitionUtil.getProcess(processDefinitionId);
+		BpmnModel bpmnModel = processEngineConfiguration.getDeploymentManager()
+				.resolveProcessDefinition(processDefinition).getBpmnModel();
+		org.activiti.bpmn.model.Process process = bpmnModel.getProcessById(processDefinition.getKey());
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (FlowElement activity : process.getFlowElements()) {
 			if (activity instanceof Activity) {
@@ -173,12 +170,11 @@ public class ProcessTraceService {
 			if ((execution instanceof ExecutionEntity) && ((ExecutionEntity) execution).isActive())
 				activityIds.add(execution.getActivityId());
 		}
-		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) repositoryService
 				.getDeployedProcessDefinition(processInstance.getProcessDefinitionId());
-		Context.setProcessEngineConfiguration(processEngineConfiguration);
-		BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModel(processInstance.getProcessDefinitionId());
-		org.activiti.bpmn.model.Process process = ProcessDefinitionUtil
-				.getProcess(processInstance.getProcessDefinitionId());
+		BpmnModel bpmnModel = processEngineConfiguration.getDeploymentManager()
+				.resolveProcessDefinition(processDefinition).getBpmnModel();
+		org.activiti.bpmn.model.Process process = bpmnModel.getProcessById(processDefinition.getKey());
 		List<Map<String, Object>> activities = new ArrayList<Map<String, Object>>();
 		for (FlowElement activity : process.getFlowElements()) {
 			if (activity instanceof Activity) {
