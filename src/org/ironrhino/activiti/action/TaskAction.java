@@ -603,7 +603,7 @@ public class TaskAction extends BaseAction {
 			}
 			taskService.unclaim(taskId);
 		}
-		return todolist();
+		return form();
 	}
 
 	@InputConfig(resultName = "delegate")
