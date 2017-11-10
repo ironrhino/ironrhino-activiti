@@ -25,6 +25,7 @@
 <@btn action="suspend" confirm=true/>
 </#if>
 '>
-<@richtable formid="processDefinition-form" entityName="processDefinition" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=true celleditable=false/>
+<#assign rowDynamicAttributes=r'{"class":"${entity.processDefinition.suspended?then("warning","")}"}'>
+<@richtable formid="processDefinition-form" entityName="processDefinition" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons rowDynamicAttributes=rowDynamicAttributes searchable=true celleditable=false/>
 </body>
 </html></#escape>

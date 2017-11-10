@@ -25,7 +25,8 @@
 <@btn class="reload"/>
 <@btn class="filter"/>
 '>
-<@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false/>
+<#assign rowDynamicAttributes=r'{"class":"${entity.task.suspended?then("warning","")}"}'>
+<@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons rowDynamicAttributes=rowDynamicAttributes searchable=false celleditable=false/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
 	<@s.textfield label=getText('processDefinitionKey') name="criteria.processDefinitionKey"/>
 	<@s.textfield label=getText('processDefinitionName') name="criteria.processDefinitionName"/>
