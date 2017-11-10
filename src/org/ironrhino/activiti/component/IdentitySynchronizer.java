@@ -1,9 +1,13 @@
 package org.ironrhino.activiti.component;
 
+import java.util.Objects;
+
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.Group;
+import org.activiti.engine.identity.User;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.ironrhino.core.event.EntityOperationEvent;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,11 +33,20 @@ public class IdentitySynchronizer {
 		switch (event.getType()) {
 		case CREATE:
 		case UPDATE:
-			org.activiti.engine.identity.User u = identityService.createUserQuery().userId(user.getUsername())
-					.singleResult();
+			BeanWrapperImpl bw = new BeanWrapperImpl(user);
+			String email = null;
+			if (bw.isReadableProperty("email"))
+				email = (String) bw.getPropertyValue("email");
+			User u = identityService.createUserQuery().userId(user.getUsername()).singleResult();
 			if (u == null) {
 				u = identityService.newUser(user.getUsername());
+				u.setEmail(email);
 				identityService.saveUser(u);
+			} else {
+				if (!Objects.equals(u.getEmail(), email)) {
+					u.setEmail(email);
+					identityService.saveUser(u);
+				}
 			}
 			for (Group group : identityService.createGroupQuery().groupMember(u.getId()).list())
 				identityService.deleteMembership(u.getId(), group.getId());
