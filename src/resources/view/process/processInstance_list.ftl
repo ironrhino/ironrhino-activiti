@@ -23,8 +23,8 @@
 '+r'</@authorize>'
 +r'<@btn class="reload"/> <@btn class="filter"/>'>
 <#assign actionColumnButtons=r'<@btn view="view" '+'windowoptions="{\'width\':\'90%\',\'height\':650}"/>'>
-
-<@richtable entityName="processInstance" columns=columns rowDynamicAttributes=r'{"data-deletable":"${entity.processInstance.suspended?string}"}' actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false rowDynamicAttributes="<#if entity.processInstance.suspended>{'data-suspended':'true'}</#if>"/>
+<#assign rowDynamicAttributes=r'{"data-deletable":"${entity.processInstance.suspended?string}","class":"${entity.processInstance.suspended?then("warning","")}"}'>
+<@richtable entityName="processInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons rowDynamicAttributes=rowDynamicAttributes searchable=false celleditable=false/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
 	<@s.textfield label=getText('processDefinitionKey') name="criteria.processDefinitionKey"/>
 	<@s.textfield label=getText('processDefinitionName') name="criteria.processDefinitionName"/>
