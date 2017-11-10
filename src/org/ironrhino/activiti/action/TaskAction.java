@@ -562,7 +562,7 @@ public class TaskAction extends BaseAction {
 					addActionError("任务已经被别人签收了");
 			}
 		}
-		return todolist();
+		return form();
 	}
 
 	public String unclaim() {

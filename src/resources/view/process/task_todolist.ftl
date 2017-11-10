@@ -22,7 +22,7 @@
 <@btn view="delegate"/>
 </#if>
 <#else>
-<@btn action="claim"/>
+<@btn view="claim"/>
 </#if>
 '>
 <#assign bottomButtons='
