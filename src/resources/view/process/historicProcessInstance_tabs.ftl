@@ -1,5 +1,6 @@
+<#ftl output_format='HTML'>
 <!DOCTYPE html>
-<#escape x as x?html><html>
+<html>
 <head>
 <title><#if request.requestURI?ends_with('/tabs2')><#if startedBy??&&startedBy>发起的流程<#else>经办的流程</#if><#else>流程列表</#if></title>
 </head>
@@ -26,4 +27,4 @@
 	</div>
 </div>
 </body>
-</html></#escape>
+</html>
