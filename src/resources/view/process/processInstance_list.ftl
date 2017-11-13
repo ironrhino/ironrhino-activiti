@@ -46,10 +46,8 @@
 	</div>
 	</div>
 </@authorize>
-<div class="row">
-	<div class="span12" style="text-align:center;">
-		<button type="submit" class="btn btn-primary">${getText('search')}</button> <button type="button" class="btn restore">${getText('restore')}</button>
-	</div>
+<div class="center">
+	<button type="submit" class="btn btn-primary">${getText('search')}</button> <button type="button" class="btn restore">${getText('restore')}</button>
 </div>
 </form>
 </body>

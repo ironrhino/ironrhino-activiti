@@ -23,7 +23,7 @@
 	</tr>
 	<#if ad.data?? && !ad.data.empty>
 	<tr>
-		<td colspan="4" style="text-align:center;font-weight:bold;">表单数据</td>
+		<td colspan="4" class="center" style="font-weight:bold;">表单数据</td>
 	</tr>
 	<#list ad.data.entrySet() as entry>
 	<tr>
@@ -34,7 +34,7 @@
 	</#if>
 	<#if ad.comments?? && !ad.comments.empty>
 	<tr>
-		<td colspan="4" style="text-align:center;font-weight:bold;">${getText('comment')}</td>
+		<td colspan="4" class="center" style="font-weight:bold;">${getText('comment')}</td>
 	</tr>
 	<#list ad.comments as comment>
 	<tr>
@@ -44,7 +44,7 @@
 	</#if>
 	<#if ad.attachments?? && !ad.attachments.empty>
 	<tr>
-		<td colspan="4" style="text-align:center;font-weight:bold;">${getText('attachment')}</td>
+		<td colspan="4" class="center" style="font-weight:bold;">${getText('attachment')}</td>
 	</tr>
 	<#list ad.attachments as attachment>
 	<tr>

@@ -17,7 +17,7 @@ ${processDefinition.description}
 <div class="accordion" id="accordion">
 	<div class="accordion-group">
 		<div class="accordion-heading">
-			<h4 style="text-align:center;"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#history">${getText('historyTrack')}</a></h4>
+			<h4 class="center"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#history">${getText('historyTrack')}</a></h4>
 		</div>
 		<div id="history" class="accordion-body collapse<#if !historicTaskInstances?? || historicTaskInstances?size lt 4> in</#if>">
 			<div class="accordion-inner">
