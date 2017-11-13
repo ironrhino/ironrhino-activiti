@@ -58,10 +58,8 @@
 	<@s.checkbox name="criteria.suspended" class="custom"/>
 	<@s.checkbox name="criteria.taskUnassigned" class="custom"/>
 	<@s.select name="criteria.taskDelegationState" list="@org.activiti.engine.task.DelegationState@values()" headerKey="" headerValue=""/>
-  	<div class="row">
-		<div class="span12" style="text-align:center;">
+  	<div class="center">
 		<button type="submit" class="btn btn-primary">${getText('search')}</button> <button type="button" class="btn restore">${getText('restore')}</button>
-		</div>
 	</div>
 </form>
 </body>
