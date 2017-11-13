@@ -34,14 +34,14 @@
 '>
 <@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false rowDynamicAttributes=r"<#if entity.task.assignee??>{'data-assigned':'true'}</#if>"/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
-	<@s.textfield label=getText('processInstanceId') name="criteria.processInstanceId"/>
-	<@s.textfield label=getText('processDefinitionName') name="criteria.processDefinitionName"/>
-	<@s.textfield label=getText('processInstanceBusinessKey') name="criteria.processInstanceBusinessKey"/>
-	<@s.textfield label=getText('taskName') name="criteria.taskName"/>
-	<@s.textfield label=getText('createdBefore') name="criteria.taskCreatedBefore" class="date"/>
-	<@s.textfield label=getText('createdAfter') name="criteria.taskCreatedAfter" class="date"/>
-	<@s.textfield label=getText('taskDueBefore') name="criteria.taskDueBefore" class="date"/>
-	<@s.textfield label=getText('taskDueAfter') name="criteria.taskDueAfter" class="date"/>
+	<@s.textfield name="criteria.processInstanceId"/>
+	<@s.textfield name="criteria.processDefinitionName"/>
+	<@s.textfield name="criteria.processInstanceBusinessKey"/>
+	<@s.textfield name="criteria.taskName"/>
+	<@s.textfield name="criteria.taskCreatedBefore" class="date"/>
+	<@s.textfield name="criteria.taskCreatedAfter" class="date"/>
+	<@s.textfield name="criteria.taskDueBefore" class="date"/>
+	<@s.textfield name="criteria.taskDueAfter" class="date"/>
 	<div class="row">
 		<div class="span12" style="text-align:center;">
 			<button type="submit" class="btn btn-primary">${getText('search')}</button> <button type="button" class="btn restore">${getText('restore')}</button>

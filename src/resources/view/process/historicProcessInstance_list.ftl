@@ -33,10 +33,10 @@
 </#if>
 <@richtable formid=formid entityName="historicProcessInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
 <form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
-	<@s.textfield label=getText('processDefinitionKey') name="criteria.processDefinitionKey"/>
-	<@s.textfield label=getText('processDefinitionName') name="criteria.processDefinitionName"/>
-	<@s.textfield label=getText('processInstanceId') name="criteria.processInstanceId"/>
-	<@s.textfield label=getText('processInstanceBusinessKey') name="criteria.processInstanceBusinessKey"/>
+	<@s.textfield name="criteria.processDefinitionKey"/>
+	<@s.textfield name="criteria.processDefinitionName"/>
+	<@s.textfield name="criteria.processInstanceId"/>
+	<@s.textfield name="criteria.processInstanceBusinessKey"/>
 <#if !request.requestURI?ends_with('/involved')>
 	<div class="control-group listpick" data-options="{'url':'<@url value="/user/pick?columns=username,name&enabled=true"/>','idindex':1,'nameindex':2}">
 	<@s.hidden id="criteria_involvedUser" name="criteria.involvedUser" class="listpick-id"/>
@@ -53,11 +53,11 @@
 	</div>
 	</div>
 </#if>
-	<@s.textfield label=getText('startedBefore') name="criteria.startedBefore" class="date"/>
-	<@s.textfield label=getText('startedAfter') name="criteria.startedAfter" class="date"/>
+	<@s.textfield name="criteria.startedBefore" class="date"/>
+	<@s.textfield name="criteria.startedAfter" class="date"/>
 <#if !Parameters.finished?? || Parameters.finished == 'true'>
-	<@s.textfield label=getText('finishedBefore') name="criteria.finishedBefore" class="date"/>
-	<@s.textfield label=getText('finishedAfter') name="criteria.finishedAfter" class="date"/>
+	<@s.textfield name="criteria.finishedBefore" class="date"/>
+	<@s.textfield name="criteria.finishedAfter" class="date"/>
 </#if>
 	<div class="row">
 		<div class="span12" style="text-align:center;">
