@@ -89,7 +89,7 @@ public class HistoricProcessInstanceAction extends BaseAction {
 		if (resultPage == null)
 			resultPage = new ResultPage<Row>();
 		HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery();
-		if (StringUtils.isNoneBlank(processDefinitionId))
+		if (StringUtils.isNotBlank(processDefinitionId))
 			query.processDefinitionId(processDefinitionId);
 		if (finished != null)
 			if (finished)

@@ -78,7 +78,7 @@ public class ProcessDefinitionAction extends BaseAction {
 		if (resultPage == null)
 			resultPage = new ResultPage<Row>();
 		ProcessDefinitionQuery query = repositoryService.createProcessDefinitionQuery();
-		if (StringUtils.isNoneBlank(keyword))
+		if (StringUtils.isNotBlank(keyword))
 			query.processDefinitionNameLike(keyword);
 		if (StringUtils.isNotBlank(key))
 			query.processDefinitionKey(key);
