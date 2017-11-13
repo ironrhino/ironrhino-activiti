@@ -1,5 +1,6 @@
+<#ftl output_format='HTML'>
 <!DOCTYPE html>
-<#escape x as x?html><html>
+<html>
 <head>
 <title>流程部署</title>
 </head>
@@ -28,4 +29,4 @@
 <#assign rowDynamicAttributes=r'{"class":"${entity.processDefinition.suspended?then("warning","")}"}'>
 <@richtable formid="processDefinition-form" entityName="processDefinition" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons rowDynamicAttributes=rowDynamicAttributes searchable=true celleditable=false/>
 </body>
-</html></#escape>
+</html>

@@ -1,8 +1,9 @@
+<#ftl output_format='HTML'>
 <#if formTemplate?has_content && formTemplate?index_of('<body>') gt -1>
 <@formTemplate?interpret/>
 <#else>
 <!DOCTYPE html>
-<#escape x as x?html><html>
+<html>
 <head>
 <title>${title}</title>
 </head>
@@ -80,5 +81,5 @@
 </#if>
 </body>
 </html>
-</#escape>
+
 </#if>

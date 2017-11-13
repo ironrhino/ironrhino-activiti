@@ -1,5 +1,6 @@
+<#ftl output_format='HTML'>
 <!DOCTYPE html>
-<#escape x as x?html><html>
+<html>
 <head>
 <title>我的任务</title>
 </head>
@@ -47,4 +48,4 @@
 	</div>
 </form>
 </body>
-</html></#escape>
+</html>

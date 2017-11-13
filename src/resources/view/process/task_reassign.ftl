@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<#escape x as x?html><html>
+<html>
 <head>
 <title>${getText('reassign')}</title>
 </head>
@@ -13,7 +13,7 @@
 		<span class="listpick-name"></span>
 		</div>
 	</div>
-	<@s.submit value=getText('submit') class="btn-primary"/>
+	<@s.submit label=getText('submit') class="btn-primary"/>
 </form>
 </body>
-</html></#escape>
+</html>

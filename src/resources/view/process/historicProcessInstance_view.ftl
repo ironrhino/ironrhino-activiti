@@ -1,5 +1,6 @@
+<#ftl output_format='HTML'>
 <!DOCTYPE html>
-<#escape x as x?html><html>
+<html>
 <head>
 <title>查看流程</title>
 </head>
@@ -60,4 +61,4 @@
 	</tbody>
 </table>
 </body>
-</html></#escape>
+</html>

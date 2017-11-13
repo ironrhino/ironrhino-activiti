@@ -1,5 +1,6 @@
-﻿<!DOCTYPE html>
-<#escape x as x?html><html>
+<#ftl output_format='HTML'>﻿
+<!DOCTYPE html>
+<html>
 <head>
 <title>${getText('index')}</title>
 </head>
@@ -18,4 +19,4 @@
 	
 </div>
 </body>
-</html></#escape>
+</html>

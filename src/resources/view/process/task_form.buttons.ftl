@@ -1,3 +1,4 @@
+<#ftl output_format='HTML'>
 <#assign templateName="/resources/view/process/form/"+processDefinitionKey/>
 <#if formKey?has_content>
 	<#assign templateName+="_"+formKey/>
@@ -26,7 +27,7 @@
 	</#if>
 	<div class="form-actions">
 	<#list submitFormPropertyOptions?keys as key>
-	<button type="submit" class="btn<#if key?is_first> btn-primary</#if>" name="${submitFormPropertyName}" value="${key?html}">${submitFormPropertyOptions[key]}</button>
+	<button type="submit" class="btn<#if key?is_first> btn-primary</#if>" name="${submitFormPropertyName}" value="${key}">${submitFormPropertyOptions[key]}</button>
 	</#list>
 	<#else>
 	<button type="submit" class="btn btn-primary">${getText((historicProcessInstance??)?then('submit','start'))}</button>	
