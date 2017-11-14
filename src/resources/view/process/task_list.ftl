@@ -28,7 +28,7 @@
 '>
 <#assign rowDynamicAttributes=r'{"class":"${entity.task.suspended?then("warning","")}"}'>
 <@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons rowDynamicAttributes=rowDynamicAttributes searchable=false celleditable=false/>
-<form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
+<form method="post" class="ajax view criteria form-horizontal ignore-blank" style="display:none;" data-columns="2">
 	<@s.textfield name="criteria.processDefinitionKey"/>
 	<@s.textfield name="criteria.processDefinitionName"/>
 	<@s.textfield name="criteria.processDefinitionId"/>
@@ -55,10 +55,8 @@
 	<@s.textfield name="criteria.taskCreatedAfter" class="date"/>
 	<@s.textfield name="criteria.taskDueBefore" class="date"/>
 	<@s.textfield name="criteria.taskDueAfter" class="date"/>
-	<@s.checkbox name="criteria.active" class="custom"/>
-	<@s.checkbox name="criteria.suspended" class="custom"/>
-	<@s.checkbox name="criteria.taskUnassigned" class="custom"/>
-	<@s.select name="criteria.taskDelegationState" list="@org.activiti.engine.task.DelegationState@values()" headerKey="" headerValue=""/>
+	<@s.select name="criteria.suspended" list={'true':getText('true'),'false':getText('false')} headerKey="" headerValue=""/>
+	<@s.select name="criteria.taskUnassigned" list={'true':getText('true'),'false':getText('false')} headerKey="" headerValue=""/>
   	<div class="center">
 		<button type="submit" class="btn btn-primary">${getText('search')}</button> <button type="button" class="btn restore">${getText('restore')}</button>
 	</div>

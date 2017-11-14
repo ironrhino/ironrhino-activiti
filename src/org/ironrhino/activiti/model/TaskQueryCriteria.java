@@ -3,7 +3,6 @@ package org.ironrhino.activiti.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,10 +28,6 @@ public class TaskQueryCriteria implements Serializable {
 	private String taskName;
 
 	private String taskDefinitionKey;
-
-	private DelegationState taskDelegationState;
-
-	private Boolean active;
 
 	private Boolean suspended;
 
@@ -67,10 +62,12 @@ public class TaskQueryCriteria implements Serializable {
 			query.taskNameLike("%" + taskName + "%");
 		if (StringUtils.isNotBlank(taskDefinitionKey))
 			query.taskDefinitionKey(taskDefinitionKey);
-		if (taskDelegationState != null)
-			query.taskDelegationState(taskDelegationState);
-		if (active != null && active)
-			query.active();
+		if (suspended != null) {
+			if (suspended)
+				query.suspended();
+			else
+				query.active();
+		}
 		if (suspended != null && suspended)
 			query.suspended();
 		if (taskUnassigned != null && taskUnassigned)

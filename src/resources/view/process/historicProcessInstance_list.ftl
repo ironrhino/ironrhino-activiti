@@ -33,7 +33,7 @@
 <#assign formid=((Parameters.finished=='true')?then('finished','unfinished'))+'_'+formid/>
 </#if>
 <@richtable formid=formid entityName="historicProcessInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons searchable=false celleditable=false/>
-<form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
+<form method="post" class="ajax view criteria form-horizontal ignore-blank" style="display:none;" data-columns="2">
 	<@s.textfield name="criteria.processDefinitionKey"/>
 	<@s.textfield name="criteria.processDefinitionName"/>
 	<@s.textfield name="criteria.processInstanceId"/>
