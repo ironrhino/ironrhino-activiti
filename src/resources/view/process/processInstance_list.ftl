@@ -26,7 +26,7 @@
 <#assign actionColumnButtons=r'<@btn view="view" '+'windowoptions="{\'width\':\'90%\',\'height\':650}"/>'>
 <#assign rowDynamicAttributes=r'{"data-deletable":"${entity.processInstance.suspended?string}","class":"${entity.processInstance.suspended?then("warning","")}"}'>
 <@richtable entityName="processInstance" columns=columns actionColumnButtons=actionColumnButtons bottomButtons=bottomButtons rowDynamicAttributes=rowDynamicAttributes searchable=false celleditable=false/>
-<form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
+<form method="post" class="ajax view criteria form-horizontal ignore-blank" style="display:none;" data-columns="2">
 	<@s.textfield name="criteria.processDefinitionKey"/>
 	<@s.textfield name="criteria.processDefinitionName"/>
 	<@s.textfield name="criteria.processInstanceId"/>

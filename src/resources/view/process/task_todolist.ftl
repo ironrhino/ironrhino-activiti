@@ -34,7 +34,7 @@
 <@btn class="filter"/>
 '>
 <@richtable entityName="task" columns=columns bottomButtons=bottomButtons actionColumnButtons=actionColumnButtons searchable=false celleditable=false rowDynamicAttributes=r"<#if entity.task.assignee??>{'data-assigned':'true'}</#if>"/>
-<form method="post" class="ajax view criteria form-horizontal" style="display:none;" data-columns="2">
+<form method="post" class="ajax view criteria form-horizontal ignore-blank" style="display:none;" data-columns="2">
 	<@s.textfield name="criteria.processInstanceId"/>
 	<@s.textfield name="criteria.processDefinitionName"/>
 	<@s.textfield name="criteria.processInstanceBusinessKey"/>
